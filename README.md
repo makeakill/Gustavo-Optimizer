@@ -1,4 +1,4 @@
-# ⚡ Gustavo Optimizer v1.0 - Pro Edition
+# ⚡ Gustavo Optimizer v1.1 - Pro Edition
 
 **Potência máxima, latência mínima e estabilidade inquebrável.**
 
