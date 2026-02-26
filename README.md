@@ -1,9 +1,5 @@
 # ⚡ Gustavo Optimizer v1.0 - Pro Edition
 
-![Versão](https://img.shields.io/badge/Vers%C3%A3o-1.0%20Pro-00E5FF?style=for-the-badge)
-![Plataforma](https://img.shields.io/badge/OS-Windows%2010%20%7C%2011-blue?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Est%C3%A1vel%20%26%20Seguro-su	ccess?style=for-the-badge)
-
 **Potência máxima, latência mínima e estabilidade inquebrável.**
 
 O **Gustavo Optimizer** não é apenas mais um limpador de ficheiros. É uma ferramenta de engenharia de sistema desenhada para extrair cada gota de desempenho do seu hardware, priorizando sempre a segurança e a estabilidade do Windows. 
