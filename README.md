@@ -24,11 +24,3 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 O Gustavo Optimizer respeita a regra de ouro da informática: **não executa limpezas de registo cegas (procura de chaves órfãs) que causam ecrãs azuis (BSOD)**. Todas as otimizações atuam em camadas de sistema documentadas, garantindo que a estabilidade do seu Sistema Operativo nunca seja comprometida. Estabilidade e FPS andam sempre de mãos dadas.
 
 ---
-
-## 🛠️ Como Compilar / Instalar (Para Desenvolvedores)
-
-Se possui o código-fonte (`Programa dos Bats.py`) e o ficheiro de ícone (`icone.ico`), pode gerar o executável final blindado utilizando o PyInstaller com o seguinte comando no terminal (recomendado rodar dentro da pasta do projeto):
-
-```powershell
-py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon="icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil "Programa dos Bats.py"
-
