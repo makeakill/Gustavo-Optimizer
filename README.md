@@ -25,40 +25,30 @@ O Gustavo Optimizer respeita a regra de ouro da informática: **não executa lim
 
 ---
 
-## 📜 Changelog Definitivo (Histórico de Versões)
+📜 Changelog (Histórico de Versões)
 
-### 🚀 v1.0.0 - A Versão "Pro Edition" Definitiva (Versão Atual)
-* **Implementação Crítica:** Memória Profunda no Registo. O "Modo Gamer" agora persiste após fechar o aplicativo. O programa cria um *snapshot* serializado das 10 chaves de otimização na raiz do Windows.
-* **Correção "Botões Fantasma" (Thread Race Condition):** Resolvido o problema em que o "Modo Gamer" não ativava visualmente as chaves ao ser acionado devido ao bloqueio de segurança do motor gráfico. Os *Helpers* agora utilizam chamadas UI-Safe para garantir sincronia total e fluidez.
+🛠️ v1.1.1 - Patch de Correção Crítica
 
-### ⚡ v0.9.0 - Validação Sênior e Energia Extrema
-* **Funcionalidade:** Otimização do Plano de Energia. O programa agora identifica, cria e injeta o plano oculto "Desempenho Máximo" (*Ultimate Performance*) nativo do Windows, em vez do simples "Alto Desempenho".
-* **Auditoria de Execução (Double-Check):** O programa não "assume" mais que um comando funcionou. Ele agora envia o comando de energia e faz uma leitura no sistema para confirmar se o Windows realmente obedeceu antes de dar sucesso no log.
-* **Correção (Crash):** Resolvido o erro `RuntimeError: main thread is not in main loop` na inicialização, aplicando um atraso inteligente de 500ms antes das validações de background.
+Esta atualização focou-se em resolver anomalias estruturais de baixo nível e garantir a sincronia absoluta entre a interface visual (CustomTkinter), o Kernel do Windows e o Registo de Memória.
 
-### 🎨 v0.8.0 - Expansão de Perfis e Reestruturação Visual
-* **Expansão:** "Modo Gamer" ampliado de 5 para 10 camadas simultâneas (incluindo *Network Throttling, Core Parking, Timer Res, GPU Downclock e DSCP*).
-* **Melhoria Visual:** Os Perfis Inteligentes foram movidos para o topo da hierarquia visual.
-* **Cores Dinâmicas:** Os botões agora alteram a sua cor consoante o perfil selecionado e o texto altera dinamicamente entre "ATIVAR MODO" e "DESATIVAR".
+Correção de Assimetria nos Perfis (Modo Gamer/Trabalho): * Problema: Ao desativar o "Modo Gamer", o sistema apenas revertia 6 das 13 chaves de otimização ativadas.
 
-### 🛠️ v0.7.0 - A Grande Atualização de Ferramentas
-* **Novas Integrações:**
-  * Aba de "Perfis Inteligentes" automatizada.
-  * Atalho nativo para o Gerenciador de "Apps de Inicialização".
-  * Ferramenta de Diagnóstico de Rede nativa.
-  * Chave para desativar "Tarefas Ocultas (Telemetria)".
-* **Diretriz de Segurança:** Decisão arquitetónica de não incluir varredura de chaves órfãs de Regedit para garantir risco zero de corromper o sistema (*Anti-Blue Screen*).
+Solução: O array de reversão do "Modo Trabalho" foi reescrito. Agora atua como um verdadeiro Master Switch, varrendo e forçando agressivamente a desativação das 13 chaves de hardware e rede, garantindo o retorno ao estado original de fábrica.
 
-### 📦 v0.6.0 - Correção Ortográfica e Empacotamento
-* **Correção:** Alteração massiva na nomenclatura de ficheiros e código-fonte para refletir a gramática correta ("Programa").
-* **Melhoria de Compilação:** Introdução da flag `--clean` no PyInstaller para evitar corrupção por ficheiros `.pkg` residuais.
+Prevenção de Falsos Positivos de Memória (Bug do Flip-Flop):
 
-### 🛡️ v0.5.0 - Blindagem Anti-Heurística (Bypass Antivírus)
-* **Correção Crítica:** O Kaspersky e outros antivírus bloqueavam o executável como `HEUR:Trojan-PSW.Python.Agent.gen` devido aos caminhos de cache dos navegadores.
-* **Solução Implementada:** Aplicada engenharia de "Ofuscação de Strings". Os diretórios são montados dinamicamente na RAM apenas na hora do clique, garantindo 100% de aprovação em motores de antivírus.
+Problema: Comandos bloqueados pelo Windows por falta de permissões causavam dessincronização: o botão voltava para "OFF" visualmente, mas o Registo gravava "ON".
 
-### 🏗️ v0.1.0 a v0.4.0 - Fundações da Arquitetura
-* Criação da grelha de Interface em `CustomTkinter` com modo escuro.
-* Implementação do sistema de Temas dinâmicos.
-* Desenvolvimento das 29 funções base e painel de hardware (CPU, RAM, GPU) em tempo real.
-* Integração nativa do Ícone no código-fonte via script de ponteiro absoluto.
+Solução: O auditor log_res foi reestruturado para ser a "dona da memória". A chave no Registo só é atualizada para refletir o estado visual final e real do botão após a tentativa de execução do comando no sistema operativo.
+
+Execução 100% Assíncrona (Anti-Freeze UI):
+
+Problema: Ativar múltiplas chaves simultaneamente asfixiava a Thread Principal do programa, causando o congelamento silencioso da interface (os botões não alteravam visualmente).
+
+Solução: Desacoplamento total da interface gráfica (UI) das ações de sistema (CMD/PowerShell). As rotinas de otimização correm agora em Threads de fundo silenciosas e utilizam contentores self.after com delays milimétricos (0.15s) para garantir animações fluidas.
+
+Captura Dinâmica do Plano de Energia (OEM Fix):
+
+Problema: Forçar o GUID do plano "Equilibrado" padrão falhava em máquinas OEM (Dell, Lenovo, HP) que utilizam planos de energia customizados de fábrica.
+
+Solução: Implementada a rotina guid_padrao que "tira uma fotografia" do plano de energia nativo do computador no primeiro arranque do programa, garantindo que o "Modo Trabalho" restaura a energia para o plano exato da máquina do utilizador.
