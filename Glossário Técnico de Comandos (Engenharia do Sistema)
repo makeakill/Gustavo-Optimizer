@@ -1,0 +1,61 @@
+⚙️ Glossário Técnico de Comandos (Engenharia do Sistema)
+
+Uma visão transparente e técnica de como o Gustavo Optimizer interage com a máquina em baixo nível.
+
+🐍 1. Otimizações Nativas (API Python) e Kernel
+
+Purga da Standby List (Nível ISLC): Método: Chama ntdll.NtSetSystemInformation solicitando privilégios SeProfileSingleProcessPrivilege. Ação: Esvazia a RAM em espera acumulada pelo SO, prevenindo quedas bruscas de FPS (Stuttering).
+
+Smart RAM Cleaner: Método: psapi.EmptyWorkingSet acoplado via ctypes. Ação: Força aplicações minimizadas a libertarem cache e devolverem RAM à placa-mãe.
+
+Auto Game Priority: Método: Injeção via psutil.HIGH_PRIORITY_CLASS. Ação: Encontra identificadores (PIDs) de jogos em execução e altera a gestão do processador para foco absoluto nesses binários.
+
+Benchmark DNS Nativo: Método: Leituras Regex sobre ping -n 4. Ação: Teste multi-rota real e aplicação paramétrica do IP vencedor na placa de rede via PowerShell.
+
+Limpeza Visual de Temp: Método: Módulo os.walk recursivo. Ação: Elimina ficheiros abandonados na cache individualmente, reportando de forma assíncrona à interface gráfica.
+
+🌐 2. Rede, Latência e NIC (TCP/IP)
+
+Interrupt Moderation (NIC): Comando: Disable-NetAdapterInterruptModeration -Physical. Ação: Obriga a placa de rede a processar pacotes unitariamente no momento exato em que chegam (Ideal para E-Sports).
+
+TCP NoDelay (Nagle's Algorithm): Ação: Aplica TcpAckFrequency e TCPNoDelay para 1. Remove a retenção técnica de consolidação de pacotes (reduz delay de registo dos tiros).
+
+Limitação de Rede (Throttling): Ação: Fixa NetworkThrottlingIndex a 0xFFFFFFFF. Cancela limites em largura de banda impostos pelo serviço de multimédia do Windows.
+
+Controle CUBIC: Ação: Adota o algoritmo avançado de controlo de congestão padrão de servidores Linux na placa Windows.
+
+Pacotes DSCP: Ação: Etiqueta de qualidade de serviço (Do not use NLA = 1) que força os roteadores residenciais a darem primazia absoluta ao tráfego do jogo.
+
+🚀 3. Hardware Extremo (Ferramentas de Root)
+
+Modo MSI (Message Signaled Interrupts): Ação: Varre e edita a chave oculta MSISupported = 1 no caminho PCI do Registo. Faz a Placa Gráfica ignorar o controlador antigo da motherboard e interromper o CPU de forma direta, cortando drasticamente a Latência DPC.
+
+Desligar HPET & Ticks: Comandos: bcdedit /deletevalue useplatformclock e disabledynamictick yes. Ação: Mata relógios digitais pesados que flutuam e danificam a estabilidade do 1% Low de FPS.
+
+Mira Perfeita (Raw Mouse): Ação: Esmaga as chaves MouseSpeed e MouseThreshold a 0. Remove a perigosa aceleração invisível de ponteiro introduzida pelo sistema operativo.
+
+Mitigações de CPU: Ação: Injeta FeatureSettingsOverride. Desliga proteções virtuais pesadas (Spectre/Meltdown) devolvendo a força bruta total de processamento ao chip.
+
+⚡ 4. Desempenho e Energia Dinâmica
+
+Core Parking: Ação: powercfg sub_processor CPMINCORES 100. Impede a nível energético que os núcleos lógicos se suspendam, garantindo prontidão máxima em picos de processamento.
+
+Power Throttling: Ação: Impede restrições de voltagem aplicadas pelo serviço dinâmico aos processos em background.
+
+Plano Desempenho Máximo (Workstation): Ação: Revela a chave oculta e aplica e9a42b02-d5df-448d-aa00-03f14749eb61. Extração de poder sem limites energéticos.
+
+Resolução de Tempo: Ação: Fixa GlobalTimerResolutionRequests para 1. Otimiza os ciclos de precisão de espera do Windows para a tolerância extrema de 0.5 milissegundos.
+
+🛡️ 5. Privacidade, Segurança e Debloat
+
+Painel Interativo de Gerenciador de Apps: Comandos: Interação direta via Get-AppxPackage e Remove-AppxPackage. Ação: Varre o Windows, categoriza software (Instalado/Ausente) e aplica remoções massivas ou reinstalações via manifesto XML em tempo real.
+
+Telemetria (DiagTrack e Tarefas): Ação: Executa a suspensão de agendamentos ocultos (schtasks) que compilam e enviam os seus dados de uso.
+
+Privacidade NVIDIA: Ação: Elimina permissões OptIn e termina contentores locais de envio de registos estatísticos dos drivers de vídeo.
+
+🧹 6. Manutenção e Estrutura Limpa
+
+Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar imagens sãs nos servidores da Microsoft e reparar ficheiros corrompidos essenciais.
+
+Ofuscação de Cache (Anti-Heurística): Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas dinamicamente na RAM e destruídas a seguir à limpeza, impedindo antivírus (Defender/Kaspersky) de categorizar erradamente a rotina como Malware.
