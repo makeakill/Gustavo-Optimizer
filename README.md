@@ -22,6 +22,8 @@ Glossário Técnico de Comandos
 
 Como Compilar para Desenvolvedores
 
+<a id="funcionalidades"></a>
+
 🔥 Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
@@ -41,6 +43,8 @@ Como Compilar para Desenvolvedores
 ⚙️ Engenharia Anti-Crash e UI-Safe: Blindado contra falsos positivos através de ofuscação avançada. A interface gráfica roda a 60FPS constantes devido à alocação de cargas pesadas (como leituras de Placa Gráfica) em Threads de background.
 
 🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
+
+<a id="changelog"></a>
 
 📜 Changelog Definitivo (Histórico de Versões)
 
@@ -136,6 +140,8 @@ Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
 
 </details>
 
+<a id="glossario"></a>
+
 ⚙️ Glossário Técnico de Comandos (Engenharia do Sistema)
 
 🐍 1. Otimizações Nativas (API Python, UI e Kernel)
@@ -200,21 +206,23 @@ Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
+<a id="compilar"></a>
+
 💻 Como Compilar (Para Desenvolvedores)
 
-O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais.
+O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
-1. Instale as Dependências de Sistema e Imagem:
+1. Instale todas as Dependências de Sistema, Compilação e Imagem:
 
-py -m pip install customtkinter psutil pystray Pillow
+py -m pip install pyinstaller customtkinter psutil pystray Pillow
 
 
 2. Navegue até à pasta do projeto:
 
-cd "C:\Users\gugu_\Downloads\Programa dos Bats"
+cd "INSIRA_AQUI_O_CAMINHO_DO_ARQUIVO"
 
 
-(Ajuste o caminho se a pasta estiver num local diferente).
+(Ajuste o caminho inserindo o local exato onde se encontra o script e o ícone).
 
 3. Execute a compilação absoluta com PyInstaller:
 
