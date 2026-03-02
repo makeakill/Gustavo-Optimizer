@@ -200,6 +200,28 @@ Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
+💻 Como Compilar (Para Desenvolvedores)
+
+O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais.
+
+1. Instale as Dependências de Sistema e Imagem:
+
+py -m pip install customtkinter psutil pystray Pillow
+
+
+2. Navegue até à pasta do projeto:
+
+cd "C:\Users\gugu_\Downloads\Programa dos Bats"
+
+
+(Ajuste o caminho se a pasta estiver num local diferente).
+
+3. Execute a compilação absoluta com PyInstaller:
+
+py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
+
+
+Nota Crítica: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação, para que a injeção de ID de Processo (AppUserModelID) tenha êxito visual na barra de tarefas do Windows.
 
 <div align="center">
 <i>Engenharia desenvolvida para performance máxima e estabilidade intocável.</i>
