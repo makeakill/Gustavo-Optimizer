@@ -103,26 +103,68 @@ Proteção de Sessão Avançada: Chaves Root de reinício passaram a ser ignorad
 <details>
 <summary><b>🛠️ v2.0 - Elite Edition (A Atualização de Kernel)</b></summary>
 
-Purga da Standby List (Nível ISLC) via API nativa (ntdll.dll).
+Purga da Standby List (Nível ISLC): Ligação direta em C/C++ via API nativa (ntdll.dll) para esvaziar a memória RAM em espera.
 
-Modo MSI para forçar interrupção direta da GPU sobre a CPU.
+Forçar Modo MSI (GPU): Algoritmo que altera o registo PCI da Placa Gráfica para comunicar sem interrupções com o CPU.
 
-Otimizações E-Sports: HPET, Dynamic Ticks e Raw Mouse Input.
+Otimizações E-Sports (Latência Zero): Desativação do relógio HPET, aniquilação de Dynamic Ticks e Raw Mouse Input.
 
-Thread Assíncrona dedicada à leitura da GPU (nvidia-smi), destravando 60FPS na UI principal.
+Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destravando 60FPS na UI principal.
 
 </details>
 
 <details>
-<summary><b>🚀 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
+<summary><b>🛠️ v1.1.1 - Patch de Correção Crítica</b></summary>
 
-Introdução de lógica 100% Assíncrona para evitar ecrãs congelados.
+Correção de Assimetria nos Perfis: O "Modo Trabalho" foi reescrito para atuar como um verdadeiro Master Switch, desligando toda a agressividade de uma só vez.
 
-Smart RAM Cleaner, Auto Game Priority e Validador Hz.
+Prevenção de Falsos Positivos de Memória: O Registo passou a refletir o estado visual final e real do botão apenas após a consolidação do comando no sistema operativo.
 
-Memória Persistente de Perfil (Snapshots Registo).
+Execução 100% Assíncrona: Desacoplamento total da interface gráfica (UI) das ações de sistema (CMD/PowerShell), eliminando travamentos de tela (Anti-Freeze).
 
-Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
+Captura Dinâmica do Plano de Energia: Implementado o registo em tempo real da configuração energética de fábrica (OEM) no primeiro arranque.
+
+</details>
+
+<details>
+<summary><b>🚀 v1.1.0 - Otimizações Nativas e Integração</b></summary>
+
+Motor Python Direto: Inclusão do código primário para ferramentas de leitura direta, sem uso do CMD, como o Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
+
+Manual Interativo: Adicionado o manual de instruções integrado ao software, com capacidade de exportação em ficheiro .txt.
+
+Barras de Progresso Visuais: Implementação de feedbacks visuais reativos para indicar o andamento de processos de limpeza complexos.
+
+Limpeza Temp Recursiva: A limpeza de arquivos temporários passou a ser mapeada recursivamente usando a biblioteca os, localizando lixo profundamente oculto.
+
+</details>
+
+<details>
+<summary><b>🧠 v1.0.0 - A Versão "Pro Edition" Definitiva</b></summary>
+
+Memória Profunda no Registo: Implementação pioneira do sistema de Snapshots utilizando a biblioteca winreg. O programa passou a ser capaz de gravar o estado exato do PC e reverter otimizações.
+
+Correção de "Botões Fantasma": Resolução de bloqueios críticos causados por Race Conditions na renderização do CustomTkinter, garantindo cliques responsivos a todo o momento.
+
+</details>
+
+<details>
+<summary><b>⚡ v0.9.0 - Validação e Energia Extrema</b></summary>
+
+Otimização do Plano de Energia: Criação de script para injetar, clonar e aplicar o plano de energia oculto da Microsoft focado em Workstations ("Desempenho Máximo").
+
+Verificação de Execução: Inseridas consultas de Loop-back nos scripts para confirmar ativamente a obediência do Sistema Operacional aos comandos emitidos.
+
+</details>
+
+<details>
+<summary><b>🛡️ v0.1.0 a v0.8.0 - As Fundações do Projeto</b></summary>
+
+Bypass de Antivírus: Desenvolvimento de técnicas de ofuscação de strings na memória e divisão de diretórios para evitar falsos positivos de motores heurísticos (Defender/Kaspersky) em ficheiros .exe compilados.
+
+Interface Gráfica Base: Substituição dos ficheiros .bat brutos em consola preta por uma interface gráfica moderna e interativa utilizando a biblioteca CustomTkinter.
+
+Módulos Iniciais: Implementação das primeiras rotinas automatizadas de limpeza de cache de navegadores, serviços de Spooler e otimização básica de rede.
 
 </details>
 
