@@ -15,6 +15,15 @@ import urllib.request
 import re
 import shutil
 
+# Importação das bibliotecas de System Tray (Bandeja do Sistema)
+try:
+    from PIL import Image, ImageTk
+    import pystray
+    from pystray import MenuItem as pystray_item
+    HAS_TRAY = True
+except ImportError:
+    HAS_TRAY = False
+
 # --- FUNÇÃO PARA LER ARQUIVOS COMPILADOS (ÍCONES) ---
 def resource_path(relative_path):
     """ Retorna o caminho absoluto, funcionando tanto em desenvolvimento quanto no .exe compilado """
@@ -67,13 +76,26 @@ class MeuOtimizador(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        # --- SEPARAÇÃO DE IDENTIDADE PARA A BARRA DE TAREFAS ---
+        # Força o Windows a reconhecer este programa como único, substituindo o ícone azul do CustomTkinter pelo nosso.
+        if os.name == 'nt':
+            try:
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("gustavo.optimizer.elite.v2.0.6")
+            except Exception:
+                pass
+
+        # --- CONFIGURAÇÃO DA JANELA E TITLEBAR CUSTOMIZADA ---
         self.title("Gustavo Optimizer v2.0 - Elite Edition")
-        self.geometry("1400x900")
+        self.geometry("1450x950")
         
-        # Lock de segurança para escrita Thread-Safe no Registo
+        # Remove a barra de título padrão do Windows
+        self.overrideredirect(True)
+        
+        # Hack Ctypes para garantir que o ícone do programa aparece na barra de tarefas mesmo sem o Titlebar
+        self.after(10, self.corrigir_barra_tarefas)
+
+        # Configurações de Estado
         self.reg_lock = threading.Lock()
-        
-        # Variáveis de Estado para os Perfis Inteligentes
         self.estado_anterior = {}
         self.gpu_cache = "A calcular..."
         
@@ -81,89 +103,168 @@ class MeuOtimizador(ctk.CTk):
         icone_path = resource_path("icone.ico")
         if os.path.exists(icone_path):
             self.iconbitmap(icone_path)
+            try:
+                if HAS_TRAY:
+                    # Aplica o ícone internamente de forma profunda para janelas Frameless
+                    img = ImageTk.PhotoImage(Image.open(icone_path))
+                    self.wm_iconphoto(True, img)
+            except Exception:
+                pass
         
-        # Carrega o tema salvo no Registo ou usa o padrão
+        # Carrega o tema salvo
         tema_salvo = self.carregar_config("TemaPrincipal", "Pure Power (Ciano)")
         if tema_salvo not in PALETAS:
             tema_salvo = "Pure Power (Ciano)"
         self.aplicar_variaveis_tema(tema_salvo)
         
-        # Carrega o Perfil Ativo da Memória do Registo
         self.perfil_ativo = self.carregar_config("PerfilAtivo", "Nenhum")
         self.carregar_snapshot_memoria()
         
-        # Fallback inicial para Planos de Energia e Captura Dinâmica
         self.guid_maximo = "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
         self.guid_padrao = self.carregar_config("GuidPadrao", "381b4222-f694-41f0-9685-ff5bb260df2e")
         
         self.configure(fg_color=self.bg_main)
+        self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=0) # Linha da Titlebar
+        self.grid_rowconfigure(1, weight=1) # Linha do Conteúdo
 
         # ==========================================
-        # 1. BARRA LATERAL (SIDEBAR) TÉCNICA
+        # 0. DESENHANDO A TITLEBAR CUSTOMIZADA
         # ==========================================
-        self.sidebar = ctk.CTkFrame(self, width=300, corner_radius=0, fg_color=self.bg_painel, border_width=1, border_color=self.borda)
-        self.sidebar.grid(row=0, column=0, sticky="nsew")
-        self.sidebar.grid_rowconfigure(13, weight=1)
+        self.titlebar = ctk.CTkFrame(self, height=40, corner_radius=0, fg_color=self.bg_painel, border_color=self.borda, border_width=1)
+        self.titlebar.grid(row=0, column=0, columnspan=2, sticky="ew")
+        
+        # Variáveis para arrastar a janela
+        self._x = None
+        self._y = None
+        self.titlebar.bind("<ButtonPress-1>", self.iniciar_movimento)
+        self.titlebar.bind("<B1-Motion>", self.mover_janela)
+        
+        self.lbl_title = ctk.CTkLabel(self.titlebar, text="  Gustavo Optimizer v2.0.6 - Elite Edition", font=("Segoe UI", 12, "bold"), text_color=self.acento)
+        self.lbl_title.pack(side="left", padx=10)
+        
+        self.btn_close = ctk.CTkButton(self.titlebar, text="✕", width=45, height=30, corner_radius=6, fg_color="transparent", hover_color="#e74c3c", text_color=self.texto_branco, font=("Segoe UI", 16, "bold"), command=self.destroy)
+        self.btn_close.pack(side="right", padx=(0, 5), pady=5)
+        
+        self.btn_min = ctk.CTkButton(self.titlebar, text="—", width=45, height=30, corner_radius=6, fg_color="transparent", hover_color=self.borda, text_color=self.texto_branco, font=("Segoe UI", 14, "bold"), command=self.minimizar_custom)
+        self.btn_min.pack(side="right", padx=5, pady=5)
 
-        self.lbl_logo = ctk.CTkLabel(self.sidebar, text="[ GUSTAVO OPTIMIZER ]", font=("Consolas", 20, "bold"), text_color=self.acento)
-        self.lbl_logo.grid(row=0, column=0, padx=20, pady=(30, 10), sticky="w")
+        # ==========================================
+        # 1. BARRA LATERAL (SIDEBAR) TÉCNICA E MODERNA
+        # ==========================================
+        self.sidebar = ctk.CTkFrame(self, width=320, corner_radius=0, fg_color=self.bg_painel, border_width=1, border_color=self.borda)
+        self.sidebar.grid(row=1, column=0, sticky="nsew")
+        self.sidebar.grid_rowconfigure(14, weight=1)
+
+        self.lbl_logo = ctk.CTkLabel(self.sidebar, text="[ GUSTAVO OPTIMIZER ]", font=("Consolas", 22, "bold"), text_color=self.acento)
+        self.lbl_logo.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
         self.is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
         admin_text = "MODO ADMIN: ATIVO" if self.is_admin else "AVISO: RODE COMO ADMIN"
-        self.status_topo = ctk.CTkLabel(self.sidebar, text=admin_text, text_color="#2ecc71" if self.is_admin else self.acento, font=("Consolas", 12, "bold"))
-        self.status_topo.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="w")
+        self.status_topo = ctk.CTkLabel(self.sidebar, text=admin_text, text_color="#2ecc71" if self.is_admin else self.acento, font=("Segoe UI", 12, "bold"))
+        self.status_topo.grid(row=1, column=0, padx=20, pady=(0, 15), sticky="w")
 
-        self.sw_master_sys = ctk.CTkSwitch(self.sidebar, text="MASTER SISTEMA (ON/OFF)", command=self.iniciar_thread_master, font=("Consolas", 12, "bold"), progress_color=self.acento, fg_color=self.borda)
-        self.sw_master_sys.grid(row=2, column=0, padx=20, pady=10, sticky="w")
+        self.sw_master_sys = ctk.CTkSwitch(self.sidebar, text="MASTER SISTEMA (ON/OFF)", command=self.iniciar_thread_master, font=("Segoe UI", 12, "bold"), progress_color=self.acento, fg_color=self.borda)
+        self.sw_master_sys.grid(row=2, column=0, padx=20, pady=8, sticky="w")
 
-        self.sw_master_clean = ctk.CTkSwitch(self.sidebar, text="MASTER MANUTENÇÃO", command=self.thread_manutencao, font=("Consolas", 12, "bold"), progress_color=self.acento, fg_color=self.borda)
-        self.sw_master_clean.grid(row=3, column=0, padx=20, pady=10, sticky="w")
+        self.sw_master_clean = ctk.CTkSwitch(self.sidebar, text="MASTER MANUTENÇÃO", command=self.thread_manutencao, font=("Segoe UI", 12, "bold"), progress_color=self.acento, fg_color=self.borda)
+        self.sw_master_clean.grid(row=3, column=0, padx=20, pady=8, sticky="w")
 
-        self.btn_restore = ctk.CTkButton(self.sidebar, text="PONTO RESTAURAÇÃO", command=self.criar_ponto_restauracao, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, corner_radius=0, border_width=1, border_color=self.acento, font=("Consolas", 12, "bold"))
-        self.btn_restore.grid(row=4, column=0, padx=20, pady=10, sticky="w")
+        self.btn_restore = ctk.CTkButton(self.sidebar, text="PONTO RESTAURAÇÃO", command=self.criar_ponto_restauracao, fg_color="transparent", hover_color=self.acento, text_color=self.texto_branco, corner_radius=6, border_width=2, border_color=self.acento, font=("Segoe UI", 12, "bold"))
+        self.btn_restore.grid(row=4, column=0, padx=20, pady=8, sticky="ew")
 
-        self.btn_exportar = ctk.CTkButton(self.sidebar, text="EXPORTAR LOG", command=self.exportar_log, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, corner_radius=0, border_width=1, border_color=self.acento, font=("Consolas", 12, "bold"))
-        self.btn_exportar.grid(row=5, column=0, padx=20, pady=10, sticky="w")
+        self.btn_exportar = ctk.CTkButton(self.sidebar, text="EXPORTAR LOG", command=self.exportar_log, fg_color="transparent", hover_color=self.acento, text_color=self.texto_branco, corner_radius=6, border_width=2, border_color=self.acento, font=("Segoe UI", 12, "bold"))
+        self.btn_exportar.grid(row=5, column=0, padx=20, pady=8, sticky="ew")
 
-        self.btn_manual = ctk.CTkButton(self.sidebar, text="MANUAL DO PROGRAMA", command=self.abrir_manual, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, corner_radius=0, border_width=1, border_color=self.acento, font=("Consolas", 12, "bold"))
-        self.btn_manual.grid(row=6, column=0, padx=20, pady=(10, 20), sticky="w")
+        self.btn_manual = ctk.CTkButton(self.sidebar, text="MANUAL DO PROGRAMA", command=self.abrir_manual, fg_color="transparent", hover_color=self.acento, text_color=self.texto_branco, corner_radius=6, border_width=2, border_color=self.acento, font=("Segoe UI", 12, "bold"))
+        self.btn_manual.grid(row=6, column=0, padx=20, pady=(8, 15), sticky="ew")
 
-        self.combo_temas = ctk.CTkOptionMenu(self.sidebar, values=list(PALETAS.keys()), command=self.mudar_tema, fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, dropdown_fg_color=self.bg_painel, text_color=self.texto_branco, font=("Consolas", 11, "bold"))
+        # Rótulo Informativo do Tema
+        self.lbl_tema_info = ctk.CTkLabel(self.sidebar, text="🎨 Estilo Visual (Nord, Dracula, etc.):", font=("Segoe UI", 11, "bold"), text_color=self.texto_cinza)
+        self.lbl_tema_info.grid(row=7, column=0, padx=20, pady=(0, 0), sticky="w")
+
+        self.combo_temas = ctk.CTkOptionMenu(self.sidebar, values=list(PALETAS.keys()), command=self.mudar_tema, fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, dropdown_fg_color=self.bg_painel, text_color=self.texto_branco, font=("Segoe UI", 12, "bold"), corner_radius=8)
         self.combo_temas.set(tema_salvo)
-        self.combo_temas.grid(row=7, column=0, padx=20, pady=(0, 20), sticky="w")
+        self.combo_temas.grid(row=8, column=0, padx=20, pady=(5, 15), sticky="ew")
 
-        self.lbl_cpu = ctk.CTkLabel(self.sidebar, text="⚙️ CPU: Calc...", font=("Consolas", 14, "bold"), text_color=self.texto_branco)
-        self.lbl_cpu.grid(row=8, column=0, padx=20, pady=5, sticky="w")
+        # --- DASHBOARD VISUAL DE HARDWARE ---
+        self.frame_hw = ctk.CTkFrame(self.sidebar, fg_color=self.bg_main, border_color=self.borda, border_width=1, corner_radius=12)
+        self.frame_hw.grid(row=9, column=0, padx=20, pady=(0, 15), sticky="ew")
         
-        self.lbl_ram = ctk.CTkLabel(self.sidebar, text="💾 RAM: Calc...", font=("Consolas", 14, "bold"), text_color=self.texto_branco)
-        self.lbl_ram.grid(row=9, column=0, padx=20, pady=5, sticky="w")
+        self.lbl_cpu_tit = ctk.CTkLabel(self.frame_hw, text="⚙️ CPU", font=("Segoe UI", 12, "bold"), text_color=self.texto_cinza)
+        self.lbl_cpu_tit.grid(row=0, column=0, padx=15, pady=(15,0), sticky="w")
+        self.lbl_cpu_val = ctk.CTkLabel(self.frame_hw, text="0%", font=("Segoe UI", 12, "bold"), text_color=self.texto_branco)
+        self.lbl_cpu_val.grid(row=0, column=1, padx=15, pady=(15,0), sticky="e")
+        self.prog_cpu = ctk.CTkProgressBar(self.frame_hw, height=6, progress_color=self.acento, fg_color=self.borda, corner_radius=4)
+        self.prog_cpu.grid(row=1, column=0, columnspan=2, padx=15, pady=(5,10), sticky="ew")
+        self.prog_cpu.set(0)
         
-        self.lbl_gpu = ctk.CTkLabel(self.sidebar, text="🎮 GPU: Calc...", font=("Consolas", 14, "bold"), text_color=self.texto_branco)
-        self.lbl_gpu.grid(row=10, column=0, padx=20, pady=5, sticky="nw")
+        self.lbl_ram_tit = ctk.CTkLabel(self.frame_hw, text="💾 RAM", font=("Segoe UI", 12, "bold"), text_color=self.texto_cinza)
+        self.lbl_ram_tit.grid(row=2, column=0, padx=15, sticky="w")
+        self.lbl_ram_val = ctk.CTkLabel(self.frame_hw, text="0%", font=("Segoe UI", 12, "bold"), text_color=self.texto_branco)
+        self.lbl_ram_val.grid(row=2, column=1, padx=15, sticky="e")
+        self.prog_ram = ctk.CTkProgressBar(self.frame_hw, height=6, progress_color=self.acento, fg_color=self.borda, corner_radius=4)
+        self.prog_ram.grid(row=3, column=0, columnspan=2, padx=15, pady=(5,10), sticky="ew")
+        self.prog_ram.set(0)
+        
+        self.lbl_gpu_tit = ctk.CTkLabel(self.frame_hw, text="🎮 GPU", font=("Segoe UI", 12, "bold"), text_color=self.texto_cinza)
+        self.lbl_gpu_tit.grid(row=4, column=0, padx=15, sticky="w")
+        self.lbl_gpu_val = ctk.CTkLabel(self.frame_hw, text="Calc...", font=("Segoe UI", 12, "bold"), text_color=self.texto_branco)
+        self.lbl_gpu_val.grid(row=4, column=1, padx=15, sticky="e")
+        self.prog_gpu = ctk.CTkProgressBar(self.frame_hw, height=6, progress_color=self.acento, fg_color=self.borda, corner_radius=4)
+        self.prog_gpu.grid(row=5, column=0, columnspan=2, padx=15, pady=(5,15), sticky="ew")
+        self.prog_gpu.set(0)
 
-        self.sw_sidebar_dark = ctk.CTkSwitch(self.sidebar, text="FORÇAR MODO ESCURO", command=self.acao_dark_mode, font=("Consolas", 12, "bold"), progress_color=self.acento, fg_color=self.borda)
-        self.sw_sidebar_dark.grid(row=11, column=0, padx=20, pady=(20, 5), sticky="w")
+        # Forçar Modo Escuro
+        self.sw_sidebar_dark = ctk.CTkSwitch(self.sidebar, text="MODO ESCURO SO", command=self.acao_dark_mode, font=("Segoe UI", 11, "bold"), progress_color=self.acento, fg_color=self.borda)
+        self.sw_sidebar_dark.grid(row=10, column=0, padx=20, pady=(0, 10), sticky="w")
         estado_dark = self.carregar_config("DarkModeSidebar", "0")
         if estado_dark == "1":
             self.sw_sidebar_dark.select()
 
-        self.progress_bar = ctk.CTkProgressBar(self.sidebar, height=8, progress_color=self.acento, fg_color=self.borda, corner_radius=0)
-        self.progress_bar.grid(row=12, column=0, padx=20, pady=(15, 5), sticky="ew")
-        self.progress_bar.set(0)
+        # Efeito Mica / Transparência
+        self.lbl_mica = ctk.CTkLabel(self.sidebar, text="🪟 Efeito Mica / Transparência:", font=("Segoe UI", 11, "bold"), text_color=self.texto_cinza)
+        self.lbl_mica.grid(row=11, column=0, padx=20, pady=(5, 0), sticky="w")
+        
+        self.slider_mica = ctk.CTkSlider(self.sidebar, from_=0.3, to=1.0, command=self.mudar_transparencia, progress_color=self.acento, button_color=self.acento, button_hover_color=self.texto_branco)
+        self.slider_mica.grid(row=12, column=0, padx=20, pady=(5, 10), sticky="ew")
+        self.slider_mica.set(1.0) # Opaco por padrão
 
-        self.caixa_log = ctk.CTkTextbox(self.sidebar, height=180, corner_radius=0, font=("Consolas", 11), fg_color=self.bg_main, text_color=self.texto_cinza, border_width=1, border_color=self.borda)
-        self.caixa_log.grid(row=13, column=0, padx=10, pady=10, sticky="sew")
+        # Log Terminal
+        self.caixa_log = ctk.CTkTextbox(self.sidebar, height=130, corner_radius=10, font=("Consolas", 10), fg_color=self.bg_main, text_color=self.texto_cinza, border_width=1, border_color=self.borda)
+        self.caixa_log.grid(row=13, column=0, padx=15, pady=10, sticky="sew")
         
         self.after(500, lambda: self.log("Sistema de Memória Persistente ativado."))
-        self.after(550, lambda: self.log("Iniciando Auditoria em Tempo Real no Registo do Windows..."))
+        self.after(550, lambda: self.log("Iniciando Auditoria em Tempo Real no Registo..."))
 
         # ==========================================
-        # 2. ÁREA DE CONTEÚDO E INICIALIZAÇÃO
+        # 2. ÁREA DE CONTEÚDO (SISTEMA DE ABAS - TABVIEW)
         # ==========================================
-        self.scroll_area = ctk.CTkScrollableFrame(self, fg_color=self.bg_main, corner_radius=0)
-        self.scroll_area.grid(row=0, column=1, sticky="nsew", padx=0, pady=0)
+        self.tabview = ctk.CTkTabview(self, fg_color=self.bg_main, segmented_button_fg_color=self.bg_painel, segmented_button_selected_color=self.acento, segmented_button_unselected_color=self.bg_painel, text_color=self.texto_branco, corner_radius=12)
+        self.tabview.grid(row=1, column=1, sticky="nsew", padx=15, pady=15)
+
+        self.tab_desempenho = self.tabview.add("⚡ Desempenho")
+        self.tab_rede = self.tabview.add("🌐 Rede & Internet")
+        self.tab_privacidade = self.tabview.add("🛡️ Privacidade & OS")
+        self.tab_limpeza = self.tabview.add("🧹 Limpeza")
+        self.tab_root = self.tabview.add("⚙️ Root (Reinício)")
+
+        # Scrollable Frames dentro das Abas
+        self.scroll_desempenho = ctk.CTkScrollableFrame(self.tab_desempenho, fg_color="transparent")
+        self.scroll_desempenho.pack(expand=True, fill="both")
+        
+        self.scroll_rede = ctk.CTkScrollableFrame(self.tab_rede, fg_color="transparent")
+        self.scroll_rede.pack(expand=True, fill="both")
+        
+        self.scroll_privacidade = ctk.CTkScrollableFrame(self.tab_privacidade, fg_color="transparent")
+        self.scroll_privacidade.pack(expand=True, fill="both")
+        
+        self.scroll_limpeza = ctk.CTkScrollableFrame(self.tab_limpeza, fg_color="transparent")
+        self.scroll_limpeza.pack(expand=True, fill="both")
+        
+        self.scroll_root = ctk.CTkScrollableFrame(self.tab_root, fg_color="transparent")
+        self.scroll_root.pack(expand=True, fill="both")
 
         self.lista_switches = [] 
         self.cards_interface = [] 
@@ -176,29 +277,123 @@ class MeuOtimizador(ctk.CTk):
         
         self.after(500, self.iniciar_verificacao_energia)
 
+    # --- FUNÇÕES DA TITLEBAR CUSTOMIZADA E SYSTEM TRAY ---
+    def iniciar_movimento(self, event):
+        self._x = event.x
+        self._y = event.y
+
+    def mover_janela(self, event):
+        deltax = event.x - self._x
+        deltay = event.y - self._y
+        x = self.winfo_x() + deltax
+        y = self.winfo_y() + deltay
+        self.geometry(f"+{x}+{y}")
+
+    def minimizar_custom(self):
+        """ Minimização de Elite para a Bandeja do Sistema (Tray Icon) """
+        if HAS_TRAY:
+            self.withdraw() # Esconde a janela da tela e da barra de tarefas
+            
+            icone_path = resource_path("icone.ico")
+            try:
+                image = Image.open(icone_path)
+            except Exception:
+                image = Image.new('RGB', (64, 64), color=(0, 229, 255))
+                
+            menu = pystray.Menu(
+                pystray_item('Restaurar Interface', self.restaurar_do_tray, default=True),
+                pystray_item('Encerrar Optimizer', self.fechar_pelo_tray)
+            )
+            
+            self.tray_icon = pystray.Icon("GustavoOptimizer", image, "Gustavo Optimizer Elite", menu)
+            
+            # Executa o ícone numa thread separada para não bloquear a interface gráfica
+            threading.Thread(target=self.tray_icon.run, daemon=True).start()
+            self.log("[*] Oculto na Bandeja do Sistema. Clique com o botão direito para restaurar.")
+        else:
+            # Fallback seguro caso o utilizador não tenha instalado o pystray
+            self.overrideredirect(False)
+            self.iconify()
+            self.bind("<FocusIn>", self.restaurar_custom_fallback)
+            self.log("[-] Aviso: Execute 'pip install pystray Pillow' para ativar o Menu de Bandeja.")
+
+    def restaurar_custom_fallback(self, event):
+        self.unbind("<FocusIn>")
+        self.overrideredirect(True)
+        self.after(10, self.corrigir_barra_tarefas)
+
+    def restaurar_do_tray(self, icon, item):
+        icon.stop()
+        self.after(0, self._mostrar_janela_tray)
+
+    def _mostrar_janela_tray(self):
+        self.deiconify()
+        self.corrigir_barra_tarefas()
+        self.log("[+] Interface restaurada com sucesso.")
+
+    def fechar_pelo_tray(self, icon, item):
+        icon.stop()
+        self.after(0, self.destroy)
+
+    def corrigir_barra_tarefas(self):
+        # Acesso profundo via Ctypes para garantir que o software aparece na barra de tarefas do Windows
+        # Mesmo com o overrideredirect ativado (Elite Feature)
+        try:
+            hwnd = ctypes.windll.user32.GetParent(self.winfo_id())
+            if hwnd == 0:
+                hwnd = self.winfo_id()
+            GWL_EXSTYLE = -20
+            WS_EX_APPWINDOW = 0x00040000
+            WS_EX_TOOLWINDOW = 0x00000080
+            estilo_atual = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+            estilo_novo = (estilo_atual & ~WS_EX_TOOLWINDOW) | WS_EX_APPWINDOW
+            ctypes.windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, estilo_novo)
+            self.withdraw()
+            self.deiconify()
+            
+            # Re-força o ícone customizado na barra de tarefas (Removendo o 'C' azul do Tkinter)
+            icone_path = resource_path("icone.ico")
+            if os.path.exists(icone_path):
+                self.iconbitmap(icone_path)
+        except Exception:
+            pass
+
+    def mudar_transparencia(self, valor):
+        # Aplica o Efeito Mica/Transparência global da janela
+        self.attributes("-alpha", valor)
+
     # --- MONITORAMENTO DE HARDWARE OTIMIZADO ---
     def atualizar_hardware_ui(self):
-        """ Atualiza apenas a UI na thread principal com dados rápidos ou em cache """
         uso_cpu = psutil.cpu_percent(interval=None)
         uso_ram = psutil.virtual_memory().percent
         
-        self.lbl_cpu.configure(text=f"⚙️ CPU: {uso_cpu}%")
-        self.lbl_ram.configure(text=f"💾 RAM: {uso_ram}%")
-        self.lbl_gpu.configure(text=f"🎮 GPU: {self.gpu_cache}")
+        self.lbl_cpu_val.configure(text=f"{uso_cpu}%")
+        self.prog_cpu.set(uso_cpu / 100.0)
+        
+        self.lbl_ram_val.configure(text=f"{uso_ram}%")
+        self.prog_ram.set(uso_ram / 100.0)
+        
+        gpu_txt = self.gpu_cache.replace("%", "").strip()
+        self.lbl_gpu_val.configure(text=f"{self.gpu_cache}")
+        try:
+            gpu_num = float(gpu_txt)
+            self.prog_gpu.set(gpu_num / 100.0)
+        except Exception:
+            self.prog_gpu.set(0)
+            
         self.after(1500, self.atualizar_hardware_ui)
 
     def thread_atualizar_gpu(self):
-        """ Processo super pesado isolado do mainloop para garantir fluidez a 60fps na UI """
         while True:
             try:
                 res = subprocess.run(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader,nounits'], capture_output=True, text=True, creationflags=0x08000000)
                 if res.returncode == 0: 
                     self.gpu_cache = f"{res.stdout.strip()}%"
                 else:
-                    self.gpu_cache = "Erro/AMD"
+                    self.gpu_cache = "N/A (AMD)"
             except Exception: 
-                self.gpu_cache = "Erro/AMD"
-            time.sleep(2) # Pausa de 2 segundos para não asfixiar o CPU
+                self.gpu_cache = "N/A"
+            time.sleep(2)
 
     # --- CONTROLES MASTER DA BARRA LATERAL ---
     def thread_manutencao(self):
@@ -257,7 +452,6 @@ class MeuOtimizador(ctk.CTk):
                 self.log("[-] Permissão Negada: É obrigatório executar como Administrador.", "erro")
                 return
             self.log("[*] Solicitando privilégios SeProfileSingleProcessPrivilege ao Kernel...")
-            self.after(0, self.progress_bar.set, 0.2)
             try:
                 SE_PRIVILEGE_ENABLED = 0x00000002
                 TOKEN_ADJUST_PRIVILEGES = 0x0020
@@ -295,8 +489,6 @@ class MeuOtimizador(ctk.CTk):
                 
                 if not advapi32.AdjustTokenPrivileges(hToken, False, ctypes.byref(tp), ctypes.sizeof(tp), None, None): 
                     raise ctypes.WinError(ctypes.get_last_error())
-
-                self.after(0, self.progress_bar.set, 0.6)
                 
                 command = ctypes.c_int(MemoryPurgeStandbyList)
                 status = ntdll.NtSetSystemInformation(SystemMemoryListInformation, ctypes.byref(command), ctypes.sizeof(command))
@@ -309,16 +501,11 @@ class MeuOtimizador(ctk.CTk):
                 kernel32.CloseHandle(hToken)
             except Exception as e: 
                 self.log(f"[-] Erro Grave na Aplicação Ctypes (Standby List): {str(e)}", "erro")
-            finally: 
-                self.after(0, self.progress_bar.set, 1)
-                time.sleep(1.5)
-                self.after(0, self.progress_bar.set, 0)
         threading.Thread(target=tarefa, daemon=True).start()
 
     def otimizar_ram_nativa(self):
         def tarefa():
             self.log("[*] Esvaziando Working Set de processos ativos na memória RAM...")
-            self.after(0, self.progress_bar.set, 0.2)
             try:
                 PROCESS_SET_QUOTA = 0x0100
                 PROCESS_QUERY_INFORMATION = 0x0400
@@ -339,17 +526,10 @@ class MeuOtimizador(ctk.CTk):
                             kernel32.CloseHandle(h_process)
                     except Exception: 
                         pass
-                        
-                    if i % max(1, total // 10) == 0: 
-                        self.after(0, self.progress_bar.set, 0.2 + (i/total)*0.8)
                 
-                self.after(0, self.progress_bar.set, 1)
                 self.log(f"[+] Smart RAM Cleaner concluído. Memória de cache ociosa libertada em {count} aplicações.")
-                time.sleep(1.5)
-                self.after(0, self.progress_bar.set, 0)
             except Exception as e: 
                 self.log(f"[-] Erro Crítico na API do Kernel: {str(e)}", "erro")
-                self.after(0, self.progress_bar.set, 0)
         threading.Thread(target=tarefa, daemon=True).start()
 
     def prioridade_jogos_nativa(self):
@@ -361,7 +541,6 @@ class MeuOtimizador(ctk.CTk):
                 'lol.exe', 'cod.exe', 'cyberpunk2077.exe'
             ]
             encontrados = []
-            self.after(0, self.progress_bar.set, 0.5)
             
             for proc in psutil.process_iter(['pid', 'name']):
                 try:
@@ -373,22 +552,16 @@ class MeuOtimizador(ctk.CTk):
                 except Exception: 
                     pass
             
-            self.after(0, self.progress_bar.set, 1)
-            
             if encontrados:
                 for jogo in set(encontrados): 
                     self.log(f"[+] Jogo detetado e otimizado com sucesso: {jogo.upper()} (Prioridade ALTA)")
             else: 
                 self.log("[-] Nenhum jogo reconhecido ativo no momento. Abra o jogo primeiro!", "erro")
-                
-            time.sleep(1.5)
-            self.after(0, self.progress_bar.set, 0)
         threading.Thread(target=tarefa, daemon=True).start()
 
     def verificar_hz_monitor(self):
         def tarefa():
             self.log("[*] Consultando a API de Vídeo do Windows (user32.dll)...")
-            self.after(0, self.progress_bar.set, 0.5)
             try:
                 class DEVMODE(ctypes.Structure):
                     _fields_ = [
@@ -417,17 +590,11 @@ class MeuOtimizador(ctk.CTk):
                     self.log("[-] Falha ao tentar ler as informações da placa de vídeo.", "erro")
             except Exception as e: 
                 self.log(f"[-] Erro inesperado na leitura de hardware: {str(e)}", "erro")
-                
-            self.after(0, self.progress_bar.set, 1)
-            time.sleep(1.5)
-            self.after(0, self.progress_bar.set, 0)
         threading.Thread(target=tarefa, daemon=True).start()
 
     def benchmark_dns_nativo(self):
         def tarefa():
             self.log("[*] Buscando DNS Atual configurado na sua placa de rede...")
-            self.after(0, self.progress_bar.set, 0)
-            
             try:
                 cmd_ps = 'powershell -Command "(Get-NetAdapter | Where-Object {$_.Status -eq \'Up\' -and $_.InterfaceAlias -notlike \'*Loopback*\'} | Get-DnsClientServerAddress -AddressFamily IPv4)[0].ServerAddresses[0]"'
                 res_dns = subprocess.run(cmd_ps, capture_output=True, text=True, creationflags=0x08000000)
@@ -446,8 +613,6 @@ class MeuOtimizador(ctk.CTk):
                 servidores["Atual (Seu Provedor)"] = current_dns
                 
             resultados = {}
-            passo = 1.0 / len(servidores)
-            progresso = 0.0
             
             self.log("[*] Iniciando Benchmark Global de Latência. Testando rotas de pacotes...")
             
@@ -463,13 +628,6 @@ class MeuOtimizador(ctk.CTk):
                         resultados[nome] = (999, ip)
                 except Exception: 
                     resultados[nome] = (999, ip)
-                    
-                progresso += passo
-                self.after(0, self.progress_bar.set, progresso)
-            
-            self.after(0, self.progress_bar.set, 1)
-            time.sleep(0.5)
-            self.after(0, self.progress_bar.set, 0)
             
             ordenados = sorted(resultados.items(), key=lambda item: item[1][0])
             self.after(0, lambda: self.abrir_tela_selecao_dns(ordenados))
@@ -484,9 +642,9 @@ class MeuOtimizador(ctk.CTk):
         janela_dns.grab_set()
         janela_dns.configure(fg_color=self.bg_main)
         
-        ctk.CTkLabel(janela_dns, text="[ RESULTADO DO BENCHMARK DNS ]", font=("Consolas", 16, "bold"), text_color=self.acento).pack(pady=(20, 10))
+        ctk.CTkLabel(janela_dns, text="[ RESULTADO DO BENCHMARK DNS ]", font=("Segoe UI", 16, "bold"), text_color=self.acento).pack(pady=(20, 10))
         
-        frame_res = ctk.CTkFrame(janela_dns, fg_color=self.bg_painel, border_width=1, border_color=self.borda)
+        frame_res = ctk.CTkFrame(janela_dns, fg_color=self.bg_painel, border_width=1, border_color=self.borda, corner_radius=10)
         frame_res.pack(expand=True, fill="both", padx=20, pady=10)
         
         opcoes_dropdown = []
@@ -497,8 +655,8 @@ class MeuOtimizador(ctk.CTk):
             texto_ping = f"{ping} ms" if ping != 999 else "Falha/TimeOut"
             texto_exibicao = f"{nome} ({ip}) - {texto_ping}"
             
-            lbl_res = ctk.CTkLabel(frame_res, text=texto_exibicao, font=("Consolas", 12, "bold" if i == 0 else "normal"), text_color=cor)
-            lbl_res.pack(anchor="w", padx=20, pady=5)
+            lbl_res = ctk.CTkLabel(frame_res, text=texto_exibicao, font=("Segoe UI", 13, "bold" if i == 0 else "normal"), text_color=cor)
+            lbl_res.pack(anchor="w", padx=20, pady=8)
             
             if ping != 999:
                 opcao = f"{nome} ({ip})"
@@ -506,9 +664,9 @@ class MeuOtimizador(ctk.CTk):
                 if i == 0: 
                     melhor_opcao = opcao
                     
-        ctk.CTkLabel(janela_dns, text="Selecione o DNS para aplicar na placa de rede:", font=("Roboto", 12), text_color=self.texto_cinza).pack(pady=(10, 5))
+        ctk.CTkLabel(janela_dns, text="Selecione o DNS para aplicar na placa de rede:", font=("Segoe UI", 12), text_color=self.texto_cinza).pack(pady=(10, 5))
         
-        combo_dns = ctk.CTkOptionMenu(janela_dns, values=opcoes_dropdown, fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, text_color=self.texto_branco)
+        combo_dns = ctk.CTkOptionMenu(janela_dns, values=opcoes_dropdown, fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, text_color=self.texto_branco, font=("Segoe UI", 12), corner_radius=8)
         if melhor_opcao: 
             combo_dns.set(melhor_opcao)
         combo_dns.pack(pady=5)
@@ -523,7 +681,7 @@ class MeuOtimizador(ctk.CTk):
                 self.executar_comando_assincrono(cmd, f"Aplicação Definitiva de DNS ({ip_alvo})")
             janela_dns.destroy()
             
-        btn_aplicar = ctk.CTkButton(janela_dns, text="APLICAR DNS", command=aplicar_dns_selecionado, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, border_width=1, border_color=self.acento, font=("Consolas", 12, "bold"))
+        btn_aplicar = ctk.CTkButton(janela_dns, text="APLICAR DNS", command=aplicar_dns_selecionado, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, border_width=1, border_color=self.acento, font=("Segoe UI", 12, "bold"), corner_radius=8)
         btn_aplicar.pack(pady=(10, 20))
 
     def limpar_temp_nativa(self):
@@ -549,7 +707,6 @@ class MeuOtimizador(ctk.CTk):
                 return
             
             self.log(f"[*] Exterminando {total} ficheiros corrompidos, temporários ou inúteis...")
-            self.after(0, self.progress_bar.set, 0)
             apagados = 0
             
             for i, item in enumerate(arquivos_para_apagar):
@@ -562,14 +719,7 @@ class MeuOtimizador(ctk.CTk):
                 except Exception: 
                     pass
                     
-                if total > 0 and i % max(1, total // 50) == 0: 
-                    self.after(0, self.progress_bar.set, i / total)
-                    
-            self.after(0, self.progress_bar.set, 1)
             self.log(f"[+] Limpeza Profunda Concluída: {apagados} ficheiros apagados de forma permanente.")
-            time.sleep(1.5)
-            self.after(0, self.progress_bar.set, 0)
-            
         threading.Thread(target=tarefa, daemon=True).start()
 
     # --- VERIFICAÇÃO INTELIGENTE DO DESEMPENHO MÁXIMO ---
@@ -655,7 +805,6 @@ class MeuOtimizador(ctk.CTk):
             except OSError:
                 return "0" 
         
-        # Fallback para configurações que são scripts (PowerShell, bcdedit, rede complexa) e não residem num único reg key localizável
         return self.carregar_config(nome_log, "0")
 
     # --- SISTEMA DE MEMÓRIA (REGISTO DO WINDOWS) COM LOCK THREAD-SAFE ---
@@ -718,25 +867,43 @@ class MeuOtimizador(ctk.CTk):
         self.salvar_config("TemaPrincipal", novo_tema) 
         
         self.configure(fg_color=self.bg_main)
+        
+        # Titlebar
+        self.titlebar.configure(fg_color=self.bg_painel, border_color=self.borda)
+        self.lbl_title.configure(text_color=self.acento)
+        self.btn_min.configure(hover_color=self.borda)
+        
         self.sidebar.configure(fg_color=self.bg_painel, border_color=self.borda)
         self.lbl_logo.configure(text_color=self.acento)
         self.status_topo.configure(text_color="#2ecc71" if self.is_admin else self.acento)
         self.sw_master_sys.configure(progress_color=self.acento, fg_color=self.borda)
         self.sw_master_clean.configure(progress_color=self.acento, fg_color=self.borda)
         self.sw_sidebar_dark.configure(progress_color=self.acento, fg_color=self.borda)
-        self.btn_exportar.configure(fg_color=self.bg_painel, hover_color=self.acento, border_color=self.acento)
-        self.btn_restore.configure(fg_color=self.bg_painel, hover_color=self.acento, border_color=self.acento)
-        self.btn_manual.configure(fg_color=self.bg_painel, hover_color=self.acento, border_color=self.acento)
-        self.combo_temas.configure(fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, dropdown_fg_color=self.bg_painel, text_color=self.texto_branco)
-        self.caixa_log.configure(fg_color=self.bg_main, text_color=self.texto_cinza, border_color=self.borda)
-        self.lbl_cpu.configure(text_color=self.texto_branco)
-        self.lbl_ram.configure(text_color=self.texto_branco)
-        self.lbl_gpu.configure(text_color=self.texto_branco)
         
-        if hasattr(self, 'progress_bar'): 
-            self.progress_bar.configure(progress_color=self.acento, fg_color=self.borda)
-            
-        self.scroll_area.configure(fg_color=self.bg_main)
+        self.frame_hw.configure(fg_color=self.bg_main, border_color=self.borda)
+        self.prog_cpu.configure(progress_color=self.acento, fg_color=self.borda)
+        self.prog_ram.configure(progress_color=self.acento, fg_color=self.borda)
+        self.prog_gpu.configure(progress_color=self.acento, fg_color=self.borda)
+        
+        self.btn_exportar.configure(fg_color="transparent", hover_color=self.acento, border_color=self.acento)
+        self.btn_restore.configure(fg_color="transparent", hover_color=self.acento, border_color=self.acento)
+        self.btn_manual.configure(fg_color="transparent", hover_color=self.acento, border_color=self.acento)
+        self.combo_temas.configure(fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, dropdown_fg_color=self.bg_painel, text_color=self.texto_branco)
+        
+        self.slider_mica.configure(progress_color=self.acento, button_color=self.acento)
+        
+        self.caixa_log.configure(fg_color=self.bg_main, text_color=self.texto_cinza, border_color=self.borda)
+        
+        self.lbl_cpu_tit.configure(text_color=self.texto_cinza)
+        self.lbl_cpu_val.configure(text_color=self.texto_branco)
+        self.lbl_ram_tit.configure(text_color=self.texto_cinza)
+        self.lbl_ram_val.configure(text_color=self.texto_branco)
+        self.lbl_gpu_tit.configure(text_color=self.texto_cinza)
+        self.lbl_gpu_val.configure(text_color=self.texto_branco)
+        self.lbl_tema_info.configure(text_color=self.texto_cinza)
+        self.lbl_mica.configure(text_color=self.texto_cinza)
+        
+        self.tabview.configure(fg_color=self.bg_main, segmented_button_fg_color=self.bg_painel, segmented_button_selected_color=self.acento, segmented_button_unselected_color=self.bg_painel, text_color=self.texto_branco)
         
         for widget in self.cards_interface: 
             widget.destroy()
@@ -751,7 +918,7 @@ class MeuOtimizador(ctk.CTk):
         if not hasattr(self, 'btn_gamer') or not hasattr(self, 'btn_trabalho'): 
             return
             
-        cor_fundo_padrao = self.bg_painel
+        cor_fundo_padrao = "transparent"
         cor_texto_padrao = self.texto_branco
         cor_borda_padrao = self.acento
 
@@ -781,15 +948,15 @@ class MeuOtimizador(ctk.CTk):
         janela_manual.grab_set() 
         janela_manual.configure(fg_color=self.bg_main)
         
-        lbl_titulo = ctk.CTkLabel(janela_manual, text="[ MANUAL DE INSTRUÇÕES E DOCUMENTAÇÃO V2.0 ]", font=("Consolas", 18, "bold"), text_color=self.acento)
+        lbl_titulo = ctk.CTkLabel(janela_manual, text="[ MANUAL DE INSTRUÇÕES E DOCUMENTAÇÃO V2.0 ]", font=("Segoe UI", 18, "bold"), text_color=self.acento)
         lbl_titulo.pack(pady=(20, 10))
         
-        caixa_texto = ctk.CTkTextbox(janela_manual, font=("Consolas", 13), fg_color=self.bg_painel, text_color=self.texto_branco, border_width=1, border_color=self.borda)
+        caixa_texto = ctk.CTkTextbox(janela_manual, font=("Consolas", 13), fg_color=self.bg_painel, text_color=self.texto_branco, border_width=1, border_color=self.borda, corner_radius=12)
         caixa_texto.pack(expand=True, fill="both", padx=20, pady=10)
 
         manual_completo = (
             "================================================================================\n"
-            "                 GUSTAVO OPTIMIZER v2.0 - ELITE EDITION                           \n"
+            "                 GUSTAVO OPTIMIZER v2.0.6 - ELITE EDITION                           \n"
             "================================================================================\n\n"
             "Bem-vindo à ferramenta definitiva de engenharia de software para Windows.\n"
             "Este manual contém a documentação técnica de todas as funções do sistema.\n\n"
@@ -801,13 +968,13 @@ class MeuOtimizador(ctk.CTk):
             "- MODO GAMER ELITE: Aplica ativamente a performance extrema em tempo real.\n"
             "- MASTER SISTEMA: Ativa chaves seguras (Ignorando propositadamente as de reinício).\n\n"
             "================================================================================\n"
-            "2. OTIMIZAÇÕES NATIVAS (API KERNEL)\n"
+            "2. OTIMIZAÇÕES NATIVAS (API KERNEL E BANDEJA)\n"
             "================================================================================\n"
             "- Purgar Standby List (ISLC): Invoca NtSetSystemInformation para esvaziar a RAM em\n"
             "  espera, aniquilando o 'Micro-Stuttering' nos jogos pesados.\n"
             "- Smart RAM Cleaner: Força processos em segundo plano a devolverem memória ociosa.\n"
             "- Auto Game Priority: Deteta jogos abertos (CS2, Valorant, etc.) e eleva o uso do CPU.\n"
-            "- Benchmark DNS Global: Testa rotas e sugere o servidor com menor latência real.\n\n"
+            "- Minimizar para a Bandeja: Mantém o software ativo e invisível no System Tray.\n\n"
             "================================================================================\n"
             "3. DESEMPENHO PROFUNDO, UX E LATÊNCIA\n"
             "================================================================================\n"
@@ -844,7 +1011,7 @@ class MeuOtimizador(ctk.CTk):
                 self.log(f"Documentação exportada para: {caminho}")
                 janela_manual.destroy() 
                 
-        btn_salvar = ctk.CTkButton(janela_manual, text="EXPORTAR TEXTO PARA .TXT", command=salvar_manual, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, border_width=1, border_color=self.acento, font=("Consolas", 12, "bold"))
+        btn_salvar = ctk.CTkButton(janela_manual, text="EXPORTAR TEXTO PARA .TXT", command=salvar_manual, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, border_width=1, border_color=self.acento, font=("Segoe UI", 12, "bold"), corner_radius=8)
         btn_salvar.pack(pady=(10, 20))
 
     def abrir_painel_debloat(self):
@@ -855,7 +1022,7 @@ class MeuOtimizador(ctk.CTk):
         janela_db.grab_set()
         janela_db.configure(fg_color=self.bg_main)
 
-        lbl_titulo = ctk.CTkLabel(janela_db, text="[ GERENCIADOR DE APPS DO WINDOWS ]", font=("Consolas", 16, "bold"), text_color=self.acento)
+        lbl_titulo = ctk.CTkLabel(janela_db, text="[ GERENCIADOR DE APPS DO WINDOWS ]", font=("Segoe UI", 16, "bold"), text_color=self.acento)
         lbl_titulo.pack(pady=(20, 10))
 
         frame_legenda = ctk.CTkFrame(janela_db, fg_color="transparent")
@@ -864,13 +1031,13 @@ class MeuOtimizador(ctk.CTk):
         cor_instalado = "#2ecc71"
         cor_ausente = "#e74c3c"
         
-        ctk.CTkLabel(frame_legenda, text="■ INSTALADO", font=("Consolas", 12, "bold"), text_color=cor_instalado).pack(side="left", padx=10)
-        ctk.CTkLabel(frame_legenda, text="■ NÃO INSTALADO", font=("Consolas", 12, "bold"), text_color=cor_ausente).pack(side="left", padx=10)
+        ctk.CTkLabel(frame_legenda, text="■ INSTALADO", font=("Segoe UI", 12, "bold"), text_color=cor_instalado).pack(side="left", padx=10)
+        ctk.CTkLabel(frame_legenda, text="■ NÃO INSTALADO", font=("Segoe UI", 12, "bold"), text_color=cor_ausente).pack(side="left", padx=10)
 
-        scroll_db = ctk.CTkScrollableFrame(janela_db, fg_color=self.bg_painel, border_width=1, border_color=self.borda)
+        scroll_db = ctk.CTkScrollableFrame(janela_db, fg_color=self.bg_painel, border_width=1, border_color=self.borda, corner_radius=12)
         scroll_db.pack(expand=True, fill="both", padx=20, pady=5)
 
-        lbl_loading = ctk.CTkLabel(scroll_db, text="A analisar o sistema... Por favor aguarde.", font=("Consolas", 12, "italic"), text_color=self.texto_cinza)
+        lbl_loading = ctk.CTkLabel(scroll_db, text="A analisar o sistema... Por favor aguarde.", font=("Segoe UI", 12, "italic"), text_color=self.texto_cinza)
         lbl_loading.pack(pady=20)
 
         apps = {
@@ -911,7 +1078,7 @@ class MeuOtimizador(ctk.CTk):
                         texto_exibicao = f"{nome} (Ausente)"
                         cor_texto = cor_ausente
                         
-                    cb = ctk.CTkCheckBox(scroll_db, text=texto_exibicao, variable=var, text_color=cor_texto, fg_color=self.acento, font=("Roboto", 12, "bold"))
+                    cb = ctk.CTkCheckBox(scroll_db, text=texto_exibicao, variable=var, text_color=cor_texto, fg_color=self.acento, font=("Segoe UI", 12, "bold"))
                     cb.pack(anchor="w", pady=5, padx=10)
                     vars_dict[pacote] = var
                     
@@ -928,7 +1095,6 @@ class MeuOtimizador(ctk.CTk):
             def tarefa():
                 texto_acao = "remoção" if acao == "remover" else "reinstalação"
                 self.log(f"[*] Iniciando {texto_acao} nativa de {len(selecionados)} pacotes no sistema...")
-                self.after(0, self.progress_bar.set, 0)
                 
                 passo = 1.0 / len(selecionados)
                 prog = 0.0
@@ -943,12 +1109,9 @@ class MeuOtimizador(ctk.CTk):
                     
                     subprocess.run(cmd, shell=True, creationflags=0x08000000)
                     prog += passo
-                    self.after(0, self.progress_bar.set, prog)
                     
                 self.log(f"[+] Operação de {texto_acao} (Apps) concluída com sucesso no Kernel!")
-                self.after(0, self.progress_bar.set, 1)
                 time.sleep(1.5)
-                self.after(0, self.progress_bar.set, 0)
                 self.after(0, janela_db.destroy)
 
             threading.Thread(target=tarefa, daemon=True).start()
@@ -956,45 +1119,50 @@ class MeuOtimizador(ctk.CTk):
         frame_botoes = ctk.CTkFrame(janela_db, fg_color="transparent")
         frame_botoes.pack(pady=(10, 20), fill="x", padx=20)
         
-        btn_remover = ctk.CTkButton(frame_botoes, text="DESINSTALAR", command=lambda: executar_acao("remover"), fg_color="#FF4444", hover_color="#CC0000", font=("Consolas", 12, "bold"), width=150)
+        btn_remover = ctk.CTkButton(frame_botoes, text="DESINSTALAR", command=lambda: executar_acao("remover"), fg_color="#e74c3c", hover_color="#c0392b", font=("Segoe UI", 12, "bold"), corner_radius=8, width=150)
         btn_remover.pack(side="left", padx=10, expand=True)
         
-        btn_reinstalar = ctk.CTkButton(frame_botoes, text="REINSTALAR", command=lambda: executar_acao("reinstalar"), fg_color="#2ecc71", hover_color="#27ae60", font=("Consolas", 12, "bold"), width=150)
+        btn_reinstalar = ctk.CTkButton(frame_botoes, text="REINSTALAR", command=lambda: executar_acao("reinstalar"), fg_color="#2ecc71", hover_color="#27ae60", font=("Segoe UI", 12, "bold"), corner_radius=8, width=150)
         btn_reinstalar.pack(side="right", padx=10, expand=True)
 
     def remover_bloatware(self):
         self.log("[*] Redirecionando para o Gerenciador de Apps Avançado do Windows...")
         self.abrir_painel_debloat()
 
-    # --- FUNÇÕES DE LAYOUT (A FUNDAÇÃO DA INTERFACE) ---
-    def criar_secao(self, texto, linha):
-        lbl = ctk.CTkLabel(self.scroll_area, text=f"// {texto.upper()}", font=("Consolas", 18, "bold"), text_color=self.acento)
-        lbl.grid(row=linha, column=0, columnspan=3, pady=(40, 15), padx=20, sticky="w")
+    # --- FUNÇÕES DE LAYOUT (A FUNDAÇÃO DA INTERFACE SOFT UI) ---
+    def criar_secao(self, parent, texto, linha):
+        lbl = ctk.CTkLabel(parent, text=f"// {texto.upper()}", font=("Segoe UI", 18, "bold"), text_color=self.acento)
+        lbl.grid(row=linha, column=0, columnspan=3, pady=(25, 5), padx=10, sticky="w")
         self.cards_interface.append(lbl) 
 
-    def criar_card_switch(self, linha, coluna, categoria, titulo, descricao, cmd, nome_log, auto=True, reinicio=False):
-        card = ctk.CTkFrame(self.scroll_area, fg_color=self.bg_painel, corner_radius=0, width=320, height=160, border_width=1, border_color=self.borda)
-        card.grid(row=linha, column=coluna, padx=15, pady=15, sticky="nw")
+    def criar_card_switch(self, parent, linha, coluna, categoria, titulo, descricao, cmd, nome_log, auto=True, reinicio=False):
+        card = ctk.CTkFrame(parent, fg_color=self.bg_painel, corner_radius=10, width=335, height=165, border_width=1, border_color=self.borda)
+        card.grid(row=linha, column=coluna, padx=10, pady=10, sticky="nw")
         card.grid_propagate(False)
         self.cards_interface.append(card)
 
-        lbl_cat = ctk.CTkLabel(card, text=f" [{categoria.upper()}] ", font=("Consolas", 10, "bold"), text_color=self.acento, fg_color=self.bg_main, corner_radius=0)
+        # Sistema Inteligente de Hover ligado à cor do Tema Atual
+        def on_enter(event): card.configure(border_color=self.acento)
+        def on_leave(event): card.configure(border_color=self.borda)
+        card.bind("<Enter>", on_enter)
+        card.bind("<Leave>", on_leave)
+
+        lbl_cat = ctk.CTkLabel(card, text=f" {categoria.upper()} ", font=("Segoe UI", 11, "bold"), text_color=self.acento, fg_color=self.bg_main, corner_radius=4)
         lbl_cat.place(x=15, y=15)
 
-        lbl_tit = ctk.CTkLabel(card, text=titulo, font=("Consolas", 14, "bold"), text_color=self.texto_branco)
+        lbl_tit = ctk.CTkLabel(card, text=titulo, font=("Segoe UI", 15, "bold"), text_color=self.texto_branco)
         lbl_tit.place(x=15, y=45)
         
-        lbl_desc = ctk.CTkLabel(card, text=descricao, font=("Roboto", 11), text_color=self.texto_cinza, wraplength=290, justify="left")
-        lbl_desc.place(x=15, y=70)
+        lbl_desc = ctk.CTkLabel(card, text=descricao, font=("Segoe UI", 11), text_color=self.texto_cinza, wraplength=305, justify="left")
+        lbl_desc.place(x=15, y=72)
 
         if reinicio:
-            lbl_reinicio = ctk.CTkLabel(card, text="[REQUER REINICIAR]", font=("Consolas", 10, "bold"), text_color="#FF4444")
+            lbl_reinicio = ctk.CTkLabel(card, text="[REQUER REINICIAR]", font=("Segoe UI", 10, "bold"), text_color="#FF4444")
             lbl_reinicio.place(x=15, y=125)
         
-        sw = ctk.CTkSwitch(card, text="ATIVAR", progress_color=self.acento, fg_color=self.borda, font=("Consolas", 10, "bold"), text_color=self.acento)
-        sw.place(x=220, y=125)
+        sw = ctk.CTkSwitch(card, text="ATIVAR", progress_color=self.acento, fg_color=self.borda, font=("Segoe UI", 10, "bold"), text_color=self.acento)
+        sw.place(x=225, y=125)
         
-        # AUDITORIA EM TEMPO REAL (Se a chave no Registo estiver ativada "por fora", a UI adapta-se)
         estado_salvo = self.auditar_estado_real(nome_log)
         if estado_salvo == "1":
             sw.select()
@@ -1013,130 +1181,133 @@ class MeuOtimizador(ctk.CTk):
             
         return sw
 
-    def criar_card_botao(self, linha, coluna, categoria, titulo, descricao, cmd, reinicio=False, btn_texto="EXECUTAR"):
-        card = ctk.CTkFrame(self.scroll_area, fg_color=self.bg_painel, corner_radius=0, width=320, height=160, border_width=1, border_color=self.borda)
-        card.grid(row=linha, column=coluna, padx=15, pady=15, sticky="nw")
+    def criar_card_botao(self, parent, linha, coluna, categoria, titulo, descricao, cmd, reinicio=False, btn_texto="EXECUTAR"):
+        card = ctk.CTkFrame(parent, fg_color=self.bg_painel, corner_radius=10, width=335, height=165, border_width=1, border_color=self.borda)
+        card.grid(row=linha, column=coluna, padx=10, pady=10, sticky="nw")
         card.grid_propagate(False)
         self.cards_interface.append(card)
 
-        lbl_cat = ctk.CTkLabel(card, text=f" [{categoria.upper()}] ", font=("Consolas", 10, "bold"), text_color=self.acento, fg_color=self.bg_main, corner_radius=0)
+        # Sistema Inteligente de Hover
+        def on_enter(event): card.configure(border_color=self.acento)
+        def on_leave(event): card.configure(border_color=self.borda)
+        card.bind("<Enter>", on_enter)
+        card.bind("<Leave>", on_leave)
+
+        lbl_cat = ctk.CTkLabel(card, text=f" {categoria.upper()} ", font=("Segoe UI", 11, "bold"), text_color=self.acento, fg_color=self.bg_main, corner_radius=4)
         lbl_cat.place(x=15, y=15)
 
-        lbl_tit = ctk.CTkLabel(card, text=titulo, font=("Consolas", 14, "bold"), text_color=self.texto_branco)
+        lbl_tit = ctk.CTkLabel(card, text=titulo, font=("Segoe UI", 15, "bold"), text_color=self.texto_branco)
         lbl_tit.place(x=15, y=45)
         
-        lbl_desc = ctk.CTkLabel(card, text=descricao, font=("Roboto", 11), text_color=self.texto_cinza, wraplength=290, justify="left")
-        lbl_desc.place(x=15, y=70)
+        lbl_desc = ctk.CTkLabel(card, text=descricao, font=("Segoe UI", 11), text_color=self.texto_cinza, wraplength=305, justify="left")
+        lbl_desc.place(x=15, y=72)
 
         if reinicio:
-            lbl_reinicio = ctk.CTkLabel(card, text="[REQUER REINICIAR]", font=("Consolas", 10, "bold"), text_color="#FF4444")
+            lbl_reinicio = ctk.CTkLabel(card, text="[REQUER REINICIAR]", font=("Segoe UI", 10, "bold"), text_color="#FF4444")
             lbl_reinicio.place(x=15, y=125)
         
-        btn = ctk.CTkButton(card, text=btn_texto, command=cmd, fg_color=self.bg_painel, hover_color=self.acento, text_color=self.texto_branco, corner_radius=0, border_width=1, border_color=self.acento, width=120, height=28, font=("Consolas", 11, "bold"))
-        btn.place(x=180, y=120)
+        btn = ctk.CTkButton(card, text=btn_texto, command=cmd, fg_color="transparent", hover_color=self.acento, text_color=self.texto_branco, corner_radius=6, border_width=2, border_color=self.acento, width=120, height=28, font=("Segoe UI", 11, "bold"))
+        btn.place(x=195, y=120)
         
         return btn
 
-    # --- MONTAGEM DA GRELHA TOTAL ---
+    # --- MONTAGEM DAS GRELHAS TEMÁTICAS (SISTEMA DE ABAS) ---
     def montar_interface_total(self):
         
-        # Secção 0: Perfis de Utilização
-        self.criar_secao("Perfis Inteligentes V2.0", 0)
-        self.btn_gamer = self.criar_card_botao(1, 0, "Desempenho", "Ativar Modo Gamer", "Aplica simultaneamente as 15 chaves dinâmicas de CPU, GPU, Rede e RAM.", self.acionar_perfil_gamer, btn_texto="ATIVAR MODO")
-        self.btn_trabalho = self.criar_card_botao(1, 1, "Equilíbrio", "Ativar Modo Trabalho", "Desliga agressivamente todas as otimizações, forçando estabilidade.", self.acionar_perfil_trabalho, btn_texto="ATIVAR MODO")
+        # TAB 1: ⚡ DESEMPENHO (scroll_desempenho)
+        self.criar_secao(self.scroll_desempenho, "Perfis Inteligentes V2.0", 0)
+        self.btn_gamer = self.criar_card_botao(self.scroll_desempenho, 1, 0, "Desempenho", "🎮 Ativar Modo Gamer", "Aplica simultaneamente as 15 chaves dinâmicas de CPU, GPU, Rede e RAM.", self.acionar_perfil_gamer, btn_texto="ATIVAR MODO")
+        self.btn_trabalho = self.criar_card_botao(self.scroll_desempenho, 1, 1, "Equilíbrio", "💼 Ativar Modo Trabalho", "Desliga agressivamente todas as otimizações, forçando estabilidade.", self.acionar_perfil_trabalho, btn_texto="ATIVAR MODO")
 
-        # Secção 1: Ferramentas Nativas em Python
-        self.criar_secao("Otimizações Nativas (Kernel e RAM)", 2)
-        self.criar_card_botao(3, 0, "Memória", "Smart RAM Cleaner", "Liberta memória em cache de processos nativos da API do Windows.", self.otimizar_ram_nativa, btn_texto="LIMPAR RAM")
-        self.criar_card_botao(3, 1, "Memória", "Purgar Standby List (ISLC)", "Nível Elite: Usa a API Ntdll para exterminar Stuttering por falta de RAM.", self.purgar_standby_list_nativa, btn_texto="PURGAR STANDBY")
-        self.criar_card_botao(3, 2, "Desempenho", "Auto Game Priority", "Localiza jogos ativos na RAM e eleva-os para prioridade Máxima.", self.prioridade_jogos_nativa, btn_texto="APLICAR CPU")
+        self.criar_secao(self.scroll_desempenho, "Otimizações Nativas (Kernel e RAM)", 2)
+        self.criar_card_botao(self.scroll_desempenho, 3, 0, "Memória", "🚀 Smart RAM Cleaner", "Liberta memória em cache de processos nativos da API do Windows.", self.otimizar_ram_nativa, btn_texto="LIMPAR RAM")
+        self.criar_card_botao(self.scroll_desempenho, 3, 1, "Memória", "🌪️ Purgar Standby (ISLC)", "Nível Elite: Usa a API Ntdll para exterminar Stuttering por falta de RAM.", self.purgar_standby_list_nativa, btn_texto="PURGAR STANDBY")
+        self.criar_card_botao(self.scroll_desempenho, 3, 2, "Desempenho", "🎯 Auto Game Priority", "Localiza jogos ativos na RAM e eleva-os para prioridade Máxima.", self.prioridade_jogos_nativa, btn_texto="APLICAR CPU")
         
-        self.criar_card_botao(4, 0, "Hardware", "Validador de Hz (Ecrã)", "Consulta a API gráfica para confirmar os Hertz reais do seu monitor.", self.verificar_hz_monitor, btn_texto="VERIFICAR TELA")
-        self.criar_card_botao(4, 1, "Diagnóstico", "Benchmark DNS Global", "Testa a rota do seu DNS e os 4 mundiais, abrindo seleção para aplicar.", self.benchmark_dns_nativo, btn_texto="TESTAR E APLICAR")
-        self.criar_card_botao(4, 2, "Limpeza Profunda", "Pasta Temporária Visual", "Destrói lixo eletrónico mapeando ficheiros individualmente sem CMD.", self.limpar_temp_nativa, btn_texto="LIMPAR TEMP")
+        self.criar_card_botao(self.scroll_desempenho, 4, 0, "Hardware", "🖥️ Validador de Hz", "Consulta a API gráfica para confirmar os Hertz reais do seu monitor.", self.verificar_hz_monitor, btn_texto="VERIFICAR TELA")
+        
+        self.criar_secao(self.scroll_desempenho, "Desempenho Profundo", 5)
+        self.sw_thrott = self.criar_card_switch(self.scroll_desempenho, 6, 0, "Desempenho", "🔋 Power Throttling", "Impede o Windows de cortar energia dos programas minimizados.", self.toggle_thrott, "Power Throttling")
+        self.sw_gaming = self.criar_card_switch(self.scroll_desempenho, 6, 1, "Jogos", "🕹️ Modo de Jogo Pro", "Aplica o Gaming Mode e assassina as gravações Xbox GameDVR.", self.toggle_gaming, "Gaming Mode")
+        self.sw_tim = self.criar_card_switch(self.scroll_desempenho, 6, 2, "Latência", "⏱️ Timer Res (0.5ms)", "Força o Timer do Kernel para precisão cirúrgica de Input.", self.toggle_tim, "Timer Res")
+        
+        self.sw_pow = self.criar_card_switch(self.scroll_desempenho, 7, 0, "Desempenho", "⚡ Plano Energia Máxima", "Revela e aplica o plano de Workstation escondido (Ultimate).", self.toggle_pow, "Powerplan")
+        self.sw_gpu_oc = self.criar_card_switch(self.scroll_desempenho, 7, 1, "Hardware", "🔥 Bloquear Economia GPU", "A Placa de Vídeo não vai baixar os Mhz quando estiver em repouso.", self.toggle_gpu_oc, "GPU Downclock")
+        self.sw_flip = self.criar_card_switch(self.scroll_desempenho, 7, 2, "Latência", "🪟 Flip Fix (Janelas)", "Altera o modo de apresentação para tirar delay de Jogos em Janela.", self.toggle_flip_fix, "Flip Fix")
+        
+        self.sw_srv = self.criar_card_switch(self.scroll_desempenho, 8, 0, "Desempenho", "🔍 SysMain e Search", "Apaga o Superfetch. Liberta RAM brutal desativando indexação.", self.toggle_srv, "Servicos Windows")
+        self.sw_core_park = self.criar_card_switch(self.scroll_desempenho, 8, 1, "Hardware", "🧠 Desativar Core Parking", "Processador a 100%: Nenhum núcleo volta a adormecer.", self.toggle_core_parking, "Core Parking")
 
-        # Secção 2: Privacidade e Segurança do Utilizador
-        self.criar_secao("Privacidade e Segurança", 5)
-        self.sw_vs_tel = self.criar_card_switch(6, 0, "Privacidade", "Telemetria Visual Studio", "Impede o VS de enviar dados de uso para a Microsoft.", self.toggle_vs_tel, "VS Telemetry")
-        self.sw_tel = self.criar_card_switch(6, 1, "Privacidade", "DiagTrack (Rastreamento)", "Desativa o serviço de rastreamento de diagnósticos do Windows.", self.toggle_tel, "DiagTrack")
-        self.sw_nv_priv = self.criar_card_switch(6, 2, "Privacidade", "Privacidade NVIDIA", "Desativa a coleta de dados e serviços de fundo da NVIDIA.", self.toggle_nv_priv, "NVIDIA Privacy")
-        
-        self.sw_loc = self.criar_card_switch(7, 0, "Privacidade", "Localização do Sistema", "Desativa o serviço de geolocalização e acesso à posição por apps.", self.toggle_loc, "GeoLocation")
-        self.sw_tasks = self.criar_card_switch(7, 1, "Segurança", "Tarefas Ocultas (Microsoft)", "Mata os agendadores secretos que enviam dados na calada da noite.", self.toggle_telemetry_tasks, "Telemetry Tasks")
-        self.criar_card_botao(7, 2, "Segurança", "Desbloquear Menus (Edge)", "Remove restrições de 'Organização' que bloqueiam configurações do Edge e Windows.", self.remover_bloqueio_organizacao, btn_texto="DESBLOQUEAR")
 
-        # Secção 3: Modificações de Sistema e Efeitos Visuais
-        self.criar_secao("Sistema e Interface Visual", 8)
-        self.criar_card_botao(9, 0, "Sistema", "Gerir Apps do Windows", "Abre janela Elite para apagar ou reinstalar apps nativos do Windows.", self.abrir_painel_debloat, btn_texto="ABRIR PAINEL")
-        self.criar_card_botao(9, 1, "Sistema", "Apps de Inicialização", "Abre o gestor nativo do Windows para impedir programas no arranque.", self.abrir_inicializacao, btn_texto="ABRIR GESTOR")
-        self.criar_card_botao(9, 2, "Sistema", "Remover Bloatware (Rápido)", "Atalho para o painel avançado de gestão das aplicações do sistema.", self.remover_bloatware, btn_texto="GERIR APPS")
-        
-        self.sw_visual_perf = self.criar_card_switch(10, 0, "Interface", "Desempenho Visual Máximo", "Ajusta a aparência do Windows focando no desempenho: desativa os efeitos de vidro (Acrílico) e suprime sombras/animações visuais pesadas.", self.toggle_visual_perf, "Desempenho Visual")
+        # TAB 2: 🌐 REDE & INTERNET (scroll_rede)
+        self.criar_secao(self.scroll_rede, "Internet e Rede E-Sports", 0)
+        self.criar_card_botao(self.scroll_rede, 1, 0, "Diagnóstico", "🌍 Benchmark DNS Global", "Testa a rota do seu DNS e os mundiais, abrindo seleção para aplicar.", self.benchmark_dns_nativo, btn_texto="TESTAR ROTAS")
+        self.criar_card_botao(self.scroll_rede, 1, 1, "Diagnóstico", "📡 Analisar IP e Ping", "Varre a sua LAN e faz request remoto à API IPify para o seu WAN.", self.analisar_rede_info, btn_texto="INICIAR SCAN")
+        self.criar_card_botao(self.scroll_rede, 1, 2, "Rede", "🔌 Redefinir Placa (DNS)", "Apaga o DNS Cache e aplica reset severo ao IPConfig do adaptador.", self.otimizar_internet, btn_texto="RESET PLACA")
 
-        # Secção 4: Alterações Profundas de Desempenho e Latência
-        self.criar_secao("Desempenho Profundo", 11)
-        self.sw_thrott = self.criar_card_switch(12, 0, "Desempenho", "Desligar Power Throttling", "Impede o Windows de cortar energia dos programas minimizados.", self.toggle_thrott, "Power Throttling")
-        self.sw_gaming = self.criar_card_switch(12, 1, "Jogos", "Modo de Jogo Pro", "Aplica o Gaming Mode e assassina as gravações Xbox GameDVR.", self.toggle_gaming, "Gaming Mode")
-        self.sw_tim = self.criar_card_switch(12, 2, "Latência", "Resolução de Tempo (0.5ms)", "Força o Timer do Kernel para precisão cirúrgica de Input.", self.toggle_tim, "Timer Res")
-        
-        self.sw_pow = self.criar_card_switch(13, 0, "Desempenho", "Plano de Energia Máxima", "Revela e aplica o plano de Workstation escondido (Ultimate).", self.toggle_pow, "Powerplan")
-        self.sw_gpu_oc = self.criar_card_switch(13, 1, "Hardware", "Bloquear Economia GPU", "A Placa de Vídeo não vai baixar os Mhz quando estiver em repouso.", self.toggle_gpu_oc, "GPU Downclock")
-        self.sw_flip = self.criar_card_switch(13, 2, "Latência", "Flip Fix (Janelas)", "Altera o modo de apresentação para tirar delay de Jogos em Janela.", self.toggle_flip_fix, "Flip Fix")
-        
-        self.sw_srv = self.criar_card_switch(14, 0, "Desempenho", "SysMain e Search", "Apaga o Superfetch. Liberta RAM brutal desativando indexação.", self.toggle_srv, "Servicos Windows")
-        self.sw_net_thrott = self.criar_card_switch(14, 1, "Rede", "Limitação de Rede (Throttling)", "Destrói a restrição de rede que o Windows impõe aos jogos.", self.toggle_net_thrott, "Network Throttling")
-        self.sw_core_park = self.criar_card_switch(14, 2, "Hardware", "Desativar Core Parking", "Processador a 100%: Nenhum núcleo volta a adormecer.", self.toggle_core_parking, "Core Parking")
+        self.sw_nic_int = self.criar_card_switch(self.scroll_rede, 2, 0, "Rede", "🚥 Interrupt Moderation", "Elite: Impede a placa de rede de agrupar pacotes. Envia os tiros NA HORA.", self.toggle_nic_interrupt, "NIC Interrupt")
+        self.sw_tcp_global = self.criar_card_switch(self.scroll_rede, 2, 1, "Rede", "⚡ Otimização TCP/IP", "Unifica TcpNoDelay, Controle CUBIC e Buffers Netsh para a menor latência.", self.toggle_tcp_global, "TCP Global")
+        self.sw_dscp = self.criar_card_switch(self.scroll_rede, 2, 2, "Rede", "📦 Otimizar Pacotes DSCP", "Pede ao seu router para dar prioridade de realeza aos pacotes do Jogo.", self.toggle_dscp, "DSCP")
+        self.sw_net_thrott = self.criar_card_switch(self.scroll_rede, 3, 0, "Rede", "🔓 Desbloquear Largura", "Destrói a restrição de rede que o Windows impõe aos jogos.", self.toggle_net_thrott, "Network Throttling")
 
-        # Secção 5: Modificações de Placa de Rede (E-Sports)
-        self.criar_secao("Internet e Rede E-Sports", 15)
-        self.sw_nic_int = self.criar_card_switch(16, 0, "Rede", "Interrupt Moderation (NIC)", "Elite: Impede a placa de rede de agrupar pacotes. Envia os tiros NA HORA.", self.toggle_nic_interrupt, "NIC Interrupt")
-        self.sw_tcp_global = self.criar_card_switch(16, 1, "Rede", "Otimização Global TCP/IP", "Unifica TcpNoDelay, Controle CUBIC e Buffers Netsh para a menor latência e disparo absoluto de rede em jogos E-Sports.", self.toggle_tcp_global, "TCP Global")
-        self.sw_dscp = self.criar_card_switch(16, 2, "Rede", "Otimizar Pacotes (DSCP)", "Pede ao seu router para dar prioridade de realeza aos pacotes do Jogo.", self.toggle_dscp, "DSCP")
-        
-        self.criar_card_botao(17, 0, "Diagnóstico", "Analisar IP Privado e Ping", "Varre a sua LAN e faz request remoto à API IPify para o seu WAN.", self.analisar_rede_info, btn_texto="INICIAR SCAN")
-        self.criar_card_botao(17, 1, "Rede", "Redefinir Placa (Winsock/DNS)", "Apaga o DNS Cache e aplica reset severo ao IPConfig do adaptador.", self.otimizar_internet)
 
-        # Secção 6: Diagnósticos de Máquina e Discos
-        self.criar_secao("Manutenção e Verificação", 18)
-        self.criar_card_botao(19, 0, "Sistema", "Reparo de Imagem (DISM)", "Puxa pacotes sãos da Microsoft para curar corrupção no núcleo.", self.reparar_imagem_dism)
-        self.criar_card_botao(19, 1, "Limpeza", "Limpar Logs de Eventos", "Executa Wevtutil para eliminar milhares de falsos erros ocultos no Disco.", self.limpar_logs_windows)
-        self.criar_card_botao(19, 2, "Limpeza", "Arquivos de Prefetch", "Destrói a memória morta do arranque para forçar recriação veloz.", self.limpar_prefetch)
+        # TAB 3: 🛡️ PRIVACIDADE & OS (scroll_privacidade)
+        self.criar_secao(self.scroll_privacidade, "Privacidade e Segurança", 0)
+        self.sw_vs_tel = self.criar_card_switch(self.scroll_privacidade, 1, 0, "Privacidade", "🚫 Telemetria Visual Studio", "Impede o VS de enviar dados de uso para a Microsoft.", self.toggle_vs_tel, "VS Telemetry")
+        self.sw_tel = self.criar_card_switch(self.scroll_privacidade, 1, 1, "Privacidade", "🕵️ DiagTrack (Rastreamento)", "Desativa o serviço de rastreamento de diagnósticos do Windows.", self.toggle_tel, "DiagTrack")
+        self.sw_nv_priv = self.criar_card_switch(self.scroll_privacidade, 1, 2, "Privacidade", "🛑 Privacidade NVIDIA", "Desativa a coleta de dados e serviços de fundo da NVIDIA.", self.toggle_nv_priv, "NVIDIA Privacy")
         
-        self.criar_card_botao(20, 0, "Hardware", "Limpar Cache NVIDIA (Shader)", "Apaga shaders gráficos obsoletos diretamente do LocalAppData.", self.limpar_gpu)
-        self.criar_card_botao(20, 1, "Disco", "Limpeza de Disco Avançada", "Aplica o Cleanmgr do Windows no seu nível máximo e silencioso.", self.limpar_windows)
-        self.criar_card_botao(20, 2, "Sistema", "Limpar Windows Update", "Estripa o SoftwareDistribution, matando updates emperrados.", self.limpar_update)
-        
-        self.criar_card_botao(21, 0, "Interface", "Limpar Miniaturas", "Exclui o cache de imagens para forçar o recarregamento dos ícones.", self.limpar_thumbnails)
-        self.criar_card_botao(21, 1, "Disco", "Otimizar Unidades (Defrag)", "Executa rotina TRIM em todos os SSDs e desfragmenta mecânicos.", self.otimizar_discos)
+        self.sw_loc = self.criar_card_switch(self.scroll_privacidade, 2, 0, "Privacidade", "📍 Localização do Sistema", "Desativa o serviço de geolocalização e acesso à posição por apps.", self.toggle_loc, "GeoLocation")
+        self.sw_tasks = self.criar_card_switch(self.scroll_privacidade, 2, 1, "Segurança", "👻 Tarefas Ocultas (MS)", "Mata os agendadores secretos que enviam dados na calada da noite.", self.toggle_telemetry_tasks, "Telemetry Tasks")
+        self.criar_card_botao(self.scroll_privacidade, 2, 2, "Segurança", "🔓 Desbloquear Menus Edge", "Remove restrições de 'Organização' que bloqueiam o Microsoft Edge.", self.remover_bloqueio_organizacao, btn_texto="DESBLOQUEAR")
 
-        # Secção 7: Ofuscação e Limpeza Isolada de Softwares
-        self.criar_secao("Ofuscação e Limpeza de Aplicações", 22)
-        self.criar_card_botao(23, 0, "Navegador", "Exterminar Cache Google", "Apaga rastros de pesquisa temporária no Chrome sem desinstalar.", self.limpar_chrome)
-        self.criar_card_botao(23, 1, "Navegador", "Exterminar Cache Edge", "Força a exclusão do diretório User Data do MS Edge da sua máquina.", self.limpar_edge)
-        self.criar_card_botao(23, 2, "Navegador", "Limpar Mozilla Firefox", "Apaga o cache completo de todos os perfis do Mozilla Firefox do PC.", self.limpar_firefox)
+        self.criar_secao(self.scroll_privacidade, "Sistema e Interface Visual", 3)
+        self.criar_card_botao(self.scroll_privacidade, 4, 0, "Sistema", "📦 Gerir Apps do Windows", "Abre janela Elite para apagar ou reinstalar apps nativos do Windows.", self.abrir_painel_debloat, btn_texto="ABRIR PAINEL")
+        self.criar_card_botao(self.scroll_privacidade, 4, 1, "Sistema", "🚀 Apps de Inicialização", "Abre o gestor nativo do Windows para impedir programas no arranque.", self.abrir_inicializacao, btn_texto="ABRIR GESTOR")
+        self.sw_visual_perf = self.criar_card_switch(self.scroll_privacidade, 4, 2, "Interface", "✨ Desempenho Visual Máx.", "Ajusta a aparência para desempenho, desativando efeitos e sombras pesadas.", self.toggle_visual_perf, "Desempenho Visual")
 
-        self.criar_card_botao(24, 0, "Navegador", "Limpar Opera / Opera GX", "Apaga dados antigos armazenados pelas versões do Opera Browser.", self.limpar_opera)
-        self.criar_card_botao(24, 1, "Aplicativo", "Limpar Cache Steam", "Limpa pasta AppCache. Pode resolver bugs de não atualizar jogos.", self.limpar_steam)
-        self.criar_card_botao(24, 2, "Aplicativo", "Limpar Cache Discord", "Mata a árvore inteira de cache do Discord que se esconde no disco.", self.limpar_discord)
-        
-        self.criar_card_botao(25, 0, "Aplicativo", "Limpar Cache Spotify", "Apaga dados antigos e músicas em cache armazenadas pelo aplicativo.", self.limpar_spotify)
-        self.criar_card_botao(25, 1, "Aplicativo", "Limpar Cache Battle.net", "Abre caminho livre apagando os agentes da Blizzard que ficam presos.", self.limpar_battlenet)
-        self.criar_card_botao(25, 2, "Geral", "Limpeza Total (Apps)", "Limpa simultaneamente Spotify, Steam, Discord e Battle.net (Exclui navegadores).", self.limpar_apps_multi)
 
-        # Secção 8: O Agrupamento Final (Requerem Reinício Mandatório do Computador)
-        self.criar_secao("Comandos de Root (Requer Reiniciar o Computador)", 26)
+        # TAB 4: 🧹 LIMPEZA (scroll_limpeza)
+        self.criar_secao(self.scroll_limpeza, "Manutenção e Verificação", 0)
+        self.criar_card_botao(self.scroll_limpeza, 1, 0, "Limpeza Profunda", "🗑️ Pasta Temporária Visual", "Destrói lixo eletrónico mapeando ficheiros individualmente sem CMD.", self.limpar_temp_nativa, btn_texto="LIMPAR TEMP")
+        self.criar_card_botao(self.scroll_limpeza, 1, 1, "Sistema", "🔧 Reparo de Imagem (DISM)", "Puxa pacotes sãos da Microsoft para curar corrupção no núcleo.", self.reparar_imagem_dism, btn_texto="REPARAR")
+        self.criar_card_botao(self.scroll_limpeza, 1, 2, "Limpeza", "📜 Limpar Logs de Eventos", "Executa Wevtutil para eliminar milhares de falsos erros ocultos.", self.limpar_logs_windows, btn_texto="LIMPAR LOGS")
         
-        self.sw_msi = self.criar_card_switch(27, 0, "Latência", "Modo MSI (Para GPU)", "Força a Placa de Vídeo a comunicar sem interrupções com o CPU (DPC Baixa).", self.toggle_msi, "Modo MSI", auto=False, reinicio=True)
-        self.sw_hpet = self.criar_card_switch(27, 1, "Latência", "Desligar HPET & Ticks", "Desliga o relógio lento da Motherboard para dar fluidez absurda aos FPS.", self.toggle_hpet, "HPET Ticks", auto=False, reinicio=True)
-        self.sw_mouse = self.criar_card_switch(27, 2, "Hardware", "Mira Perfeita Raw (Rato)", "Mata os parâmetros invisíveis de aceleração de rato aplicados no Registo.", self.toggle_mouse, "Raw Mouse", auto=False, reinicio=True)
+        self.criar_card_botao(self.scroll_limpeza, 2, 0, "Limpeza", "⚡ Arquivos de Prefetch", "Destrói a memória morta do arranque para forçar recriação veloz.", self.limpar_prefetch, btn_texto="LIMPAR PREFETCH")
+        self.criar_card_botao(self.scroll_limpeza, 2, 1, "Hardware", "🎮 Limpar Cache NVIDIA", "Apaga shaders gráficos obsoletos diretamente do LocalAppData.", self.limpar_gpu, btn_texto="LIMPAR SHADERS")
+        self.criar_card_botao(self.scroll_limpeza, 2, 2, "Disco", "💽 Limpeza Disco Avançada", "Aplica o Cleanmgr do Windows no seu nível máximo e silencioso.", self.limpar_windows, btn_texto="EXECUTAR CLEANMGR")
         
-        self.sw_mnu = self.criar_card_switch(28, 0, "Interface", "Menu Clássico Win11", "Extermina o design novo de 2 cliques e traz de volta o Menu Gigante antigo.", self.toggle_mnu, "Menu Clássico", auto=False, reinicio=True)
-        self.sw_bmn = self.criar_card_switch(28, 1, "Sistema", "Espera de Boot (2 Seg)", "Acelera a tela de Dual-Boot para não ficar à espera que o sistema avance.", self.toggle_bmn, "Boot Menu", auto=False, reinicio=True)
-        self.sw_fast_start = self.criar_card_switch(28, 2, "Sistema", "Desativar Fast Startup", "Protege a RAM contra corrupção ao impedir o PC de fingir que desligou.", self.toggle_fast_startup, "Fast Startup", auto=False, reinicio=True)
+        self.criar_card_botao(self.scroll_limpeza, 3, 0, "Sistema", "🔄 Limpar Windows Update", "Estripa o SoftwareDistribution, matando updates emperrados.", self.limpar_update, btn_texto="LIMPAR UPDATES")
+        self.criar_card_botao(self.scroll_limpeza, 3, 1, "Interface", "🖼️ Limpar Miniaturas", "Exclui o cache de imagens para forçar o recarregamento dos ícones.", self.limpar_thumbnails, btn_texto="LIMPAR ÍCONES")
+        self.criar_card_botao(self.scroll_limpeza, 3, 2, "Disco", "⚙️ Otimizar Unidades", "Executa rotina TRIM em todos os SSDs e desfragmenta mecânicos.", self.otimizar_discos, btn_texto="OTIMIZAR DISCOS")
+
+        self.criar_secao(self.scroll_limpeza, "Ofuscação e Limpeza de Aplicações", 4)
+        self.criar_card_botao(self.scroll_limpeza, 5, 0, "Navegador", "🌐 Exterminar Cache Google", "Apaga rastros de pesquisa temporária no Chrome sem desinstalar.", self.limpar_chrome, btn_texto="LIMPAR CHROME")
+        self.criar_card_botao(self.scroll_limpeza, 5, 1, "Navegador", "🌐 Exterminar Cache Edge", "Força a exclusão do diretório User Data do MS Edge da sua máquina.", self.limpar_edge, btn_texto="LIMPAR EDGE")
+        self.criar_card_botao(self.scroll_limpeza, 5, 2, "Navegador", "🦊 Limpar Mozilla Firefox", "Apaga o cache completo de todos os perfis do Mozilla Firefox do PC.", self.limpar_firefox, btn_texto="LIMPAR FIREFOX")
+
+        self.criar_card_botao(self.scroll_limpeza, 6, 0, "Navegador", "🔴 Limpar Opera / GX", "Apaga dados antigos armazenados pelas versões do Opera Browser.", self.limpar_opera, btn_texto="LIMPAR OPERA")
+        self.criar_card_botao(self.scroll_limpeza, 6, 1, "Aplicativo", "🎮 Limpar Cache Steam", "Limpa pasta AppCache. Pode resolver bugs de não atualizar jogos.", self.limpar_steam, btn_texto="LIMPAR STEAM")
+        self.criar_card_botao(self.scroll_limpeza, 6, 2, "Aplicativo", "💬 Limpar Cache Discord", "Mata a árvore inteira de cache do Discord que se esconde no disco.", self.limpar_discord, btn_texto="LIMPAR DISCORD")
         
-        self.sw_widgets = self.criar_card_switch(29, 0, "Interface", "Desativar Widgets", "Remove completamente do sistema os blocos de Notícias e Clima que sugam RAM.", self.toggle_widgets, "Widgets", auto=False, reinicio=True)
-        self.criar_card_botao(29, 1, "Sistema", "Verificação SFC Scan", "Busca nos servidores Microsoft e repara arquivos corrompidos ou ausentes.", self.verificar_erros, reinicio=True)
-        self.criar_card_botao(29, 2, "Sistema", "Verificar Discos (CHKDSK)", "Examina a integridade e procura setores mecânicos defeituosos em TODOS os discos.", self.verificar_disco, reinicio=True)
+        self.criar_card_botao(self.scroll_limpeza, 7, 0, "Aplicativo", "🎵 Limpar Cache Spotify", "Apaga dados antigos e músicas em cache armazenadas pelo aplicativo.", self.limpar_spotify, btn_texto="LIMPAR SPOTIFY")
+        self.criar_card_botao(self.scroll_limpeza, 7, 1, "Aplicativo", "⚔️ Limpar Battle.net", "Abre caminho livre apagando os agentes da Blizzard que ficam presos.", self.limpar_battlenet, btn_texto="LIMPAR BNET")
+        self.criar_card_botao(self.scroll_limpeza, 7, 2, "Geral", "💥 Limpeza Total (Apps)", "Limpa simultaneamente Spotify, Steam, Discord e Battle.net.", self.limpar_apps_multi, btn_texto="DESTRUIR TUDO")
+
+
+        # TAB 5: ⚙️ ROOT (scroll_root)
+        self.criar_secao(self.scroll_root, "Comandos de Root (Requer Reiniciar o Computador)", 0)
+        self.sw_msi = self.criar_card_switch(self.scroll_root, 1, 0, "Latência", "🔌 Modo MSI (Para GPU)", "Força a Placa de Vídeo a comunicar sem interrupções com o CPU.", self.toggle_msi, "Modo MSI", auto=False, reinicio=True)
+        self.sw_hpet = self.criar_card_switch(self.scroll_root, 1, 1, "Latência", "⏰ Desligar HPET & Ticks", "Desliga o relógio lento da Motherboard para dar fluidez aos FPS.", self.toggle_hpet, "HPET Ticks", auto=False, reinicio=True)
+        self.sw_mouse = self.criar_card_switch(self.scroll_root, 1, 2, "Hardware", "🖱️ Mira Perfeita (Raw Mouse)", "Mata os parâmetros invisíveis de aceleração de rato no Registo.", self.toggle_mouse, "Raw Mouse", auto=False, reinicio=True)
+        
+        self.sw_mnu = self.criar_card_switch(self.scroll_root, 2, 0, "Interface", "📋 Menu Clássico Win11", "Extermina o design novo de 2 cliques e traz de volta o Menu Gigante.", self.toggle_mnu, "Menu Clássico", auto=False, reinicio=True)
+        self.sw_bmn = self.criar_card_switch(self.scroll_root, 2, 1, "Sistema", "⏳ Espera de Boot (2 Seg)", "Acelera a tela de Dual-Boot para não ficar à espera do sistema.", self.toggle_bmn, "Boot Menu", auto=False, reinicio=True)
+        self.sw_fast_start = self.criar_card_switch(self.scroll_root, 2, 2, "Sistema", "💤 Desativar Fast Startup", "Protege a RAM contra corrupção ao impedir o PC de fingir que desligou.", self.toggle_fast_startup, "Fast Startup", auto=False, reinicio=True)
+        
+        self.sw_widgets = self.criar_card_switch(self.scroll_root, 3, 0, "Interface", "📰 Desativar Widgets", "Remove completamente os blocos de Notícias e Clima que sugam RAM.", self.toggle_widgets, "Widgets", auto=False, reinicio=True)
+        self.criar_card_botao(self.scroll_root, 3, 1, "Sistema", "🔍 Verificação SFC Scan", "Busca nos servidores Microsoft e repara arquivos corrompidos/ausentes.", self.verificar_erros, reinicio=True, btn_texto="SFC SCAN")
+        self.criar_card_botao(self.scroll_root, 3, 2, "Sistema", "💽 Verificar Discos (CHKDSK)", "Examina a integridade e procura setores defeituosos em TODOS os discos.", self.verificar_disco, reinicio=True, btn_texto="RODAR CHKDSK")
         
         self.atualizar_cores_perfis()
 
@@ -1206,7 +1377,6 @@ class MeuOtimizador(ctk.CTk):
                 erro_txt = stderr.strip() if stderr else "Acesso Negado ou Falha de Permissão do Registo"
                 self.caixa_log.insert("end", f"[-] ERRO | {nome}: {erro_txt} (Cód. {res}). Revertendo a interface de imediato...\n")
                 if sw_obj is not None:
-                    # Se o Windows falhou a aplicação, a memória não é guardada e o botão reverte visualmente ao estado original salvo
                     estado_memoria = self.carregar_config(sw_obj.nome_log, "0")
                     if estado_memoria == "1":
                         sw_obj.select()
