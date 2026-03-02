@@ -114,57 +114,43 @@ Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destrava
 </details>
 
 <details>
-<summary><b>🛠️ v1.1.1 - Patch de Correção Crítica</b></summary>
+<summary><b>📦 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
 
-Correção de Assimetria nos Perfis: O "Modo Trabalho" foi reescrito para atuar como um verdadeiro Master Switch, desligando toda a agressividade de uma só vez.
+🛠️ v1.1.1 - Patch de Correção Crítica
 
-Prevenção de Falsos Positivos de Memória: O Registo passou a refletir o estado visual final e real do botão apenas após a consolidação do comando no sistema operativo.
+Correção de Assimetria nos Perfis: O "Modo Trabalho" foi reescrito para atuar como um verdadeiro Master Switch e desligar toda a agressividade.
 
-Execução 100% Assíncrona: Desacoplamento total da interface gráfica (UI) das ações de sistema (CMD/PowerShell), eliminando travamentos de tela (Anti-Freeze).
+Prevenção de Falsos Positivos de Memória: O Registo reflete o estado visual final e real do botão apenas após a consolidação do SO.
 
-Captura Dinâmica do Plano de Energia: Implementado o registo em tempo real da configuração energética de fábrica (OEM) no primeiro arranque.
+Execução 100% Assíncrona: Desacoplamento da interface gráfica (UI) das ações de sistema (CMD/PowerShell) evitando congelamentos.
 
-</details>
+Captura Dinâmica do Plano de Energia: Registo do plano de energia de fábrica (OEM) no primeiro arranque.
 
-<details>
-<summary><b>🚀 v1.1.0 - Otimizações Nativas e Integração</b></summary>
+🚀 v1.1.0 - Otimizações Nativas e Integração
 
-Motor Python Direto: Inclusão do código primário para ferramentas de leitura direta, sem uso do CMD, como o Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
+Manual Interativo adicionado com capacidade de exportação em .txt.
 
-Manual Interativo: Adicionado o manual de instruções integrado ao software, com capacidade de exportação em ficheiro .txt.
+Barras de Progresso visuais reativas implementadas.
 
-Barras de Progresso Visuais: Implementação de feedbacks visuais reativos para indicar o andamento de processos de limpeza complexos.
+Implementação do Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
 
-Limpeza Temp Recursiva: A limpeza de arquivos temporários passou a ser mapeada recursivamente usando a biblioteca os, localizando lixo profundamente oculto.
+Limpeza Temp transformada numa rotina mapeada recursivamente (os.walk).
 
-</details>
+🧠 v1.0.0 - A Versão "Pro Edition" Definitiva
 
-<details>
-<summary><b>🧠 v1.0.0 - A Versão "Pro Edition" Definitiva</b></summary>
+Memória Profunda no Registo: Implementação de Snapshots (winreg), permitindo reverter o PC ao estado exato pré-otimização.
 
-Memória Profunda no Registo: Implementação pioneira do sistema de Snapshots utilizando a biblioteca winreg. O programa passou a ser capaz de gravar o estado exato do PC e reverter otimizações.
+Correção "Botões Fantasma": Resolvido problema de Race Conditions nas renderizações do CustomTkinter.
 
-Correção de "Botões Fantasma": Resolução de bloqueios críticos causados por Race Conditions na renderização do CustomTkinter, garantindo cliques responsivos a todo o momento.
+⚡ v0.9.0 - Validação e Energia Extrema
 
-</details>
+Otimização do Plano de Energia: Cria e aplica o plano oculto "Desempenho Máximo" (Ultimate Performance).
 
-<details>
-<summary><b>⚡ v0.9.0 - Validação e Energia Extrema</b></summary>
+Verificação de Execução: Consultas de Loop-back para confirmar a obediência do SO.
 
-Otimização do Plano de Energia: Criação de script para injetar, clonar e aplicar o plano de energia oculto da Microsoft focado em Workstations ("Desempenho Máximo").
+🛡️ v0.8.0 a v0.1.0 - Fundações
 
-Verificação de Execução: Inseridas consultas de Loop-back nos scripts para confirmar ativamente a obediência do Sistema Operacional aos comandos emitidos.
-
-</details>
-
-<details>
-<summary><b>🛡️ v0.1.0 a v0.8.0 - As Fundações do Projeto</b></summary>
-
-Bypass de Antivírus: Desenvolvimento de técnicas de ofuscação de strings na memória e divisão de diretórios para evitar falsos positivos de motores heurísticos (Defender/Kaspersky) em ficheiros .exe compilados.
-
-Interface Gráfica Base: Substituição dos ficheiros .bat brutos em consola preta por uma interface gráfica moderna e interativa utilizando a biblioteca CustomTkinter.
-
-Módulos Iniciais: Implementação das primeiras rotinas automatizadas de limpeza de cache de navegadores, serviços de Spooler e otimização básica de rede.
+Criação de UI CustomTkinter, bypass Antivírus via Ofuscação de Strings na memória e aplicação de otimizações de rede base.
 
 </details>
 
