@@ -13,6 +13,8 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 🔥 Principais Funcionalidades
 
+👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
+
 🎮 Perfis Inteligentes Automáticos: Transforme o seu PC numa máquina de jogos com o Modo Gamer, que aplica 15 camadas dinâmicas de otimização extremas simultâneas em tempo real. Volte ao normal com um clique usando o Modo Trabalho. O sistema protege a sua sessão ao ignorar configurações que exijam reinício de máquina nestes modos.
 
 🧠 Memória Fotográfica Persistente: O programa cria um snapshot de como o seu PC estava antes das otimizações na memória profunda do Registo. Mesmo que reinicie a máquina, ele lembrará exatamente de como reverter tudo.
@@ -23,7 +25,7 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 🖥️ Gerenciador Interativo de Apps: Um painel de Debloat bidirecional com interface assíncrona. Ele analisa o status real do sistema, indicando o que está Instalado (Verde) ou Ausente (Vermelho), permitindo desinstalar pacotes ou reinstalá-los via XML nativo.
 
-🛡️ Privacidade e Segurança: Desativa a telemetria invasiva da Microsoft e da NVIDIA, além de tarefas ocultas que consomem a sua internet e processador em segundo plano. Proteção Ativa: A ferramenta impede proativamente a desativação de barreiras essenciais do sistema para evitar malwares.
+🛡️ Privacidade e Segurança Ativa: Desativa a telemetria invasiva da Microsoft e da NVIDIA, além de tarefas ocultas que consomem a sua internet e processador em segundo plano. O programa impede proativamente a desativação de barreiras essenciais (UAC/SmartScreen) para manter a integridade contra malwares.
 
 ⚙️ Engenharia Anti-Crash e UI-Safe: Blindado contra falsos positivos através de ofuscação avançada. A interface gráfica roda a 60FPS constantes devido à alocação de cargas pesadas (como leituras de Placa Gráfica) em Threads de background.
 
@@ -31,11 +33,25 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 📜 Changelog Definitivo (Histórico de Versões)
 
-👑 v2.0.1 - Elite Edition (Patch de Estabilidade e Segurança)
+💎 v2.0.3 - Elite Edition (UX Unification & Real-Time Audit)
 
-Integração Ctypes 64-bits (Fix WinError 6): Declarados rigorosamente os argtypes e restypes na chamada da API ntdll.dll para garantir compatibilidade total com ponteiros 64-bits. A purga da Standby List opera agora com força máxima.
+Auditoria de Registo em Tempo Real: O programa passou a ler o estado real do Windows no momento de arranque (Single Source of Truth), ajustando os switches visuais caso configurações tenham sido alteradas por fora.
+
+Unificação de Desempenho Visual Máximo: Combinadas as chaves de "Desativar Acrílico" e "Desativar Efeitos Visuais" num único Master Switch, ajustando a aparência do Windows integralmente para performance em 1 clique.
+
+Otimização Global TCP/IP: Fusão arquitetural de três ferramentas antigas (TcpNoDelay, Buffers Netsh e Controle CUBIC) numa única injeção simultânea de rede, garantindo a latência zero para E-Sports de forma limpa na UI.
+
+Desbloqueio de Menus (Bypass GPO): Inserida a nova função de segurança para remover restrições de "Gerenciado por sua Organização" em aplicações como o Microsoft Edge, devolvendo o controlo manual ao utilizador.
+
+🛡️ v2.0.2 - Security Patch (Proteção de Sistema)
 
 Remoção de Funções Críticas de Risco: Visando a integridade e segurança inviolável do Windows, foram removidas de forma permanente as opções de desativação do Controle de Conta de Usuário (UAC), Filtro SmartScreen e Mitigações de Segurança de CPU (Spectre/Meltdown).
+
+Reorganização de Grelha UX: A grade visual foi adaptada dinamicamente para cobrir os espaços destas funções na interface gráfica.
+
+👑 v2.0.1 - Patch de Estabilidade Sênior
+
+Integração Ctypes 64-bits (Fix WinError 6): Declarados rigorosamente os argtypes e restypes na chamada da API ntdll.dll para garantir compatibilidade total com ponteiros 64-bits. A purga da Standby List opera agora com força máxima.
 
 Gerenciador Interativo Bidirecional: O painel de Debloat rastreia o status real (Instalado/Ausente) com legendas visuais e suporta a reinstalação e restauro de aplicações do Windows via manifesto XML.
 
@@ -43,7 +59,7 @@ Filtro Inteligente de Placa de Rede (NIC): A rotina de Moderação de Interrupç
 
 Proteção de Sessão Avançada: O "Master Sistema" e o "Modo Gamer" foram blindados para atuarem apenas sobre as 15 chaves dinâmicas. Chaves que requerem reinício são ignoradas nestas rotinas para impedir reboots surpresa.
 
-Consolidação de UX: Remoção definitiva do botão isolado "Aplicar DNS Google". A injeção de rotas agora é unificada pelo Benchmark DNS Global. Reorganização dinâmica da grade da UI para cobrir espaços das chaves de segurança removidas.
+Consolidação de UX: Remoção definitiva do botão isolado "Aplicar DNS Google". A injeção de rotas agora é unificada pelo Benchmark DNS Global.
 
 🛠️ v2.0 - Elite Edition (A Atualização de Kernel)
 
@@ -73,7 +89,7 @@ Captura Dinâmica do Plano de Energia: Registo do plano de energia de fábrica (
 
 Manual Interativo adicionado com capacidade de exportação em .txt.
 
-Barras de Progresso visuais reativas.
+Barras de Progresso visuais reativas implementadas.
 
 Implementação do Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
 
@@ -107,17 +123,15 @@ Auto Game Priority: Método: Injeção via psutil.HIGH_PRIORITY_CLASS. Ação: E
 
 Benchmark DNS Nativo: Método: Leituras Regex sobre ping -n 4. Ação: Teste multi-rota real e aplicação paramétrica do IP vencedor via PowerShell.
 
-Limpeza Visual de Temp: Método: Módulo os.walk recursivo. Ação: Elimina ficheiros abandonados na cache de forma assíncrona.
+Limpeza Visual de Temp: Método: Módulo os.walk recursivo. Ação: Elimina ficheiros abandonados na cache individualmente de forma assíncrona.
 
 🌐 2. Rede, Latência e NIC (TCP/IP)
 
 Interrupt Moderation (NIC): Comando: Disable-NetAdapterInterruptModeration -Physical. Ação: Obriga os adaptadores físicos a processarem pacotes unitariamente (Ideal para E-Sports).
 
-TCP NoDelay (Nagle's Algorithm): Ação: Aplica TcpAckFrequency e TCPNoDelay para 1. Reduz o delay de registo dos tiros.
+Otimização Global TCP/IP: Método: Executa PowerShell e Netsh. Ação: Unificação de três frentes: aplica TcpAckFrequency e TCPNoDelay (reduzindo delay), desativa o autotuninglevel e adota o algoritmo avançado de controlo de congestão CUBIC (padrão de servidores Linux).
 
 Limitação de Rede (Throttling): Ação: Fixa NetworkThrottlingIndex a 0xFFFFFFFF. Cancela limites em largura de banda impostos pelo Windows.
-
-Controle CUBIC: Ação: Adota o algoritmo avançado de controlo de congestão padrão de servidores Linux na placa Windows.
 
 Pacotes DSCP: Ação: Etiqueta de qualidade de serviço (Do not use NLA = 1) que força os roteadores residenciais a darem primazia absoluta ao tráfego do jogo.
 
@@ -129,7 +143,11 @@ Desligar HPET & Ticks: Comandos: bcdedit /deletevalue useplatformclock e disable
 
 Mira Perfeita (Raw Mouse): Ação: Esmaga as chaves MouseSpeed e MouseThreshold a 0. Remove a perigosa aceleração invisível de ponteiro introduzida pelo sistema operativo.
 
+Desbloquear Menus (Edge): Ação: Apaga restrições corporativas de Políticas de Grupo (SOFTWARE\Policies\Microsoft\Edge) e força um gpupdate, libertando configurações manuais do navegador para o utilizador.
+
 ⚡ 4. Desempenho e Energia Dinâmica
+
+Desempenho Visual Máximo: Ação: Fixa VisualFXSetting = 2 e EnableTransparency = 0. Remove o efeito "Acrílico" (vidro) e suprime animações/sombras pesadas num único comando, libertando completamente o Desktop Window Manager (dwm.exe) do GPU.
 
 Core Parking: Ação: powercfg sub_processor CPMINCORES 100. Impede a nível energético que os núcleos lógicos se suspendam, garantindo prontidão máxima.
 
