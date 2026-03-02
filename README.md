@@ -14,15 +14,15 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 📑 Índice
 
-Principais Funcionalidades
+1. Principais Funcionalidades
 
-Changelog Definitivo
+2. Changelog Definitivo
 
-Glossário Técnico de Comandos
+3. Glossário Técnico de Comandos
 
-Como Compilar para Desenvolvedores
+4. Como Compilar para Desenvolvedores
 
-<a id="funcionalidades"></a>🔥 Principais Funcionalidades
+1. Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
@@ -42,7 +42,7 @@ Como Compilar para Desenvolvedores
 
 🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
 
-<a id="changelog"></a>📜 Changelog Definitivo (Histórico de Versões)
+2. Changelog Definitivo
 
 <details open>
 <summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
@@ -136,9 +136,9 @@ Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
 
 </details>
 
-<a id="glossario"></a>⚙️ Glossário Técnico de Comandos (Engenharia do Sistema)
+3. Glossário Técnico de Comandos
 
-🐍 1. Otimizações Nativas (API Python, UI e Kernel)
+🐍 Otimizações Nativas (API Python, UI e Kernel)
 
 Purga da Standby List (Nível ISLC): Método: Chama ntdll.NtSetSystemInformation solicitando privilégios SeProfileSingleProcessPrivilege (com tratamento de ponteiros wintypes.HANDLE). Ação: Esvazia a RAM em espera acumulada.
 
@@ -152,7 +152,7 @@ Minimização Ctypes (Tray): Método: ctypes.windll.user32.ShowWindow(hwnd, 6). 
 
 Benchmark DNS Nativo: Método: Leituras Regex sobre ping -n 4. Ação: Teste multi-rota real e aplicação paramétrica do IP vencedor.
 
-🌐 2. Rede, Latência e NIC (TCP/IP)
+🌐 Rede, Latência e NIC (TCP/IP)
 
 Interrupt Moderation (NIC): Comando: Disable-NetAdapterInterruptModeration -Physical. Ação: Obriga os adaptadores físicos a processarem pacotes unitariamente.
 
@@ -162,7 +162,7 @@ Limitação de Rede (Throttling): Ação: Fixa NetworkThrottlingIndex a 0xFFFFFF
 
 Pacotes DSCP: Ação: Etiqueta de qualidade de serviço (Do not use NLA = 1) que força os roteadores a darem primazia ao tráfego do jogo.
 
-🚀 3. Hardware Extremo (Ferramentas de Root)
+🚀 Hardware Extremo (Ferramentas de Root)
 
 Modo MSI (Message Signaled Interrupts): Ação: Varre a chave MSISupported = 1 no caminho PCI. A Placa Gráfica ignora o controlador antigo e interrompe o CPU de forma direta (Corta Latência DPC).
 
@@ -172,7 +172,7 @@ Mira Perfeita (Raw Mouse): Ação: Esmaga chaves MouseSpeed e MouseThreshold a 0
 
 Desbloquear Menus (Edge): Ação: Apaga restrições de Políticas de Grupo (SOFTWARE\Policies\Microsoft\Edge) e força gpupdate.
 
-⚡ 4. Desempenho e Energia Dinâmica
+⚡ Desempenho e Energia Dinâmica
 
 Desempenho Visual Máximo: Ação: Fixa VisualFXSetting = 2 e EnableTransparency = 0. Remove Acrílico e suprime animações pesadas, libertando o dwm.exe.
 
@@ -184,7 +184,7 @@ Plano Desempenho Máximo (Workstation): Ação: Aplica e9a42b02-d5df-448d-aa00-0
 
 Resolução de Tempo: Ação: Fixa GlobalTimerResolutionRequests para 1 (Tolerância de ciclo de 0.5 milissegundos).
 
-🛡️ 5. Privacidade, Segurança e Debloat
+🛡️ Privacidade, Segurança e Debloat
 
 Painel Interativo de Gerenciador de Apps: Ação: Permite varrer, desinstalar e reinstalar ativamente pacotes oficiais via XML (Ex: Xbox, Cortana).
 
@@ -194,13 +194,13 @@ Privacidade NVIDIA: Ação: Termina contentores locais de envio estatístico dos
 
 Sensor de Localização: Ação: Modifica as Políticas do Windows (DisableLocation = 1) para impedir acessos geográficos de aplicações em background.
 
-🧹 6. Manutenção e Estrutura Limpa
+🧹 Manutenção e Estrutura Limpa
 
 Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar imagens sãs nos servidores da Microsoft e reparar arquivos.
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
-<a id="compilar"></a>💻 Como Compilar (Para Desenvolvedores)
+4. Como Compilar para Desenvolvedores
 
 O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
