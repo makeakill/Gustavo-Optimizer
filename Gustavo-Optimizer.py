@@ -157,6 +157,7 @@ class MeuOtimizador(ctk.CTk):
         self.caixa_log.grid(row=13, column=0, padx=10, pady=10, sticky="sew")
         
         self.after(500, lambda: self.log("Sistema de Memória Persistente ativado."))
+        self.after(550, lambda: self.log("Iniciando Auditoria em Tempo Real no Registo do Windows..."))
 
         # ==========================================
         # 2. ÁREA DE CONTEÚDO E INICIALIZAÇÃO
@@ -218,7 +219,7 @@ class MeuOtimizador(ctk.CTk):
                 break
             res = self.executar_comando(comando)
             time.sleep(1)
-            self.log_res(res, nome_tarefa)
+            self.log_res_simples(res, nome_tarefa)
             self.log(f"Etapa {nome_tarefa} em andamento...") 
             
         if self.sw_master_clean.get() == 1:
@@ -275,7 +276,6 @@ class MeuOtimizador(ctk.CTk):
                 kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
                 ntdll = ctypes.WinDLL('ntdll', use_last_error=True)
 
-                # Fix for 64-bit pointers [WinError 6] Invalid Handle
                 kernel32.GetCurrentProcess.restype = wintypes.HANDLE
                 advapi32.OpenProcessToken.argtypes = [wintypes.HANDLE, wintypes.DWORD, ctypes.POINTER(wintypes.HANDLE)]
                 advapi32.OpenProcessToken.restype = wintypes.BOOL
@@ -423,7 +423,6 @@ class MeuOtimizador(ctk.CTk):
             self.after(0, self.progress_bar.set, 0)
         threading.Thread(target=tarefa, daemon=True).start()
 
-    # --- NOVO BENCHMARK DE DNS (COM TELA DE SELEÇÃO E APLICADOR NATIVO) ---
     def benchmark_dns_nativo(self):
         def tarefa():
             self.log("[*] Buscando DNS Atual configurado na sua placa de rede...")
@@ -507,7 +506,7 @@ class MeuOtimizador(ctk.CTk):
                 if i == 0: 
                     melhor_opcao = opcao
                     
-        ctk.CTkLabel(janela_dns, text="Selecione o DNS para aplicar na sua placa de rede ativa:", font=("Roboto", 12), text_color=self.texto_cinza).pack(pady=(10, 5))
+        ctk.CTkLabel(janela_dns, text="Selecione o DNS para aplicar na placa de rede:", font=("Roboto", 12), text_color=self.texto_cinza).pack(pady=(10, 5))
         
         combo_dns = ctk.CTkOptionMenu(janela_dns, values=opcoes_dropdown, fg_color=self.bg_painel, button_color=self.borda, button_hover_color=self.acento, text_color=self.texto_branco)
         if melhor_opcao: 
@@ -619,14 +618,45 @@ class MeuOtimizador(ctk.CTk):
     # --- LÓGICA DO MODO ESCURO DA SIDEBAR ---
     def acao_dark_mode(self):
         if self.sw_sidebar_dark.get() == 1:
-            cmd_on = 'reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f >nul 2>&1 & reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f >nul 2>&1'
-            res = self.executar_comando(cmd_on)
+            cmd = 'reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f >nul 2>&1 & reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f >nul 2>&1'
         else:
-            cmd_off = 'reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 1 /f >nul 2>&1 & reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 1 /f >nul 2>&1'
-            res = self.executar_comando(cmd_off)
+            cmd = 'reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 1 /f >nul 2>&1 & reg add "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 1 /f >nul 2>&1'
             
-        self.log_res(res, "Modo Escuro Forçado no Sistema")
-        self.salvar_config("DarkModeSidebar", str(self.sw_sidebar_dark.get()))
+        self.executar_comando_assincrono(cmd, "Modo Escuro Forçado no Sistema", self.sw_sidebar_dark)
+
+    # --- AUDITORIA EM TEMPO REAL E LEITURA DE REGISTO (SINGLE SOURCE OF TRUTH) ---
+    def auditar_estado_real(self, nome_log):
+        """ 
+        Verifica o Kernel/Registo real do Windows no momento de abrir o programa.
+        Se o usuário alterou por fora, o programa adapta-se visualmente.
+        """
+        mapa_auditoria = {
+            "VS Telemetry": (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Policies\Microsoft\VisualStudio\Telemetry", "RefuseTelemetry", 1),
+            "DiagTrack": (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Services\DiagTrack", "Start", 4),
+            "NVIDIA Privacy": (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\NVIDIA Corporation\NvControlPanel2\Client", "OptIn", 0),
+            "GeoLocation": (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors", "DisableLocation", 1),
+            "Desempenho Visual": (winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects", "VisualFXSetting", 2),
+            "Power Throttling": (winreg.HKEY_LOCAL_MACHINE, r"System\CurrentControlSet\Control\Power\PowerThrottling", "PowerThrottlingOff", 1),
+            "Timer Res": (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\kernel", "GlobalTimerResolutionRequests", 1),
+            "GPU Downclock": (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000", "PowerMizerEnable", 0),
+            "Flip Fix": (winreg.HKEY_CURRENT_USER, r"Control Panel\Desktop", "EnableWindowedOptimization", 1),
+            "Servicos Windows": (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Services\SysMain", "Start", 4),
+            "Network Throttling": (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile", "NetworkThrottlingIndex", 0xFFFFFFFF),
+            "DSCP": (winreg.HKEY_LOCAL_MACHINE, r"System\CurrentControlSet\Services\Tcpip\Parameters\QoS", "Do not use NLA", "1"),
+        }
+
+        if nome_log in mapa_auditoria:
+            hkey, path, value_name, expected_value = mapa_auditoria[nome_log]
+            try:
+                chave = winreg.OpenKey(hkey, path)
+                valor, _ = winreg.QueryValueEx(chave, value_name)
+                winreg.CloseKey(chave)
+                return "1" if str(valor) == str(expected_value) else "0"
+            except OSError:
+                return "0" 
+        
+        # Fallback para configurações que são scripts (PowerShell, bcdedit, rede complexa) e não residem num único reg key localizável
+        return self.carregar_config(nome_log, "0")
 
     # --- SISTEMA DE MEMÓRIA (REGISTO DO WINDOWS) COM LOCK THREAD-SAFE ---
     def salvar_config(self, nome, valor):
@@ -650,7 +680,6 @@ class MeuOtimizador(ctk.CTk):
     def carregar_snapshot_memoria(self):
         self.estado_anterior = {}
         snap_str = self.carregar_config("SnapshotPerfil", "")
-        
         if snap_str:
             try:
                 for par in snap_str.split(','):
@@ -663,21 +692,13 @@ class MeuOtimizador(ctk.CTk):
     def guardar_snapshot_atual(self):
         """ Salva o estado atual das chaves dinâmicas no Registo. """
         self.estado_anterior = {
-            'pow': self.sw_pow.get(), 
-            'gaming': self.sw_gaming.get(),
-            'net_thrott': self.sw_net_thrott.get(), 
-            'core_park': self.sw_core_park.get(),
-            'tim': self.sw_tim.get(), 
-            'gpu_oc': self.sw_gpu_oc.get(),
-            'flip': self.sw_flip.get(), 
-            'dscp': self.sw_dscp.get(),
-            'tcp': self.sw_tcp.get(), 
-            'thrott': self.sw_thrott.get(),
-            'srv': self.sw_srv.get(), 
-            'netsh': self.sw_netsh.get(),
-            'cong': self.sw_cong.get(), 
-            'nic_int': self.sw_nic_int.get(), 
-            'visualfx': self.sw_visualfx.get()
+            'pow': self.sw_pow.get(), 'gaming': self.sw_gaming.get(),
+            'net_thrott': self.sw_net_thrott.get(), 'core_park': self.sw_core_park.get(),
+            'tim': self.sw_tim.get(), 'gpu_oc': self.sw_gpu_oc.get(),
+            'flip': self.sw_flip.get(), 'dscp': self.sw_dscp.get(),
+            'tcp_global': self.sw_tcp_global.get(), 'thrott': self.sw_thrott.get(),
+            'srv': self.sw_srv.get(), 'nic_int': self.sw_nic_int.get(), 
+            'visual_perf': self.sw_visual_perf.get()
         }
         snap_str = ",".join([f"{k}:{v}" for k, v in self.estado_anterior.items()])
         self.salvar_config("SnapshotPerfil", snap_str)
@@ -773,13 +794,12 @@ class MeuOtimizador(ctk.CTk):
             "Bem-vindo à ferramenta definitiva de engenharia de software para Windows.\n"
             "Este manual contém a documentação técnica de todas as funções do sistema.\n\n"
             "================================================================================\n"
-            "1. PERFIS E SISTEMA MASTER (PROTEÇÃO DE SESSÃO)\n"
+            "1. PERFIS E SISTEMA MASTER (PROTEÇÃO DE SESSÃO E AUDITORIA)\n"
             "================================================================================\n"
-            "- MODO GAMER ELITE: Aplica 15 camadas dinâmicas de otimização em tempo real (CPU, Rede,\n"
-            "  Energia). Para total extração de FPS, aplique também as funções da secção ROOT.\n"
-            "- MODO TRABALHO: Reverte o sistema para as configurações de fábrica/estabilidade.\n"
-            "- MASTER SISTEMA: Ativa as chaves dinâmicas da grelha de forma segura, ignorando\n"
-            "  intencionalmente funções que forçam o reinício da máquina.\n\n"
+            "- AUDITORIA EM TEMPO REAL: O Optimizer agora lê o Kernel do Windows nativamente.\n"
+            "  Se alterar definições 'por fora', o programa reconhece e ajusta-se no arranque.\n"
+            "- MODO GAMER ELITE: Aplica ativamente a performance extrema em tempo real.\n"
+            "- MASTER SISTEMA: Ativa chaves seguras (Ignorando propositadamente as de reinício).\n\n"
             "================================================================================\n"
             "2. OTIMIZAÇÕES NATIVAS (API KERNEL)\n"
             "================================================================================\n"
@@ -789,35 +809,28 @@ class MeuOtimizador(ctk.CTk):
             "- Auto Game Priority: Deteta jogos abertos (CS2, Valorant, etc.) e eleva o uso do CPU.\n"
             "- Benchmark DNS Global: Testa rotas e sugere o servidor com menor latência real.\n\n"
             "================================================================================\n"
-            "3. DESEMPENHO PROFUNDO E LATÊNCIA\n"
+            "3. DESEMPENHO PROFUNDO, UX E LATÊNCIA\n"
             "================================================================================\n"
+            "- Desempenho Visual Máximo: Funde duas restrições e ajusta o Windows para o nível\n"
+            "  absoluto de performance gráfica, cortando animações fluidas e janelas de acrílico.\n"
             "- Timer Resolution (0.5ms): Reduz o ciclo de relógio do Windows para resposta rápida.\n"
-            "- Bloquear Economia GPU: Impede flutuações de Mhz (PowerMizer) que causam quedas de FPS.\n"
             "- Plano de Energia Máxima: Desbloqueia o plano de energia oculto para Workstations.\n"
             "- Core Parking: Obriga todos os núcleos lógicos do processador a manterem-se acordados.\n\n"
             "================================================================================\n"
-            "4. INTERNET E REDE E-SPORTS\n"
+            "4. INTERNET E REDE E-SPORTS (TCP/IP UNIFICADO)\n"
             "================================================================================\n"
+            "- Otimização Global TCP/IP: Uma chave sênior unificada que executa simultaneamente a\n"
+            "  remoção de Delay (Nagle's Algorithm), reescreve os Buffers Netsh e impõe o poderoso\n"
+            "  controlo de congestionamento de Servidor Linux (CUBIC) à sua placa de rede.\n"
             "- Interrupt Moderation (NIC): Impede a placa de agrupar pacotes; dispara os dados na hora.\n"
-            "- TCP NoDelay (Algoritmo de Nagle): Elimina o atraso TCP. Os seus tiros registam logo.\n"
-            "- Controle CUBIC: Adota o algoritmo avançado de servidores Linux contra congestionamento.\n"
             "- DSCP: Define os pacotes de jogos como prioridade máxima de tráfego no router local.\n\n"
             "================================================================================\n"
-            "5. COMANDOS DE ROOT (REQUEREM REINÍCIO)\n"
+            "5. COMANDOS DE ROOT E SEGURANÇA (REINÍCIO)\n"
             "================================================================================\n"
-            "- Forçar MSI Mode (GPU): Conecta a Placa Gráfica diretamente ao CPU, evitando a fila\n"
-            "  da Motherboard. Reduz severamente a Latência DPC.\n"
+            "- Forçar MSI Mode (GPU): Conecta a Placa Gráfica diretamente ao CPU, cortando Delay DPC.\n"
             "- Desligar HPET & Ticks: Corta o relógio de alta precisão antigo, estabilizando FPS.\n"
-            "- Mira Perfeita Raw (Rato): Remove a aceleração de ponteiro nativa oculta no Registo.\n"
-            "- Mitigações de CPU: Desativa defesas antigas do Kernel que reduzem a performance.\n"
-            "- Fast Startup e Boot: Impede o PC de hibernar a RAM (evitando bugs acumulados).\n\n"
-            "================================================================================\n"
-            "6. SISTEMA, DEBLOAT E MANUTENÇÃO\n"
-            "================================================================================\n"
-            "- Gerir Apps do Windows: Painel interativo para desinstalar (vermelho) ou reinstalar\n"
-            "  (verde) aplicações nativas do sistema operativo em tempo real.\n"
-            "- Limpezas Profundas: Rotinas automatizadas e ofuscadas para exterminar lixo do Registo,\n"
-            "  Caches de Jogos (Steam, Battle.net, Discord) e Navegadores com tolerância a falhas.\n"
+            "- Desbloquear Menus (Edge): Apaga chaves de proteção para libertar definições geridas\n"
+            "  pela 'Organização'.\n\n"
         )
         
         caixa_texto.insert("0.0", manual_completo)
@@ -845,7 +858,6 @@ class MeuOtimizador(ctk.CTk):
         lbl_titulo = ctk.CTkLabel(janela_db, text="[ GERENCIADOR DE APPS DO WINDOWS ]", font=("Consolas", 16, "bold"), text_color=self.acento)
         lbl_titulo.pack(pady=(20, 10))
 
-        # --- LEGENDA DE IDENTIFICAÇÃO DE STATUS ---
         frame_legenda = ctk.CTkFrame(janela_db, fg_color="transparent")
         frame_legenda.pack(pady=(0, 10))
         
@@ -982,14 +994,14 @@ class MeuOtimizador(ctk.CTk):
         sw = ctk.CTkSwitch(card, text="ATIVAR", progress_color=self.acento, fg_color=self.borda, font=("Consolas", 10, "bold"), text_color=self.acento)
         sw.place(x=220, y=125)
         
-        estado_salvo = self.carregar_config(nome_log, "0")
+        # AUDITORIA EM TEMPO REAL (Se a chave no Registo estiver ativada "por fora", a UI adapta-se)
+        estado_salvo = self.auditar_estado_real(nome_log)
         if estado_salvo == "1":
             sw.select()
         else:
             sw.deselect()
 
         def acao_com_memoria():
-            # A execução da lógica despacha a tarefa através da variável 'cmd'
             cmd() 
 
         sw.configure(command=acao_com_memoria)
@@ -1050,8 +1062,8 @@ class MeuOtimizador(ctk.CTk):
         self.sw_nv_priv = self.criar_card_switch(6, 2, "Privacidade", "Privacidade NVIDIA", "Desativa a coleta de dados e serviços de fundo da NVIDIA.", self.toggle_nv_priv, "NVIDIA Privacy")
         
         self.sw_loc = self.criar_card_switch(7, 0, "Privacidade", "Localização do Sistema", "Desativa o serviço de geolocalização e acesso à posição por apps.", self.toggle_loc, "GeoLocation")
-        self.sw_smart = self.criar_card_switch(7, 1, "Privacidade", "Filtro SmartScreen", "Desativa as verificações pesadas de ficheiros que abrandam o PC.", self.toggle_smart, "SmartScreen")
-        self.sw_tasks = self.criar_card_switch(7, 2, "Segurança", "Tarefas Ocultas (Microsoft)", "Mata os agendadores secretos que enviam dados na calada da noite.", self.toggle_telemetry_tasks, "Telemetry Tasks")
+        self.sw_tasks = self.criar_card_switch(7, 1, "Segurança", "Tarefas Ocultas (Microsoft)", "Mata os agendadores secretos que enviam dados na calada da noite.", self.toggle_telemetry_tasks, "Telemetry Tasks")
+        self.criar_card_botao(7, 2, "Segurança", "Desbloquear Menus (Edge)", "Remove restrições de 'Organização' que bloqueiam configurações do Edge e Windows.", self.remover_bloqueio_organizacao, btn_texto="DESBLOQUEAR")
 
         # Secção 3: Modificações de Sistema e Efeitos Visuais
         self.criar_secao("Sistema e Interface Visual", 8)
@@ -1059,8 +1071,7 @@ class MeuOtimizador(ctk.CTk):
         self.criar_card_botao(9, 1, "Sistema", "Apps de Inicialização", "Abre o gestor nativo do Windows para impedir programas no arranque.", self.abrir_inicializacao, btn_texto="ABRIR GESTOR")
         self.criar_card_botao(9, 2, "Sistema", "Remover Bloatware (Rápido)", "Atalho para o painel avançado de gestão das aplicações do sistema.", self.remover_bloatware, btn_texto="GERIR APPS")
         
-        self.sw_tra = self.criar_card_switch(10, 0, "Interface", "Desativar Acrílico", "Para PCs fracos: Retira os efeitos de borrão pesado do Windows.", self.toggle_tra, "Transparência")
-        self.sw_visualfx = self.criar_card_switch(10, 1, "Interface", "Desativar Efeitos Visuais", "Corta animações e sombras inúteis, ajustando para Desempenho Máximo.", self.toggle_visualfx, "Visual Effects")
+        self.sw_visual_perf = self.criar_card_switch(10, 0, "Interface", "Desempenho Visual Máximo", "Ajusta a aparência do Windows focando no desempenho: desativa os efeitos de vidro (Acrílico) e suprime sombras/animações visuais pesadas.", self.toggle_visual_perf, "Desempenho Visual")
 
         # Secção 4: Alterações Profundas de Desempenho e Latência
         self.criar_secao("Desempenho Profundo", 11)
@@ -1079,59 +1090,53 @@ class MeuOtimizador(ctk.CTk):
         # Secção 5: Modificações de Placa de Rede (E-Sports)
         self.criar_secao("Internet e Rede E-Sports", 15)
         self.sw_nic_int = self.criar_card_switch(16, 0, "Rede", "Interrupt Moderation (NIC)", "Elite: Impede a placa de rede de agrupar pacotes. Envia os tiros NA HORA.", self.toggle_nic_interrupt, "NIC Interrupt")
-        self.sw_tcp = self.criar_card_switch(16, 1, "Rede", "TcpNoDelay (Nagle's Algorithm)", "Obriga o adaptador a disparar dados de TCP sem consolidação (No Delay).", self.toggle_tcp, "TCP")
+        self.sw_tcp_global = self.criar_card_switch(16, 1, "Rede", "Otimização Global TCP/IP", "Unifica TcpNoDelay, Controle CUBIC e Buffers Netsh para a menor latência e disparo absoluto de rede em jogos E-Sports.", self.toggle_tcp_global, "TCP Global")
         self.sw_dscp = self.criar_card_switch(16, 2, "Rede", "Otimizar Pacotes (DSCP)", "Pede ao seu router para dar prioridade de realeza aos pacotes do Jogo.", self.toggle_dscp, "DSCP")
         
-        self.sw_netsh = self.criar_card_switch(17, 0, "Rede", "Ajustes de Buffer (Netsh)", "Otimiza a leitura máxima (MTU) ao nível do interpretador de comandos.", self.toggle_netsh, "Netsh")
-        self.sw_cong = self.criar_card_switch(17, 1, "Rede", "Controle CUBIC", "Adota a estabilidade CUBIC de servidores Linux na sua placa de rede.", self.toggle_cong, "Congestion")
-        
-        self.criar_card_botao(18, 0, "Diagnóstico", "Analisar IP Privado e Ping", "Varre a sua LAN e faz request remoto à API IPify para o seu WAN.", self.analisar_rede_info, btn_texto="INICIAR SCAN")
-        self.criar_card_botao(18, 1, "Rede", "Redefinir Placa (Winsock/DNS)", "Apaga o DNS Cache e aplica reset severo ao IPConfig do adaptador.", self.otimizar_internet)
+        self.criar_card_botao(17, 0, "Diagnóstico", "Analisar IP Privado e Ping", "Varre a sua LAN e faz request remoto à API IPify para o seu WAN.", self.analisar_rede_info, btn_texto="INICIAR SCAN")
+        self.criar_card_botao(17, 1, "Rede", "Redefinir Placa (Winsock/DNS)", "Apaga o DNS Cache e aplica reset severo ao IPConfig do adaptador.", self.otimizar_internet)
 
         # Secção 6: Diagnósticos de Máquina e Discos
-        self.criar_secao("Manutenção e Verificação", 19)
-        self.criar_card_botao(20, 0, "Sistema", "Reparo de Imagem (DISM)", "Puxa pacotes sãos da Microsoft para curar corrupção no núcleo.", self.reparar_imagem_dism)
-        self.criar_card_botao(20, 1, "Limpeza", "Limpar Logs de Eventos", "Executa Wevtutil para eliminar milhares de falsos erros ocultos no Disco.", self.limpar_logs_windows)
-        self.criar_card_botao(20, 2, "Limpeza", "Arquivos de Prefetch", "Destrói a memória morta do arranque para forçar recriação veloz.", self.limpar_prefetch)
+        self.criar_secao("Manutenção e Verificação", 18)
+        self.criar_card_botao(19, 0, "Sistema", "Reparo de Imagem (DISM)", "Puxa pacotes sãos da Microsoft para curar corrupção no núcleo.", self.reparar_imagem_dism)
+        self.criar_card_botao(19, 1, "Limpeza", "Limpar Logs de Eventos", "Executa Wevtutil para eliminar milhares de falsos erros ocultos no Disco.", self.limpar_logs_windows)
+        self.criar_card_botao(19, 2, "Limpeza", "Arquivos de Prefetch", "Destrói a memória morta do arranque para forçar recriação veloz.", self.limpar_prefetch)
         
-        self.criar_card_botao(21, 0, "Hardware", "Limpar Cache NVIDIA (Shader)", "Apaga shaders gráficos obsoletos diretamente do LocalAppData.", self.limpar_gpu)
-        self.criar_card_botao(21, 1, "Disco", "Limpeza de Disco Avançada", "Aplica o Cleanmgr do Windows no seu nível máximo e silencioso.", self.limpar_windows)
-        self.criar_card_botao(21, 2, "Sistema", "Limpar Windows Update", "Estripa o SoftwareDistribution, matando updates emperrados.", self.limpar_update)
+        self.criar_card_botao(20, 0, "Hardware", "Limpar Cache NVIDIA (Shader)", "Apaga shaders gráficos obsoletos diretamente do LocalAppData.", self.limpar_gpu)
+        self.criar_card_botao(20, 1, "Disco", "Limpeza de Disco Avançada", "Aplica o Cleanmgr do Windows no seu nível máximo e silencioso.", self.limpar_windows)
+        self.criar_card_botao(20, 2, "Sistema", "Limpar Windows Update", "Estripa o SoftwareDistribution, matando updates emperrados.", self.limpar_update)
         
-        self.criar_card_botao(22, 0, "Interface", "Limpar Miniaturas", "Exclui o cache de imagens para forçar o recarregamento dos ícones.", self.limpar_thumbnails)
-        self.criar_card_botao(22, 1, "Disco", "Otimizar Unidades (Defrag)", "Executa rotina TRIM em todos os SSDs e desfragmenta mecânicos.", self.otimizar_discos)
+        self.criar_card_botao(21, 0, "Interface", "Limpar Miniaturas", "Exclui o cache de imagens para forçar o recarregamento dos ícones.", self.limpar_thumbnails)
+        self.criar_card_botao(21, 1, "Disco", "Otimizar Unidades (Defrag)", "Executa rotina TRIM em todos os SSDs e desfragmenta mecânicos.", self.otimizar_discos)
 
         # Secção 7: Ofuscação e Limpeza Isolada de Softwares
-        self.criar_secao("Ofuscação e Limpeza de Aplicações", 23)
-        self.criar_card_botao(24, 0, "Navegador", "Exterminar Cache Google", "Apaga rastros de pesquisa temporária no Chrome sem desinstalar.", self.limpar_chrome)
-        self.criar_card_botao(24, 1, "Navegador", "Exterminar Cache Edge", "Força a exclusão do diretório User Data do MS Edge da sua máquina.", self.limpar_edge)
-        self.criar_card_botao(24, 2, "Navegador", "Limpar Mozilla Firefox", "Apaga o cache completo de todos os perfis do Mozilla Firefox do PC.", self.limpar_firefox)
+        self.criar_secao("Ofuscação e Limpeza de Aplicações", 22)
+        self.criar_card_botao(23, 0, "Navegador", "Exterminar Cache Google", "Apaga rastros de pesquisa temporária no Chrome sem desinstalar.", self.limpar_chrome)
+        self.criar_card_botao(23, 1, "Navegador", "Exterminar Cache Edge", "Força a exclusão do diretório User Data do MS Edge da sua máquina.", self.limpar_edge)
+        self.criar_card_botao(23, 2, "Navegador", "Limpar Mozilla Firefox", "Apaga o cache completo de todos os perfis do Mozilla Firefox do PC.", self.limpar_firefox)
 
-        self.criar_card_botao(25, 0, "Navegador", "Limpar Opera / Opera GX", "Apaga dados antigos armazenados pelas versões do Opera Browser.", self.limpar_opera)
-        self.criar_card_botao(25, 1, "Aplicativo", "Limpar Cache Steam", "Limpa pasta AppCache. Pode resolver bugs de não atualizar jogos.", self.limpar_steam)
-        self.criar_card_botao(25, 2, "Aplicativo", "Limpar Cache Discord", "Mata a árvore inteira de cache do Discord que se esconde no disco.", self.limpar_discord)
+        self.criar_card_botao(24, 0, "Navegador", "Limpar Opera / Opera GX", "Apaga dados antigos armazenados pelas versões do Opera Browser.", self.limpar_opera)
+        self.criar_card_botao(24, 1, "Aplicativo", "Limpar Cache Steam", "Limpa pasta AppCache. Pode resolver bugs de não atualizar jogos.", self.limpar_steam)
+        self.criar_card_botao(24, 2, "Aplicativo", "Limpar Cache Discord", "Mata a árvore inteira de cache do Discord que se esconde no disco.", self.limpar_discord)
         
-        self.criar_card_botao(26, 0, "Aplicativo", "Limpar Cache Spotify", "Apaga dados antigos e músicas em cache armazenadas pelo aplicativo.", self.limpar_spotify)
-        self.criar_card_botao(26, 1, "Aplicativo", "Limpar Cache Battle.net", "Abre caminho livre apagando os agentes da Blizzard que ficam presos.", self.limpar_battlenet)
-        self.criar_card_botao(26, 2, "Geral", "Limpeza Total (Apps)", "Limpa simultaneamente Spotify, Steam, Discord e Battle.net (Exclui navegadores).", self.limpar_apps_multi)
+        self.criar_card_botao(25, 0, "Aplicativo", "Limpar Cache Spotify", "Apaga dados antigos e músicas em cache armazenadas pelo aplicativo.", self.limpar_spotify)
+        self.criar_card_botao(25, 1, "Aplicativo", "Limpar Cache Battle.net", "Abre caminho livre apagando os agentes da Blizzard que ficam presos.", self.limpar_battlenet)
+        self.criar_card_botao(25, 2, "Geral", "Limpeza Total (Apps)", "Limpa simultaneamente Spotify, Steam, Discord e Battle.net (Exclui navegadores).", self.limpar_apps_multi)
 
         # Secção 8: O Agrupamento Final (Requerem Reinício Mandatório do Computador)
-        self.criar_secao("Comandos de Root (Requer Reiniciar o Computador)", 27)
+        self.criar_secao("Comandos de Root (Requer Reiniciar o Computador)", 26)
         
-        self.sw_msi = self.criar_card_switch(28, 0, "Latência", "Modo MSI (Para GPU)", "Força a Placa de Vídeo a comunicar sem interrupções com o CPU (DPC Baixa).", self.toggle_msi, "Modo MSI", auto=False, reinicio=True)
-        self.sw_hpet = self.criar_card_switch(28, 1, "Latência", "Desligar HPET & Ticks", "Desliga o relógio lento da Motherboard para dar fluidez absurda aos FPS.", self.toggle_hpet, "HPET Ticks", auto=False, reinicio=True)
-        self.sw_mouse = self.criar_card_switch(28, 2, "Hardware", "Mira Perfeita Raw (Rato)", "Mata os parâmetros invisíveis de aceleração de rato aplicados no Registo.", self.toggle_mouse, "Raw Mouse", auto=False, reinicio=True)
+        self.sw_msi = self.criar_card_switch(27, 0, "Latência", "Modo MSI (Para GPU)", "Força a Placa de Vídeo a comunicar sem interrupções com o CPU (DPC Baixa).", self.toggle_msi, "Modo MSI", auto=False, reinicio=True)
+        self.sw_hpet = self.criar_card_switch(27, 1, "Latência", "Desligar HPET & Ticks", "Desliga o relógio lento da Motherboard para dar fluidez absurda aos FPS.", self.toggle_hpet, "HPET Ticks", auto=False, reinicio=True)
+        self.sw_mouse = self.criar_card_switch(27, 2, "Hardware", "Mira Perfeita Raw (Rato)", "Mata os parâmetros invisíveis de aceleração de rato aplicados no Registo.", self.toggle_mouse, "Raw Mouse", auto=False, reinicio=True)
         
-        self.sw_uac = self.criar_card_switch(29, 0, "Segurança", "Controle de Conta (UAC)", "Acaba para sempre com os escudos azuis e pop-ups irritantes de permissão.", self.toggle_uac, "UAC", auto=False, reinicio=True)
-        self.sw_mit = self.criar_card_switch(29, 1, "Desempenho", "Mitigações de CPU", "Mata as proteções de hardware (Spectre) que cortam FPS. Ganho absurdo.", self.toggle_mit, "Mitigações", auto=False, reinicio=True)
-        self.sw_mnu = self.criar_card_switch(29, 2, "Interface", "Menu Clássico Win11", "Extermina o design novo de 2 cliques e traz de volta o Menu Gigante antigo.", self.toggle_mnu, "Menu Clássico", auto=False, reinicio=True)
+        self.sw_mnu = self.criar_card_switch(28, 0, "Interface", "Menu Clássico Win11", "Extermina o design novo de 2 cliques e traz de volta o Menu Gigante antigo.", self.toggle_mnu, "Menu Clássico", auto=False, reinicio=True)
+        self.sw_bmn = self.criar_card_switch(28, 1, "Sistema", "Espera de Boot (2 Seg)", "Acelera a tela de Dual-Boot para não ficar à espera que o sistema avance.", self.toggle_bmn, "Boot Menu", auto=False, reinicio=True)
+        self.sw_fast_start = self.criar_card_switch(28, 2, "Sistema", "Desativar Fast Startup", "Protege a RAM contra corrupção ao impedir o PC de fingir que desligou.", self.toggle_fast_startup, "Fast Startup", auto=False, reinicio=True)
         
-        self.sw_bmn = self.criar_card_switch(30, 0, "Sistema", "Espera de Boot (2 Seg)", "Acelera a tela de Dual-Boot para não ficar à espera que o sistema avance.", self.toggle_bmn, "Boot Menu", auto=False, reinicio=True)
-        self.sw_fast_start = self.criar_card_switch(30, 1, "Sistema", "Desativar Fast Startup", "Protege a RAM contra corrupção ao impedir o PC de fingir que desligou.", self.toggle_fast_startup, "Fast Startup", auto=False, reinicio=True)
-        self.sw_widgets = self.criar_card_switch(30, 2, "Interface", "Desativar Widgets", "Remove completamente do sistema os blocos de Notícias e Clima que sugam RAM.", self.toggle_widgets, "Widgets", auto=False, reinicio=True)
-
-        self.criar_card_botao(31, 0, "Sistema", "Verificação SFC Scan", "Busca nos servidores Microsoft e repara arquivos corrompidos ou ausentes.", self.verificar_erros, reinicio=True)
-        self.criar_card_botao(31, 1, "Sistema", "Verificar Discos (CHKDSK)", "Examina a integridade e procura setores mecânicos defeituosos em TODOS os discos.", self.verificar_disco, reinicio=True)
+        self.sw_widgets = self.criar_card_switch(29, 0, "Interface", "Desativar Widgets", "Remove completamente do sistema os blocos de Notícias e Clima que sugam RAM.", self.toggle_widgets, "Widgets", auto=False, reinicio=True)
+        self.criar_card_botao(29, 1, "Sistema", "Verificação SFC Scan", "Busca nos servidores Microsoft e repara arquivos corrompidos ou ausentes.", self.verificar_erros, reinicio=True)
+        self.criar_card_botao(29, 2, "Sistema", "Verificar Discos (CHKDSK)", "Examina a integridade e procura setores mecânicos defeituosos em TODOS os discos.", self.verificar_disco, reinicio=True)
         
         self.atualizar_cores_perfis()
 
@@ -1150,7 +1155,7 @@ class MeuOtimizador(ctk.CTk):
                 processo = subprocess.Popen(f'cmd /c "{comando}"', creationflags=subprocess.CREATE_NEW_CONSOLE)
                 processo.wait() 
                 res = processo.returncode
-                self.log_res(res, nome_log, None, reinicio)
+                self.log_res_simples(res, nome_log, None, reinicio)
             except Exception as e: 
                 self.log(f"Erro ao executar e desenhar janela de CMD {nome_log}: {str(e)}", "erro")
                 
@@ -1160,40 +1165,55 @@ class MeuOtimizador(ctk.CTk):
         def tarefa():
             try:
                 processo = subprocess.Popen(comando, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=0x08000000)
-                processo.wait() 
+                stdout, stderr = processo.communicate()
                 res = processo.returncode
-                self.log_res(res, nome_log, sw_obj, reinicio)
+                self.log_res(res, nome_log, sw_obj, reinicio, stdout, stderr)
             except Exception as e: 
-                self.log(f"Erro assíncrono ao processar a chave {nome_log}: {str(e)}", "erro")
+                self.log(f"[-] Erro Crítico Assíncrono ao processar {nome_log}: {str(e)}", "erro")
+                if sw_obj:
+                    self.after(0, sw_obj.deselect)
                 
         threading.Thread(target=tarefa, daemon=True).start()
 
-    # --- AUDITORIA DE MEMÓRIA (FLIP-FLOP CORRIGIDO DEFINITIVAMENTE) ---
+    # --- AUDITORIA DE MEMÓRIA REAL (VERIFICAÇÃO DE ERROS WINDOWS) ---
     def log(self, mensagem, tipo="info"):
         prefixo = "[+] " if tipo == "info" else "[-] "
-        
         def update_ui():
             self.caixa_log.insert("end", f"{prefixo}{mensagem}\n")
             self.caixa_log.see("end")
             self.update_idletasks()
-            
         self.after(0, update_ui)
 
-    def log_res(self, res, nome, sw_obj=None, reinicio=False):
+    def log_res_simples(self, res, nome, sw_obj=None, reinicio=False):
         def update_ui():
             aviso = " [O SISTEMA REQUER REINÍCIO PARA APLICAR]" if reinicio else ""
-            
             if res == 0: 
-                self.caixa_log.insert("end", f"[+] {nome}: Aplicado e consolidado no sistema com sucesso.{aviso}\n")
+                self.caixa_log.insert("end", f"[+] {nome}: Aplicado com sucesso no sistema.{aviso}\n")
             else: 
-                self.caixa_log.insert("end", f"[-] AVISO: {nome} retornou falha a nível de sistema, mas a memória visual foi gravada e protegida.\n")
-                
-            if sw_obj is not None and hasattr(sw_obj, 'nome_log'): 
-                self.salvar_config(sw_obj.nome_log, str(sw_obj.get()))
-                
+                self.caixa_log.insert("end", f"[-] AVISO: {nome} retornou falha (Código {res}).\n")
             self.caixa_log.see("end")
             self.update_idletasks()
-            
+        self.after(0, update_ui)
+
+    def log_res(self, res, nome, sw_obj=None, reinicio=False, stdout="", stderr=""):
+        def update_ui():
+            aviso = " [O SISTEMA REQUER REINÍCIO PARA APLICAR]" if reinicio else ""
+            if res == 0: 
+                self.caixa_log.insert("end", f"[+] SUCESSO | {nome}: Alteração validada pelo Windows.{aviso}\n")
+                if sw_obj is not None and hasattr(sw_obj, 'nome_log'): 
+                    self.salvar_config(sw_obj.nome_log, str(sw_obj.get()))
+            else: 
+                erro_txt = stderr.strip() if stderr else "Acesso Negado ou Falha de Permissão do Registo"
+                self.caixa_log.insert("end", f"[-] ERRO | {nome}: {erro_txt} (Cód. {res}). Revertendo a interface de imediato...\n")
+                if sw_obj is not None:
+                    # Se o Windows falhou a aplicação, a memória não é guardada e o botão reverte visualmente ao estado original salvo
+                    estado_memoria = self.carregar_config(sw_obj.nome_log, "0")
+                    if estado_memoria == "1":
+                        sw_obj.select()
+                    else:
+                        sw_obj.deselect()
+            self.caixa_log.see("end")
+            self.update_idletasks()
         self.after(0, update_ui)
 
     # --- HELPER UI-SAFE E MANIPULAÇÃO DE RENDERIZAÇÃO ---
@@ -1206,7 +1226,6 @@ class MeuOtimizador(ctk.CTk):
                         sw.comando_real()
             except Exception: 
                 pass
-                
         self.after(0, acao)
         time.sleep(0.1) 
 
@@ -1219,24 +1238,6 @@ class MeuOtimizador(ctk.CTk):
                         sw.comando_real()
             except Exception: 
                 pass
-                
-        self.after(0, acao)
-        time.sleep(0.1)
-
-    def restaurar_sw(self, sw, val):
-        def acao():
-            try:
-                if int(sw.get()) != int(val):
-                    if int(val) == 1:
-                        sw.select()
-                    else:
-                        sw.deselect()
-                        
-                    if hasattr(sw, 'comando_real'): 
-                        sw.comando_real()
-            except Exception: 
-                pass
-                
         self.after(0, acao)
         time.sleep(0.1)
 
@@ -1247,8 +1248,8 @@ class MeuOtimizador(ctk.CTk):
         switches_gamer_dinamicos = [
             self.sw_pow, self.sw_gaming, self.sw_net_thrott, self.sw_core_park,
             self.sw_tim, self.sw_gpu_oc, self.sw_flip, self.sw_srv,
-            self.sw_dscp, self.sw_netsh, self.sw_cong, self.sw_tcp, self.sw_thrott,
-            self.sw_nic_int, self.sw_visualfx
+            self.sw_dscp, self.sw_tcp_global, self.sw_thrott,
+            self.sw_nic_int, self.sw_visual_perf
         ]
         
         for sw in switches_gamer_dinamicos: 
@@ -1264,8 +1265,8 @@ class MeuOtimizador(ctk.CTk):
         switches_gamer_dinamicos = [
             self.sw_pow, self.sw_gaming, self.sw_net_thrott, self.sw_core_park,
             self.sw_tim, self.sw_gpu_oc, self.sw_flip, self.sw_srv,
-            self.sw_dscp, self.sw_netsh, self.sw_cong, self.sw_tcp, self.sw_thrott,
-            self.sw_nic_int, self.sw_visualfx
+            self.sw_dscp, self.sw_tcp_global, self.sw_thrott,
+            self.sw_nic_int, self.sw_visual_perf
         ]
         
         for sw in switches_gamer_dinamicos: 
@@ -1279,8 +1280,8 @@ class MeuOtimizador(ctk.CTk):
         switches_trabalho_dinamicos = [
             self.sw_pow, self.sw_gaming, self.sw_net_thrott, self.sw_core_park,
             self.sw_tim, self.sw_gpu_oc, self.sw_flip, self.sw_srv,
-            self.sw_dscp, self.sw_netsh, self.sw_cong, self.sw_tcp, self.sw_thrott,
-            self.sw_nic_int, self.sw_visualfx
+            self.sw_dscp, self.sw_tcp_global, self.sw_thrott,
+            self.sw_nic_int, self.sw_visual_perf
         ]
         
         for sw in switches_trabalho_dinamicos: 
@@ -1355,21 +1356,26 @@ class MeuOtimizador(ctk.CTk):
         est = self.sw_nic_int.get()
         
         if est == 1:
-            # Seleciona apenas adaptadores de rede físicos ativos para evitar erros com VPNs ou Máquinas Virtuais
             cmd = 'powershell -Command "$net = Get-NetAdapter -Physical | Where-Object { $_.Status -eq \'Up\' }; if ($net) { $net | Disable-NetAdapterInterruptModeration -ErrorAction SilentlyContinue; exit 0 } else { exit 1 }"'
         else:
             cmd = 'powershell -Command "$net = Get-NetAdapter -Physical | Where-Object { $_.Status -eq \'Up\' }; if ($net) { $net | Enable-NetAdapterInterruptModeration -ErrorAction SilentlyContinue; exit 0 } else { exit 1 }"'
             
         self.executar_comando_assincrono(cmd, "Moderação de Interrupção de Rede Pura (Adaptador NIC)", self.sw_nic_int)
 
-    def toggle_visualfx(self):
-        est = self.sw_visualfx.get()
-        val = 2 if est == 1 else 0
+    def toggle_visual_perf(self):
+        est = self.sw_visual_perf.get()
+        val_fx = 2 if est == 1 else 0
+        val_tra = 0 if est == 1 else 1
         
-        cmd = f'reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects" /v "VisualFXSetting" /t REG_DWORD /d {val} /f >nul 2>&1'
-        self.executar_comando_assincrono(cmd, "Supressão de Efeitos Visuais de Desempenho", self.sw_visualfx)
+        cmd = f'reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects" /v "VisualFXSetting" /t REG_DWORD /d {val_fx} /f >nul 2>&1 & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "EnableTransparency" /t REG_DWORD /d {val_tra} /f >nul 2>&1'
+        self.executar_comando_assincrono(cmd, "Aparência e Desempenho Visual Máximo", self.sw_visual_perf)
 
-    # --- COMANDOS E SWITCHES ORIGINAIS (EXPANDIDOS E NÃO OMITIDOS) ---
+    # --- COMANDOS E SWITCHES ORIGINAIS ---
+    def remover_bloqueio_organizacao(self):
+        self.log("[*] Removendo Políticas de Grupo (GPO) que bloqueiam o Microsoft Edge e Configurações do Windows...")
+        cmd = 'reg delete "HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge" /f >nul 2>&1 & reg delete "HKCU\\SOFTWARE\\Policies\\Microsoft\\Edge" /f >nul 2>&1 & gpupdate /force'
+        self.executar_comando_assincrono(cmd, "Desbloqueio de Menus Gerenciados por Organização")
+
     def toggle_telemetry_tasks(self):
         est = self.sw_tasks.get()
         p1 = "\\".join(["Microsoft", "Windows", "Application Experience", "Microsoft Compatibility Appraiser"])
@@ -1416,36 +1422,28 @@ class MeuOtimizador(ctk.CTk):
         comando = f'reg add "HKLM\\System\\CurrentControlSet\\Services\\Tcpip\\Parameters\\QoS" /v "Do not use NLA" /t REG_SZ /d "{1 if est == 1 else 0}" /f >nul 2>&1'
         self.executar_comando_assincrono(comando, "Otimização Severa de Pacotes DSCP no Router", self.sw_dscp)
 
-    def toggle_netsh(self): 
-        est = self.sw_netsh.get()
-        comando = f'netsh int tcp set global autotuninglevel={"disabled" if est == 1 else "normal"} >nul 2>&1'
-        self.executar_comando_assincrono(comando, "Manipulação de Buffers de Rede Netsh", self.sw_netsh)
-
-    def toggle_cong(self): 
-        est = self.sw_cong.get()
-        comando = f'netsh int tcp set supplemental template=internet congestionprovider={"cubic" if est == 1 else "none"} >nul 2>&1'
-        self.executar_comando_assincrono(comando, "Algoritmo Estável de Congestionamento (CUBIC Server)", self.sw_cong)
-    
-    def toggle_tcp(self): 
-        est = self.sw_tcp.get()
-        
+    def toggle_tcp_global(self): 
+        est = self.sw_tcp_global.get()
         if est == 1:
-            cmd = 'powershell -Command "Get-ChildItem -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces | ForEach-Object { Set-ItemProperty -Path $_.PSPath -Name \'TcpAckFrequency\' -Value 1 -Type DWord -ErrorAction SilentlyContinue; Set-ItemProperty -Path $_.PSPath -Name \'TCPNoDelay\' -Value 1 -Type DWord -ErrorAction SilentlyContinue }"'
+            cmd = (
+                'powershell -Command "Get-ChildItem -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces | ForEach-Object { Set-ItemProperty -Path $_.PSPath -Name \'TcpAckFrequency\' -Value 1 -Type DWord -ErrorAction SilentlyContinue; Set-ItemProperty -Path $_.PSPath -Name \'TCPNoDelay\' -Value 1 -Type DWord -ErrorAction SilentlyContinue }" & '
+                'netsh int tcp set global autotuninglevel=disabled >nul 2>&1 & '
+                'netsh int tcp set supplemental template=internet congestionprovider=cubic >nul 2>&1'
+            )
         else:
-            cmd = 'powershell -Command "Get-ChildItem -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces | ForEach-Object { Remove-ItemProperty -Path $_.PSPath -Name \'TcpAckFrequency\' -ErrorAction SilentlyContinue; Remove-ItemProperty -Path $_.PSPath -Name \'TCPNoDelay\' -ErrorAction SilentlyContinue }"'
+            cmd = (
+                'powershell -Command "Get-ChildItem -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces | ForEach-Object { Remove-ItemProperty -Path $_.PSPath -Name \'TcpAckFrequency\' -ErrorAction SilentlyContinue; Remove-ItemProperty -Path $_.PSPath -Name \'TCPNoDelay\' -ErrorAction SilentlyContinue }" & '
+                'netsh int tcp set global autotuninglevel=normal >nul 2>&1 & '
+                'netsh int tcp set supplemental template=internet congestionprovider=none >nul 2>&1'
+            )
             
-        self.executar_comando_assincrono(cmd, "Regras de Otimização Estrita TCP Settings", self.sw_tcp)
+        self.executar_comando_assincrono(cmd, "Otimização Global da Pilha TCP/IP", self.sw_tcp_global)
         
     def toggle_gpu_oc(self): 
         est = self.sw_gpu_oc.get()
         comando = f'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{{4d36e968-e325-11ce-bfc1-08002be10318}}\\0000" /v "PowerMizerEnable" /t REG_DWORD /d {0 if est == 1 else 1} /f >nul 2>&1'
         self.executar_comando_assincrono(comando, "Força Bruta e Bloqueio de Economia da GPU", self.sw_gpu_oc)
 
-    def toggle_smart(self): 
-        est = self.sw_smart.get()
-        comando = f'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System" /v "EnableSmartScreen" /t REG_DWORD /d {0 if est == 1 else 1} /f >nul 2>&1'
-        self.executar_comando_assincrono(comando, "Filtros Nativos de Avaliação SmartScreen", self.sw_smart)
-    
     def toggle_tel(self): 
         est = self.sw_tel.get()
         
@@ -1513,11 +1511,6 @@ class MeuOtimizador(ctk.CTk):
         subprocess.run(['powercfg', '/setactive', guid_eq], creationflags=0x08000000)
         self.after(0, self.log_res, 0, "Plano de Energia Totalmente Restaurado para Configuração Original", self.sw_pow)
 
-    def toggle_tra(self): 
-        est = self.sw_tra.get()
-        comando = f'reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" /v "EnableTransparency" /t REG_DWORD /d {0 if est == 1 else 1} /f >nul 2>&1'
-        self.executar_comando_assincrono(comando, "Destruidor de Efeitos Acrílicos e Transparência", self.sw_tra)
-    
     def toggle_net_thrott(self):
         est = self.sw_net_thrott.get()
         comando = f'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v "NetworkThrottlingIndex" /t REG_DWORD /d {0xFFFFFFFF if est == 1 else 10} /f >nul 2>&1'
@@ -1527,21 +1520,6 @@ class MeuOtimizador(ctk.CTk):
         est = self.sw_core_park.get()
         comando = f'powercfg /setacvalueindex scheme_current sub_processor CPMINCORES {100 if est == 1 else 5} >nul 2>&1 & powercfg /setactive scheme_current >nul 2>&1'
         self.executar_comando_assincrono(comando, "Bloqueador Físico de Core Parking (100% de CPU Acordada)", self.sw_core_park)
-
-    def toggle_uac(self): 
-        est = self.sw_uac.get()
-        comando = f'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System" /v "EnableLUA" /t REG_DWORD /d {0 if est == 1 else 1} /f >nul 2>&1'
-        self.executar_comando_assincrono(comando, "Aniquilador de Filtros de Segurança do Sistema UAC Admin", self.sw_uac, reinicio=True)
-    
-    def toggle_mit(self): 
-        est = self.sw_mit.get()
-        
-        if est == 1:
-            cmd = 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "FeatureSettingsOverride" /t REG_DWORD /d 3 /f >nul 2>&1 & reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "FeatureSettingsOverrideMask" /t REG_DWORD /d 3 /f >nul 2>&1'
-        else:
-            cmd = 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "FeatureSettingsOverride" /t REG_DWORD /d 0 /f >nul 2>&1 & reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" /v "FeatureSettingsOverrideMask" /t REG_DWORD /d 3 /f >nul 2>&1'
-            
-        self.executar_comando_assincrono(cmd, "Desligador Completo de Mitigações Nativas do Processador", self.sw_mit, reinicio=True)
 
     def toggle_mnu(self):
         est = self.sw_mnu.get()
