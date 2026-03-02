@@ -14,15 +14,15 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 📑 Índice
 
-1. Principais Funcionalidades
+Principais Funcionalidades
 
-2. Changelog Definitivo
+Changelog Definitivo
 
-3. Glossário Técnico de Comandos
+Glossário Técnico de Comandos
 
-4. Como Compilar para Desenvolvedores
+Como Compilar para Desenvolvedores
 
-1. Principais Funcionalidades
+Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
@@ -42,7 +42,7 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
 
-2. Changelog Definitivo
+Changelog Definitivo
 
 <details open>
 <summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
@@ -136,7 +136,7 @@ Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
 
 </details>
 
-3. Glossário Técnico de Comandos
+Glossário Técnico de Comandos
 
 🐍 Otimizações Nativas (API Python, UI e Kernel)
 
@@ -200,7 +200,7 @@ Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
-4. Como Compilar para Desenvolvedores
+Como Compilar para Desenvolvedores
 
 O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
