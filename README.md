@@ -1,5 +1,5 @@
 <div align="center">
-<h1>⚡ Gustavo Optimizer v2.0.1 - Elite Edition</h1>
+<h1>⚡ Gustavo Optimizer v2.0.3 - Elite Edition</h1>
 <p>A mais avançada central de comando de engenharia para Windows, desenvolvida para extrair o máximo de frames (FPS), mitigar a latência de entrada (Input Lag) ao nível do Kernel e gerir a estabilidade do sistema com segurança absoluta.</p>
 </div>
 
