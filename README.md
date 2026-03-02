@@ -116,7 +116,8 @@ Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destrava
 <details>
 <summary><b>📦 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
 
-🛠️ v1.1.1 - Patch de Correção Crítica
+<details>
+<summary><b>🛠️ v1.1.1 - Patch de Correção Crítica</b></summary>
 
 Correção de Assimetria nos Perfis: O "Modo Trabalho" foi reescrito para atuar como um verdadeiro Master Switch e desligar toda a agressividade.
 
@@ -126,7 +127,10 @@ Execução 100% Assíncrona: Desacoplamento da interface gráfica (UI) das açõ
 
 Captura Dinâmica do Plano de Energia: Registo do plano de energia de fábrica (OEM) no primeiro arranque.
 
-🚀 v1.1.0 - Otimizações Nativas e Integração
+</details>
+
+<details>
+<summary><b>🚀 v1.1.0 - Otimizações Nativas e Integração</b></summary>
 
 Manual Interativo adicionado com capacidade de exportação em .txt.
 
@@ -136,21 +140,32 @@ Implementação do Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
 
 Limpeza Temp transformada numa rotina mapeada recursivamente (os.walk).
 
-🧠 v1.0.0 - A Versão "Pro Edition" Definitiva
+</details>
+
+<details>
+<summary><b>🧠 v1.0.0 - A Versão "Pro Edition" Definitiva</b></summary>
 
 Memória Profunda no Registo: Implementação de Snapshots (winreg), permitindo reverter o PC ao estado exato pré-otimização.
 
 Correção "Botões Fantasma": Resolvido problema de Race Conditions nas renderizações do CustomTkinter.
 
-⚡ v0.9.0 - Validação e Energia Extrema
+</details>
+
+<details>
+<summary><b>⚡ v0.9.0 - Validação e Energia Extrema</b></summary>
 
 Otimização do Plano de Energia: Cria e aplica o plano oculto "Desempenho Máximo" (Ultimate Performance).
 
 Verificação de Execução: Consultas de Loop-back para confirmar a obediência do SO.
 
-🛡️ v0.8.0 a v0.1.0 - Fundações
+</details>
+
+<details>
+<summary><b>🛡️ v0.8.0 a v0.1.0 - Fundações</b></summary>
 
 Criação de UI CustomTkinter, bypass Antivírus via Ofuscação de Strings na memória e aplicação de otimizações de rede base.
+
+</details>
 
 </details>
 
@@ -227,9 +242,11 @@ O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Adminis
 py -m pip install pyinstaller customtkinter psutil pystray Pillow
 
 
+
 2. Navegue até à pasta do projeto:
 
 cd "INSIRA_AQUI_O_CAMINHO_DO_ARQUIVO"
+
 
 
 (Ajuste o caminho inserindo o local exato onde se encontra o script e o ícone).
@@ -237,6 +254,7 @@ cd "INSIRA_AQUI_O_CAMINHO_DO_ARQUIVO"
 3. Execute a compilação absoluta com PyInstaller:
 
 py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
+
 
 
 Nota Crítica: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação, para que a injeção de ID de Processo (AppUserModelID) tenha êxito visual na barra de tarefas do Windows.
