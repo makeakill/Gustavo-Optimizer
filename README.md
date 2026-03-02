@@ -12,7 +12,17 @@ O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferrame
 
 Criado com uma interface moderna e intuitiva, ele automatiza otimizações avançadas que normalmente exigiriam horas de edição manual no Registo do Windows. Tudo à distância de um clique, e 100% reversível.
 
-🔥 Principais Funcionalidades
+📑 Índice
+
+1. Principais Funcionalidades
+
+2. Changelog Definitivo
+
+3. Glossário Técnico de Comandos
+
+4. Como Compilar para Desenvolvedores
+
+1. Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
@@ -32,7 +42,7 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
 
-📜 Changelog Definitivo (Histórico de Versões)
+2. Changelog Definitivo
 
 <details open>
 <summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
@@ -116,6 +126,8 @@ Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destrava
 <details>
 <summary><b>📦 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
 
+<blockquote>
+
 <details>
 <summary><b>🛠️ v1.1.1 - Patch de Correção Crítica</b></summary>
 
@@ -167,9 +179,11 @@ Criação de UI CustomTkinter, bypass Antivírus via Ofuscação de Strings na m
 
 </details>
 
+</blockquote>
+
 </details>
 
-⚙️ Glossário Técnico de Comandos (Engenharia do Sistema)
+3. Glossário Técnico de Comandos
 
 🐍 Otimizações Nativas (API Python, UI e Kernel)
 
@@ -233,7 +247,7 @@ Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
-💻 Como Compilar (Para Desenvolvedores)
+4. Como Compilar para Desenvolvedores
 
 O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
@@ -242,11 +256,9 @@ O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Adminis
 py -m pip install pyinstaller customtkinter psutil pystray Pillow
 
 
-
 2. Navegue até à pasta do projeto:
 
 cd "INSIRA_AQUI_O_CAMINHO_DO_ARQUIVO"
-
 
 
 (Ajuste o caminho inserindo o local exato onde se encontra o script e o ícone).
@@ -254,7 +266,6 @@ cd "INSIRA_AQUI_O_CAMINHO_DO_ARQUIVO"
 3. Execute a compilação absoluta com PyInstaller:
 
 py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
-
 
 
 Nota Crítica: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação, para que a injeção de ID de Processo (AppUserModelID) tenha êxito visual na barra de tarefas do Windows.
