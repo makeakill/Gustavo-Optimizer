@@ -12,17 +12,7 @@ O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferrame
 
 Criado com uma interface moderna e intuitiva, ele automatiza otimizações avançadas que normalmente exigiriam horas de edição manual no Registo do Windows. Tudo à distância de um clique, e 100% reversível.
 
-📑 Índice
-
-Principais Funcionalidades
-
-Changelog Definitivo
-
-Glossário Técnico de Comandos
-
-Como Compilar para Desenvolvedores
-
-Principais Funcionalidades
+🔥 Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
@@ -42,7 +32,7 @@ Principais Funcionalidades
 
 🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
 
-Changelog Definitivo
+📜 Changelog Definitivo (Histórico de Versões)
 
 <details open>
 <summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
@@ -136,7 +126,7 @@ Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
 
 </details>
 
-Glossário Técnico de Comandos
+⚙️ Glossário Técnico de Comandos (Engenharia do Sistema)
 
 🐍 Otimizações Nativas (API Python, UI e Kernel)
 
@@ -200,7 +190,7 @@ Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
-Como Compilar para Desenvolvedores
+💻 Como Compilar (Para Desenvolvedores)
 
 O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
