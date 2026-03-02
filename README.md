@@ -1,15 +1,26 @@
 <div align="center">
-<h1>⚡ Gustavo Optimizer v2.0.3 - Elite Edition</h1>
-<p>A mais avançada central de comando de engenharia para Windows, desenvolvida para extrair o máximo de frames (FPS), mitigar a latência de entrada (Input Lag) ao nível do Kernel e gerir a estabilidade do sistema com segurança absoluta.</p>
+
+⚡ Gustavo Optimizer v2.0.6 - Elite Edition
+
+A mais avançada central de comando de engenharia para Windows, desenvolvida para extrair o máximo de frames (FPS), mitigar a latência de entrada (Input Lag) ao nível do Kernel e gerir a estabilidade do sistema com segurança absoluta.
+
+Potência máxima, latência mínima e estabilidade inquebrável.
+
 </div>
 
-**Potência máxima, latência mínima e estabilidade inquebrável.**
+O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferramenta de engenharia de sistema desenhada para extrair cada gota de desempenho do seu hardware, priorizando sempre a segurança e a estabilidade do Windows.
 
-O **Gustavo Optimizer** não é apenas mais um limpador de ficheiros. É uma ferramenta de engenharia de sistema desenhada para extrair cada gota de desempenho do seu hardware, priorizando sempre a segurança e a estabilidade do Windows. 
+Criado com uma interface moderna e intuitiva, ele automatiza otimizações avançadas que normalmente exigiriam horas de edição manual no Registo do Windows. Tudo à distância de um clique, e 100% reversível.
 
-Criado com uma interface moderna e intuitiva, ele automatiza otimizações avançadas que normalmente exigiriam horas de edição manual no Registo do Windows. Tudo à distância de um clique, e **100% reversível**.
+📑 Índice
 
----
+Principais Funcionalidades
+
+Changelog Definitivo
+
+Glossário Técnico de Comandos
+
+Como Compilar para Desenvolvedores
 
 🔥 Principais Funcionalidades
 
@@ -19,7 +30,7 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 🧠 Memória Fotográfica Persistente: O programa cria um snapshot de como o seu PC estava antes das otimizações na memória profunda do Registo. Mesmo que reinicie a máquina, ele lembrará exatamente de como reverter tudo.
 
-🐍 Otimizações Nativas (Motor Python): Ferramentas exclusivas que comunicam diretamente com o Kernel do Windows, incluindo um Smart RAM Cleaner, Auto Game Priority para forçar prioridade máxima nos jogos, Validador de Hz do ecrã e Purga da Standby List (nível ISLC).
+🐍 Otimizações Nativas (Motor Python & Bandeja): Ferramentas exclusivas que comunicam diretamente com o Kernel do Windows, incluindo um Smart RAM Cleaner, Auto Game Priority para forçar prioridade máxima nos jogos, Validador de Hz do ecrã, Purga da Standby List (nível ISLC) e Minimização Inteligente para o System Tray (Bandeja do Sistema).
 
 📡 Diagnóstico de Rede Avançado: Verifique o seu IP Local, IP Público e Ping real. Faça um Benchmark Global nativo que compara a sua rota atual com os maiores servidores do mundo e permite aplicar o melhor DNS dinamicamente com um clique.
 
@@ -29,146 +40,167 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 ⚙️ Engenharia Anti-Crash e UI-Safe: Blindado contra falsos positivos através de ofuscação avançada. A interface gráfica roda a 60FPS constantes devido à alocação de cargas pesadas (como leituras de Placa Gráfica) em Threads de background.
 
-🎨 Personalização Visual: 8 Temas Premium integrados (Ciano, Vermelho Brutal, Matrix, Dracula, etc.) que se adaptam perfeitamente ao seu setup.
+🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
 
 📜 Changelog Definitivo (Histórico de Versões)
 
-💎 v2.0.3 - Elite Edition (UX Unification & Real-Time Audit)
+<details open>
+<summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
 
-Auditoria de Registo em Tempo Real: O programa passou a ler o estado real do Windows no momento de arranque (Single Source of Truth), ajustando os switches visuais caso configurações tenham sido alteradas por fora.
+Integração de System Tray (Bandeja do Sistema): Resolvido o conflito de janelas frameless. Ao minimizar, o programa oculta-se perfeitamente na bandeja do Windows, com um menu customizado via clique direito para "Restaurar" ou "Encerrar".
 
-Unificação de Desempenho Visual Máximo: Combinadas as chaves de "Desativar Acrílico" e "Desativar Efeitos Visuais" num único Master Switch, ajustando a aparência do Windows integralmente para performance em 1 clique.
+Identidade de Processo (AppUserModelID): Injeção profunda via Ctypes para forçar o Windows 11 a reconhecer o Gustavo Optimizer como um software independente, exibindo o nosso icone.ico nativo na barra de tarefas em vez do ícone azul padrão do Python/Tkinter.
 
-Otimização Global TCP/IP: Fusão arquitetural de três ferramentas antigas (TcpNoDelay, Buffers Netsh e Controle CUBIC) numa única injeção simultânea de rede, garantindo a latência zero para E-Sports de forma limpa na UI.
+Fallback Seguro de Interface: Implementada rota de fuga visual caso as bibliotecas de imagem (pystray, Pillow) não estejam instaladas na máquina do desenvolvedor, evitando crashes instantâneos.
 
-Desbloqueio de Menus (Bypass GPO): Inserida a nova função de segurança para remover restrições de "Gerenciado por sua Organização" em aplicações como o Microsoft Edge, devolvendo o controlo manual ao utilizador.
+</details>
 
-🛡️ v2.0.2 - Security Patch (Proteção de Sistema)
+<details>
+<summary><b>✨ v2.0.5 - Elite Edition</b></summary>
 
-Remoção de Funções Críticas de Risco: Visando a integridade e segurança inviolável do Windows, foram removidas de forma permanente as opções de desativação do Controle de Conta de Usuário (UAC), Filtro SmartScreen e Mitigações de Segurança de CPU (Spectre/Meltdown).
+Titlebar Customizada Absoluta: Ocultação da barra padrão branca/preta do Windows via overrideredirect. A barra de título foi redesenhada do zero para se integrar perfeitamente à paleta de cores do programa, com botões Hover-Safe.
 
-Reorganização de Grelha UX: A grade visual foi adaptada dinamicamente para cobrir os espaços destas funções na interface gráfica.
+Efeito Mica / Transparência Dinâmica: Integração de slider no painel lateral permitindo ajustar a opacidade global da ferramenta, criando um efeito de vidro elegante sobre o wallpaper do utilizador.
 
-👑 v2.0.1 - Patch de Estabilidade Sênior
+Sistema Inteligente de Hover: Cartões de otimização acendem as suas bordas de acordo com a paleta de cores ativada no momento ao passar o rato por cima.
 
-Integração Ctypes 64-bits (Fix WinError 6): Declarados rigorosamente os argtypes e restypes na chamada da API ntdll.dll para garantir compatibilidade total com ponteiros 64-bits. A purga da Standby List opera agora com força máxima.
+</details>
 
-Gerenciador Interativo Bidirecional: O painel de Debloat rastreia o status real (Instalado/Ausente) com legendas visuais e suporta a reinstalação e restauro de aplicações do Windows via manifesto XML.
+<details>
+<summary><b>🎨 v2.0.4 - Elite Edition</b></summary>
 
-Filtro Inteligente de Placa de Rede (NIC): A rotina de Moderação de Interrupção agora foca-se de forma exclusiva em adaptadores de rede físicos (-Physical) conectados. Erros com VPNs e VMs mitigados.
+Modernização de Layout: Adoção de Soft UI (Bordas arredondadas corner_radius=12) e alteração da tipografia para a elegante Segoe UI.
 
-Proteção de Sessão Avançada: O "Master Sistema" e o "Modo Gamer" foram blindados para atuarem apenas sobre as 15 chaves dinâmicas. Chaves que requerem reinício são ignoradas nestas rotinas para impedir reboots surpresa.
+Sistema de Abas (Tabview): Fim do scroll infinito. As mais de 60 opções foram divididas cirurgicamente em abas (Desempenho, Rede, Privacidade, Limpeza e Root).
 
-Consolidação de UX: Remoção definitiva do botão isolado "Aplicar DNS Google". A injeção de rotas agora é unificada pelo Benchmark DNS Global.
+Dashboard Visual de Hardware: Criação de um painel lateral interativo com barras de progresso reais.
 
-🛠️ v2.0 - Elite Edition (A Atualização de Kernel)
+</details>
 
-Purga da Standby List (Nível ISLC): Ligação direta em C/C++ via API nativa (ntdll.dll) para esvaziar a memória RAM em espera.
+<details>
+<summary><b>🔍 v2.0.3 - Elite Edition</b></summary>
 
-Forçar Modo MSI (GPU): Algoritmo que altera o registo PCI da Placa Gráfica para comunicar sem interrupções com o CPU, cortando a Latência DPC.
+Auditoria de Registo em Tempo Real: O programa passou a ler o estado real do Windows no momento de arranque (Single Source of Truth).
 
-Otimizações E-Sports (Latência Zero): Desativação do relógio HPET, aniquilação de Dynamic Ticks, remoção de Moderação de Interrupção e aplicação exata de Mira Perfeita (Raw Mouse Input).
+Unificação de Desempenho Visual Máximo: Combinadas as chaves de Acrílico e Efeitos Visuais num único Master Switch.
 
-Benchmark DNS Avançado: Ferramenta que avalia a placa de rede, testa contra os gigantes globais e abre janela pop-up dinâmica para aplicação.
+Otimização Global TCP/IP: Fusão de três ferramentas antigas (TcpNoDelay, Buffers Netsh e Controle CUBIC).
 
-Performance Gráfica UI: Isolamento do serviço de monitorização de GPU (nvidia-smi) para uma Thread secundária.
+Desbloqueio de Menus (Bypass GPO): Função para remover restrições de "Gerenciado por sua Organização" no Microsoft Edge.
 
-Limpeza UX: Remoção do botão isolado "Aplicar DNS Cloudflare".
+</details>
 
-🛠️ v1.1.1 - Patch de Correção Crítica
+<details>
+<summary><b>🛡️ v2.0.2 - Security Patch</b></summary>
 
-Correção de Assimetria nos Perfis: O "Modo Trabalho" foi reescrito para atuar como um verdadeiro Master Switch e desligar toda a agressividade.
+Remoção de Funções Críticas de Risco: Remoção permanente das opções de desativação do UAC, Filtro SmartScreen e Mitigações de Segurança de CPU (Spectre/Meltdown) para manter a integridade anti-malware da máquina.
 
-Prevenção de Falsos Positivos de Memória: O Registo reflete o estado visual final e real do botão apenas após a consolidação do SO.
+</details>
 
-Execução 100% Assíncrona: Desacoplamento da interface gráfica (UI) das ações de sistema (CMD/PowerShell) evitando congelamentos.
+<details>
+<summary><b>👑 v2.0.1 - Patch de Estabilidade Sênior</b></summary>
 
-Captura Dinâmica do Plano de Energia: Registo do plano de energia de fábrica (OEM) no primeiro arranque.
+Integração Ctypes 64-bits (Fix WinError 6): Declaração explícita de argtypes na API C++ nativa para suporte irrestrito a sistemas de 64-bits na purga de RAM.
 
-🚀 v1.1.0 - Otimizações Nativas e Integração
+Gerenciador Interativo Bidirecional: O painel de Debloat passou a rastrear o status real e a suportar a reinstalação de aplicações via manifesto XML.
 
-Manual Interativo adicionado com capacidade de exportação em .txt.
+Filtro Inteligente de Placa de Rede (NIC): A rotina de Moderação focou-se exclusivamente em adaptadores físicos (-Physical), cortando bugs com VPNs/VMs.
 
-Barras de Progresso visuais reativas implementadas.
+Proteção de Sessão Avançada: Chaves Root de reinício passaram a ser ignoradas pelo Modo Gamer automático.
 
-Implementação do Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
+</details>
 
-Limpeza Temp transformada numa rotina mapeada recursivamente (os.walk).
+<details>
+<summary><b>🛠️ v2.0 - Elite Edition (A Atualização de Kernel)</b></summary>
 
-🧠 v1.0.0 - A Versão "Pro Edition" Definitiva
+Purga da Standby List (Nível ISLC) via API nativa (ntdll.dll).
 
-Memória Profunda no Registo: Implementação de Snapshots (winreg), permitindo reverter o PC ao estado exato pré-otimização.
+Modo MSI para forçar interrupção direta da GPU sobre a CPU.
 
-Correção "Botões Fantasma": Resolvido problema de Race Conditions nas renderizações do CustomTkinter.
+Otimizações E-Sports: HPET, Dynamic Ticks e Raw Mouse Input.
 
-⚡ v0.9.0 - Validação e Energia Extrema
+Thread Assíncrona dedicada à leitura da GPU (nvidia-smi), destravando 60FPS na UI principal.
 
-Otimização do Plano de Energia: Cria e aplica o plano oculto "Desempenho Máximo" (Ultimate Performance).
+</details>
 
-Verificação de Execução: Consultas de Loop-back para confirmar a obediência do SO.
+<details>
+<summary><b>🚀 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
 
-🛡️ v0.8.0 a v0.1.0 - Fundações
+Introdução de lógica 100% Assíncrona para evitar ecrãs congelados.
 
-Criação de UI CustomTkinter, bypass Antivírus via Ofuscação de Strings na memória e aplicação de otimizações de rede base.
+Smart RAM Cleaner, Auto Game Priority e Validador Hz.
+
+Memória Persistente de Perfil (Snapshots Registo).
+
+Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
+
+</details>
 
 ⚙️ Glossário Técnico de Comandos (Engenharia do Sistema)
 
-🐍 1. Otimizações Nativas (API Python) e Kernel
+🐍 1. Otimizações Nativas (API Python, UI e Kernel)
 
-Purga da Standby List (Nível ISLC): Método: Chama ntdll.NtSetSystemInformation solicitando privilégios SeProfileSingleProcessPrivilege (com tratamento de ponteiros wintypes.HANDLE para SO 64-bits). Ação: Esvazia a RAM em espera acumulada pelo SO, prevenindo quedas bruscas de FPS.
+Purga da Standby List (Nível ISLC): Método: Chama ntdll.NtSetSystemInformation solicitando privilégios SeProfileSingleProcessPrivilege (com tratamento de ponteiros wintypes.HANDLE). Ação: Esvazia a RAM em espera acumulada.
 
-Smart RAM Cleaner: Método: psapi.EmptyWorkingSet acoplado via ctypes. Ação: Força aplicações minimizadas a libertarem cache e devolverem RAM à placa-mãe.
+Smart RAM Cleaner: Método: psapi.EmptyWorkingSet acoplado via ctypes. Ação: Força aplicações minimizadas a devolverem RAM à placa-mãe.
 
-Auto Game Priority: Método: Injeção via psutil.HIGH_PRIORITY_CLASS. Ação: Encontra identificadores (PIDs) de jogos em execução e foca o processador nesses binários.
+Auto Game Priority: Método: Injeção via psutil.HIGH_PRIORITY_CLASS. Ação: Encontra identificadores de jogos em execução e foca o processador neles.
 
-Benchmark DNS Nativo: Método: Leituras Regex sobre ping -n 4. Ação: Teste multi-rota real e aplicação paramétrica do IP vencedor via PowerShell.
+Identidade de Processo (AppUserModelID): Método: ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID. Ação: Dissocia a ferramenta do interpretador Python para forçar o ícone correto na barra de tarefas do Windows.
 
-Limpeza Visual de Temp: Método: Módulo os.walk recursivo. Ação: Elimina ficheiros abandonados na cache individualmente de forma assíncrona.
+Minimização Ctypes (Tray): Método: ctypes.windll.user32.ShowWindow(hwnd, 6). Ação: Engana o gestor de janelas do Windows para minimizar de forma estável uma janela sem barra de título (frameless).
+
+Benchmark DNS Nativo: Método: Leituras Regex sobre ping -n 4. Ação: Teste multi-rota real e aplicação paramétrica do IP vencedor.
 
 🌐 2. Rede, Latência e NIC (TCP/IP)
 
-Interrupt Moderation (NIC): Comando: Disable-NetAdapterInterruptModeration -Physical. Ação: Obriga os adaptadores físicos a processarem pacotes unitariamente (Ideal para E-Sports).
+Interrupt Moderation (NIC): Comando: Disable-NetAdapterInterruptModeration -Physical. Ação: Obriga os adaptadores físicos a processarem pacotes unitariamente.
 
-Otimização Global TCP/IP: Método: Executa PowerShell e Netsh. Ação: Unificação de três frentes: aplica TcpAckFrequency e TCPNoDelay (reduzindo delay), desativa o autotuninglevel e adota o algoritmo avançado de controlo de congestão CUBIC (padrão de servidores Linux).
+Otimização Global TCP/IP: Método: Unificação de três frentes: aplica TcpAckFrequency e TCPNoDelay (reduzindo delay), desativa o autotuninglevel e adota o algoritmo de congestão CUBIC (padrão de servidores Linux).
 
-Limitação de Rede (Throttling): Ação: Fixa NetworkThrottlingIndex a 0xFFFFFFFF. Cancela limites em largura de banda impostos pelo Windows.
+Limitação de Rede (Throttling): Ação: Fixa NetworkThrottlingIndex a 0xFFFFFFFF. Cancela limites de banda multimédia.
 
-Pacotes DSCP: Ação: Etiqueta de qualidade de serviço (Do not use NLA = 1) que força os roteadores residenciais a darem primazia absoluta ao tráfego do jogo.
+Pacotes DSCP: Ação: Etiqueta de qualidade de serviço (Do not use NLA = 1) que força os roteadores a darem primazia ao tráfego do jogo.
 
 🚀 3. Hardware Extremo (Ferramentas de Root)
 
-Modo MSI (Message Signaled Interrupts): Ação: Varre e edita a chave oculta MSISupported = 1 no caminho PCI. Faz a Placa Gráfica ignorar o controlador antigo da motherboard e interromper o CPU de forma direta, cortando a Latência DPC.
+Modo MSI (Message Signaled Interrupts): Ação: Varre a chave MSISupported = 1 no caminho PCI. A Placa Gráfica ignora o controlador antigo e interrompe o CPU de forma direta (Corta Latência DPC).
 
-Desligar HPET & Ticks: Comandos: bcdedit /deletevalue useplatformclock e disabledynamictick yes. Ação: Mata relógios digitais pesados que flutuam e danificam a estabilidade do 1% Low de FPS.
+Desligar HPET & Ticks: Comandos: bcdedit /deletevalue useplatformclock e disabledynamictick yes. Ação: Mata relógios digitais pesados.
 
-Mira Perfeita (Raw Mouse): Ação: Esmaga as chaves MouseSpeed e MouseThreshold a 0. Remove a perigosa aceleração invisível de ponteiro introduzida pelo sistema operativo.
+Mira Perfeita (Raw Mouse): Ação: Esmaga chaves MouseSpeed e MouseThreshold a 0.
 
-Desbloquear Menus (Edge): Ação: Apaga restrições corporativas de Políticas de Grupo (SOFTWARE\Policies\Microsoft\Edge) e força um gpupdate, libertando configurações manuais do navegador para o utilizador.
+Desbloquear Menus (Edge): Ação: Apaga restrições de Políticas de Grupo (SOFTWARE\Policies\Microsoft\Edge) e força gpupdate.
 
 ⚡ 4. Desempenho e Energia Dinâmica
 
-Desempenho Visual Máximo: Ação: Fixa VisualFXSetting = 2 e EnableTransparency = 0. Remove o efeito "Acrílico" (vidro) e suprime animações/sombras pesadas num único comando, libertando completamente o Desktop Window Manager (dwm.exe) do GPU.
+Desempenho Visual Máximo: Ação: Fixa VisualFXSetting = 2 e EnableTransparency = 0. Remove Acrílico e suprime animações pesadas, libertando o dwm.exe.
 
-Core Parking: Ação: powercfg sub_processor CPMINCORES 100. Impede a nível energético que os núcleos lógicos se suspendam, garantindo prontidão máxima.
+Core Parking: Ação: powercfg sub_processor CPMINCORES 100. Impede a nível energético que os núcleos lógicos se suspendam.
 
-Power Throttling: Ação: Impede restrições de voltagem aplicadas pelo serviço dinâmico aos processos em background.
+Power Throttling: Ação: Impede restrições de voltagem aplicadas a processos em background.
 
-Plano Desempenho Máximo (Workstation): Ação: Revela a chave oculta e aplica e9a42b02-d5df-448d-aa00-03f14749eb61. Extração de poder sem limites energéticos.
+Plano Desempenho Máximo (Workstation): Ação: Aplica e9a42b02-d5df-448d-aa00-03f14749eb61. Extração de poder sem limites energéticos.
 
-Resolução de Tempo: Ação: Fixa GlobalTimerResolutionRequests para 1. Otimiza os ciclos de precisão de espera do Windows para a tolerância extrema de 0.5 milissegundos.
+Resolução de Tempo: Ação: Fixa GlobalTimerResolutionRequests para 1 (Tolerância de ciclo de 0.5 milissegundos).
 
 🛡️ 5. Privacidade, Segurança e Debloat
 
-Painel Interativo de Gerenciador de Apps: Comandos: Interação direta via Get-AppxPackage e comandos de reinstalação XML. Ação: Permite varrer, desinstalar e reinstalar ativamente pacotes oficiais do Windows.
+Painel Interativo de Gerenciador de Apps: Ação: Permite varrer, desinstalar e reinstalar ativamente pacotes oficiais via XML (Ex: Xbox, Cortana).
 
-Telemetria (DiagTrack e Tarefas): Ação: Executa a suspensão de agendamentos ocultos (schtasks) que compilam e enviam os seus dados de uso.
+Telemetria e Tarefas: Ação: Suspende agendamentos ocultos (schtasks) e DiagTrack que enviam dados de uso em background.
 
-Privacidade NVIDIA: Ação: Elimina permissões OptIn e termina contentores locais de envio de registos estatísticos dos drivers de vídeo.
+Privacidade NVIDIA: Ação: Termina contentores locais de envio estatístico dos drivers de vídeo (OptIn = 0).
 
 Sensor de Localização: Ação: Modifica as Políticas do Windows (DisableLocation = 1) para impedir acessos geográficos de aplicações em background.
 
 🧹 6. Manutenção e Estrutura Limpa
 
-Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar imagens sãs nos servidores da Microsoft e reparar ficheiros corrompidos essenciais.
+Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar imagens sãs nos servidores da Microsoft e reparar arquivos.
 
-Ofuscação de Cache (Anti-Heurística): Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas dinamicamente na RAM e destruídas a seguir à limpeza, impedindo antivírus (Defender/Kaspersky) de categorizar erradamente a rotina como Malware.
+Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
+
+
+<div align="center">
+<i>Engenharia desenvolvida para performance máxima e estabilidade intocável.</i>
+</div>
