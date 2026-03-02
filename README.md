@@ -22,7 +22,7 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 4. Como Compilar para Desenvolvedores
 
-1. Principais Funcionalidades
+<a id="funcionalidades"></a>🔥 1. Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
@@ -42,7 +42,7 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
 
-2. Changelog Definitivo
+<a id="changelog"></a>📜 2. Changelog Definitivo (Histórico de Versões)
 
 <details open>
 <summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
@@ -123,20 +123,7 @@ Thread Assíncrona dedicada à leitura da GPU (nvidia-smi), destravando 60FPS na
 
 </details>
 
-<details>
-<summary><b>🚀 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
-
-Introdução de lógica 100% Assíncrona para evitar ecrãs congelados.
-
-Smart RAM Cleaner, Auto Game Priority e Validador Hz.
-
-Memória Persistente de Perfil (Snapshots Registo).
-
-Interface CustomTkinter e Desempenho Máximo nativo de Workstation.
-
-</details>
-
-3. Glossário Técnico de Comandos
+<a id="glossario"></a>⚙️ 3. Glossário Técnico de Comandos (Engenharia do Sistema)
 
 🐍 Otimizações Nativas (API Python, UI e Kernel)
 
@@ -200,7 +187,7 @@ Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar
 
 Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
-4. Como Compilar para Desenvolvedores
+<a id="compilar"></a>💻 4. Como Compilar para Desenvolvedores
 
 O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
