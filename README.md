@@ -12,18 +12,6 @@ O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferrame
 
 Criado com uma interface moderna e intuitiva, ele automatiza otimizações avançadas que normalmente exigiriam horas de edição manual no Registo do Windows. Tudo à distância de um clique, e 100% reversível.
 
-📑 Índice
-
-1. Principais Funcionalidades
-
-2. Changelog Definitivo
-
-3. Glossário Técnico de Comandos
-
-4. Como Compilar para Desenvolvedores
-
-1. Principais Funcionalidades
-
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
 🎮 Perfis Inteligentes Automáticos: Transforme o seu PC numa máquina de jogos com o Modo Gamer, que aplica 15 camadas dinâmicas de otimização extremas simultâneas em tempo real. Volte ao normal com um clique usando o Modo Trabalho. O sistema protege a sua sessão ao ignorar configurações que exijam reinício de máquina nestes modos.
