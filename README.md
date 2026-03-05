@@ -12,16 +12,6 @@ O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferrame
 
 A nova versão 2.0.6 atinge o ápice do design responsivo, com a introdução do sistema de Smart Profiles (Perfis Inteligentes) que lê o hardware do seu PC para proteger-lhe contra bloqueios e a resolução matemática definitiva para o DPI Scaling em múltiplos monitores.
 
-📑 Índice
-
-1. Principais Funcionalidades
-
-2. Changelog Definitivo
-
-3. Glossário Técnico de Comandos
-
-4. Como Compilar para Desenvolvedores
-
 1. Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
