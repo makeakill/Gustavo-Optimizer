@@ -10,11 +10,25 @@ Potência máxima, latência mínima e estabilidade inquebrável.
 
 O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferramenta de engenharia de sistema desenhada para extrair cada gota de desempenho do seu hardware, priorizando sempre a segurança e a estabilidade do Windows.
 
-Criado com uma interface moderna e intuitiva, ele automatiza otimizações avançadas que normalmente exigiriam horas de edição manual no Registo do Windows. Tudo à distância de um clique, e 100% reversível.
+A nova versão 2.0.6 atinge o ápice do design responsivo, com a introdução do sistema de Smart Profiles (Perfis Inteligentes) que lê o hardware do seu PC para proteger-lhe contra bloqueios e a resolução matemática definitiva para o DPI Scaling em múltiplos monitores.
+
+📑 Índice
+
+1. Principais Funcionalidades
+
+2. Changelog Definitivo
+
+3. Glossário Técnico de Comandos
+
+4. Como Compilar para Desenvolvedores
+
+1. Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
-🎮 Perfis Inteligentes Automáticos: Transforme o seu PC numa máquina de jogos com o Modo Gamer, que aplica 15 camadas dinâmicas de otimização extremas simultâneas em tempo real. Volte ao normal com um clique usando o Modo Trabalho. O sistema protege a sua sessão ao ignorar configurações que exijam reinício de máquina nestes modos.
+🤖 Inteligência de Hardware (Smart Profiles): O Modo Gamer é agora capaz de ler a quantidade de RAM e os limites térmicos da sua máquina. Para PCs com mais de 16GB, ele protege serviços como o SysMain para garantir navegação web ultrarrápida, enquanto força 15 camadas de rede e Kernel para latência zero nos jogos, sem superaquecer processadores modernos.
+
+📈 DPI Scaling Nativo (Ecrãs Múltiplos): A API do Windows (DWM) foi forçada a injetar cores obscuras no código nativo, mantendo o redimensionamento elástico (flexbox) perfeito em qualquer monitor e suportando totalmente o Aero Snap do Windows 11.
 
 🧠 Memória Fotográfica Persistente: O programa cria um snapshot de como o seu PC estava antes das otimizações na memória profunda do Registo. Mesmo que reinicie a máquina, ele lembrará exatamente de como reverter tudo.
 
@@ -28,25 +42,25 @@ Criado com uma interface moderna e intuitiva, ele automatiza otimizações avan�
 
 ⚙️ Engenharia Anti-Crash e UI-Safe: Blindado contra falsos positivos através de ofuscação avançada. A interface gráfica roda a 60FPS constantes devido à alocação de cargas pesadas (como leituras de Placa Gráfica) em Threads de background.
 
-🎨 Personalização Visual Nível Premium: 8 Temas integrados, Efeito Mica (transparência de vidro do Windows 11), Dashboard Interativo de Hardware, Titlebar 100% desenhada do zero e Sistema de Hover inteligente.
-
 2. Changelog Definitivo
 
 <details open>
 <summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
 
-Integração de System Tray (Bandeja do Sistema): Resolvido o conflito de janelas frameless. Ao minimizar, o programa oculta-se perfeitamente na bandeja do Windows, com um menu customizado via clique direito para "Restaurar" ou "Encerrar".
+Resolução Definitiva de DPI (Multi-Monitor): Remoção da Titlebar Customizada e devolução do controlo de geometria ao Desktop Window Manager (DWM). Garante maximização milimétrica em ecrãs secundários e restaura a funcionalidade Aero Snap.
 
-Identidade de Processo (AppUserModelID): Injeção profunda via Ctypes para forçar o Windows 11 a reconhecer o Gustavo Optimizer como um software independente, exibindo o nosso icone.ico nativo na barra de tarefas em vez do ícone azul padrão do Python/Tkinter.
+Injeção de Dark Mode Nativo: Implementação da API Win32 (DWMWA_USE_IMMERSIVE_DARK_MODE), forçando a barra de título nativa a adotar a paleta escura Premium.
 
-Fallback Seguro de Interface: Implementada rota de fuga visual caso as bibliotecas de imagem (pystray, Pillow) não estejam instaladas na máquina do desenvolvedor, evitando crashes instantâneos.
+Inteligência de Hardware (Smart Profiles): O Modo Gamer agora analisa fisicamente o PC. Se a máquina possuir mais de 16GB de RAM, ele bloqueia a desativação do SysMain (Superfetch), impedindo lentidão.
+
+Fix de Vídeo em Browsers (TCP/IP): O comando de rede foi ajustado de disabled para normal com algoritmo CUBIC. Permite streams 4K em segundo plano enquanto mantém Input Lag baixo nos jogos competitivos.
+
+Bandeja do Sistema Nativa (System Tray): Ao clicar no minimizar padrão (_) do Windows, o programa oculta-se inteligentemente ao lado do relógio através da captação do evento <Unmap>.
 
 </details>
 
 <details>
 <summary><b>✨ v2.0.5 - Elite Edition</b></summary>
-
-Titlebar Customizada Absoluta: Ocultação da barra padrão branca/preta do Windows via overrideredirect. A barra de título foi redesenhada do zero para se integrar perfeitamente à paleta de cores do programa, com botões Hover-Safe.
 
 Efeito Mica / Transparência Dinâmica: Integração de slider no painel lateral permitindo ajustar a opacidade global da ferramenta, criando um efeito de vidro elegante sobre o wallpaper do utilizador.
 
@@ -170,70 +184,6 @@ Criação de UI CustomTkinter, bypass Antivírus via Ofuscação de Strings na m
 </blockquote>
 
 </details>
-
-3. Glossário Técnico de Comandos
-
-🐍 Otimizações Nativas (API Python, UI e Kernel)
-
-Purga da Standby List (Nível ISLC): Método: Chama ntdll.NtSetSystemInformation solicitando privilégios SeProfileSingleProcessPrivilege (com tratamento de ponteiros wintypes.HANDLE). Ação: Esvazia a RAM em espera acumulada.
-
-Smart RAM Cleaner: Método: psapi.EmptyWorkingSet acoplado via ctypes. Ação: Força aplicações minimizadas a devolverem RAM à placa-mãe.
-
-Auto Game Priority: Método: Injeção via psutil.HIGH_PRIORITY_CLASS. Ação: Encontra identificadores de jogos em execução e foca o processador neles.
-
-Identidade de Processo (AppUserModelID): Método: ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID. Ação: Dissocia a ferramenta do interpretador Python para forçar o ícone correto na barra de tarefas do Windows.
-
-Minimização Ctypes (Tray): Método: ctypes.windll.user32.ShowWindow(hwnd, 6). Ação: Engana o gestor de janelas do Windows para minimizar de forma estável uma janela sem barra de título (frameless).
-
-Benchmark DNS Nativo: Método: Leituras Regex sobre ping -n 4. Ação: Teste multi-rota real e aplicação paramétrica do IP vencedor.
-
-🌐 Rede, Latência e NIC (TCP/IP)
-
-Interrupt Moderation (NIC): Comando: Disable-NetAdapterInterruptModeration -Physical. Ação: Obriga os adaptadores físicos a processarem pacotes unitariamente.
-
-Otimização Global TCP/IP: Método: Unificação de três frentes: aplica TcpAckFrequency e TCPNoDelay (reduzindo delay), desativa o autotuninglevel e adota o algoritmo de congestão CUBIC (padrão de servidores Linux).
-
-Limitação de Rede (Throttling): Ação: Fixa NetworkThrottlingIndex a 0xFFFFFFFF. Cancela limites de banda multimédia.
-
-Pacotes DSCP: Ação: Etiqueta de qualidade de serviço (Do not use NLA = 1) que força os roteadores a darem primazia ao tráfego do jogo.
-
-🚀 Hardware Extremo (Ferramentas de Root)
-
-Modo MSI (Message Signaled Interrupts): Ação: Varre a chave MSISupported = 1 no caminho PCI. A Placa Gráfica ignora o controlador antigo e interrompe o CPU de forma direta (Corta Latência DPC).
-
-Desligar HPET & Ticks: Comandos: bcdedit /deletevalue useplatformclock e disabledynamictick yes. Ação: Mata relógios digitais pesados.
-
-Mira Perfeita (Raw Mouse): Ação: Esmaga chaves MouseSpeed e MouseThreshold a 0.
-
-Desbloquear Menus (Edge): Ação: Apaga restrições de Políticas de Grupo (SOFTWARE\Policies\Microsoft\Edge) e força gpupdate.
-
-⚡ Desempenho e Energia Dinâmica
-
-Desempenho Visual Máximo: Ação: Fixa VisualFXSetting = 2 e EnableTransparency = 0. Remove Acrílico e suprime animações pesadas, libertando o dwm.exe.
-
-Core Parking: Ação: powercfg sub_processor CPMINCORES 100. Impede a nível energético que os núcleos lógicos se suspendam.
-
-Power Throttling: Ação: Impede restrições de voltagem aplicadas a processos em background.
-
-Plano Desempenho Máximo (Workstation): Ação: Aplica e9a42b02-d5df-448d-aa00-03f14749eb61. Extração de poder sem limites energéticos.
-
-Resolução de Tempo: Ação: Fixa GlobalTimerResolutionRequests para 1 (Tolerância de ciclo de 0.5 milissegundos).
-
-🛡️ Privacidade, Segurança e Debloat
-
-Painel Interativo de Gerenciador de Apps: Ação: Permite varrer, desinstalar e reinstalar ativamente pacotes oficiais via XML (Ex: Xbox, Cortana).
-
-Telemetria e Tarefas: Ação: Suspende agendamentos ocultos (schtasks) e DiagTrack que enviam dados de uso em background.
-
-Privacidade NVIDIA: Ação: Termina contentores locais de envio estatístico dos drivers de vídeo (OptIn = 0).
-
-Sensor de Localização: Ação: Modifica as Políticas do Windows (DisableLocation = 1) para impedir acessos geográficos de aplicações em background.
-
-🧹 Manutenção e Estrutura Limpa
-
-Reparo DISM e Verificação SFC: Ação: Solução de nível Root para consultar imagens sãs nos servidores da Microsoft e reparar arquivos.
-
-Ofuscação de Cache: Ação: Estruturas de diretório ("\\".join(["Steam", "appcache"])) são montadas na RAM e destruídas a seguir à limpeza para impedir deteção heurística por antivírus de terceiros.
 
 4. Como Compilar para Desenvolvedores
 
