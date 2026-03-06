@@ -1,11 +1,18 @@
 <div align="center">
-<h1>⚡ Gustavo Optimizer v2.1.0 - Elite Edition</h1>
-<p>A mais avançada central de comando de engenharia para Windows, desenvolvida para extrair o máximo de frames (FPS), mitigar a latência de entrada (Input Lag) ao nível do Kernel e gerir a estabilidade do sistema com segurança absoluta.</p>
+
+<h1 style="font-size: 3em; font-weight: bold;">⚡ Gustavo Optimizer v2.1.0 - Elite Edition</h1>
+
+A central de comando de engenharia definitiva para Windows. Desenvolvida para extrair frames (FPS), liquidar a latência de entrada (Input Lag) e blindar a estabilidade do seu sistema operativo com o uso de lógicas inteligentes e código assíncrono.
+
+Poder absoluto, latência zero e segurança inquebrável.
+
 </div>
+
+O Gustavo Optimizer abandonou os scripts frágeis. A nova versão 2.1.0 é uma ferramenta robusta, equipada com uma grelha elástica totalmente responsiva, um quebra-ciclos inteligente para contornar escudos de antivírus e algoritmos Smart Profiles que se moldam à capacidade térmica e quantidade de memória RAM da sua máquina.
 
 🔥 Principais Funcionalidades
 
-👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
+👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao arrancar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se o utilizador ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
 🤖 Inteligência de Hardware (Smart Profiles): O Modo Gamer é capaz de ler a quantidade de RAM e os limites térmicos da sua máquina. Para PCs com mais de 16GB, ele protege serviços como o SysMain para garantir navegação web ultrarrápida, enquanto força 14 camadas de rede e Kernel para latência zero nos jogos.
 
@@ -23,7 +30,8 @@
 
 📜 Changelog Definitivo (Histórico de Versões)
 
-💎 v2.1.0 - Elite Edition (Smart Profiles & UX Responsiva)
+<details open>
+<summary><b>💎 v2.1.0 - Elite Edition (Atual)</b></summary>
 
 Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface foram reduzidos para 280px e receberam pesos de geometria elásticos. A interface agora estica e encolhe fluidamente em qualquer ecrã.
 
@@ -31,7 +39,10 @@ Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescr
 
 Remoção Segura do Modo MSI: Remoção integral da função e interface gráfica do "Modo MSI", respeitando os protocolos de segurança do Windows 11 que barram modificações severas na árvore PCI.
 
-🌟 v2.0.6 - Elite Edition (Smart Profiles & DPI Native)
+</details>
+
+<details>
+<summary><b>🌟 v2.0.6 - Elite Edition (Smart Profiles & DPI Native)</b></summary>
 
 Resolução Definitiva de DPI: Remoção da Titlebar Customizada e devolução do controlo ao Desktop Window Manager (DWM). Garante maximização milimétrica e restaura o Aero Snap.
 
@@ -43,11 +54,17 @@ Fix de Vídeos / Streaming: Restauro do TCP Auto-Tuning para normal acoplado ao 
 
 Bandeja do Sistema Nativa: Interceção profunda do evento <Unmap>. O app oculta-se ao lado do relógio.
 
-✨ v2.0.5 - Elite Edition (UX Premium)
+</details>
+
+<details>
+<summary><b>✨ v2.0.5 - Elite Edition (UX Premium)</b></summary>
 
 Efeito Mica / Transparência Dinâmica: Integração de slider de opacidade (-alpha) na barra lateral e Hover Effects ligados às paletas de cores nativas.
 
-🔍 v2.0.3 e v2.0.4 - Auditoria Real e Tabviews
+</details>
+
+<details>
+<summary><b>🔍 v2.0.4 e v2.0.3 - Auditoria Real e Tabviews</b></summary>
 
 Auditoria de Registo em Tempo Real: Leitura direta em HKEY_LOCAL_MACHINE das políticas estritas do SO.
 
@@ -55,19 +72,27 @@ Organização em Tabview: Fim do scroll infinito com seções especializadas e c
 
 Desbloqueio de Menus (Edge): Remoção de Policies organizacionais impeditivas nos navegadores.
 
-🛡️ v2.0.2 - Security Patch
+</details>
+
+<details>
+<summary><b>🛡️ v2.0.2 - Security Patch</b></summary>
 
 Remoção de Funções Críticas de Risco: Remoção das opções de desativação do UAC e do Filtro SmartScreen. Otimizadores não devem expor a máquina do utilizador a ataques virtuais.
 
-👑 v2.0.1 e Anteriores (A Fundação do Kernel)
+</details>
+
+<details>
+<summary><b>👑 v2.0.1 e Anteriores (A Fundação do Kernel)</b></summary>
 
 Integração Ctypes 64-bits: Parâmetros absolutos na ntdll.dll para compatibilidade com ponteiros avançados de RAM.
 
 Standby List Nativa e Filtros de Rede Físicos: Criação do ambiente isento de Stutterings de hardware para E-Sports.
 
+</details>
+
 💻 Como Compilar (Para Desenvolvedores)
 
-O Gustavo Optimizer v2.1.0 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais.
+O Gustavo Optimizer v2.1.0 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
 
 1. Instale todas as Dependências:
 
@@ -84,4 +109,4 @@ cd "C:\Seu\Caminho\Para\O\Script"
 py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
 
 
-Nota: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação.
+Nota Crítica: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação, para que a injeção de ID de Processo (AppUserModelID) tenha êxito visual na barra de tarefas do Windows.
