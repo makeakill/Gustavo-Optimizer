@@ -1,26 +1,17 @@
 <div align="center">
-
-<h1 style="font-size: 3em; font-weight: bold;">⚡ Gustavo Optimizer v2.0.6 - Elite Edition</h1>
-
-A mais avançada central de comando de engenharia para Windows, desenvolvida para extrair o máximo de frames (FPS), mitigar a latência de entrada (Input Lag) ao nível do Kernel e gerir a estabilidade do sistema com segurança absoluta.
-
-Potência máxima, latência mínima e estabilidade inquebrável.
-
+<h1>⚡ Gustavo Optimizer v2.1.0 - Elite Edition</h1>
+<p>A mais avançada central de comando de engenharia para Windows, desenvolvida para extrair o máximo de frames (FPS), mitigar a latência de entrada (Input Lag) ao nível do Kernel e gerir a estabilidade do sistema com segurança absoluta.</p>
 </div>
 
-O Gustavo Optimizer não é apenas mais um limpador de ficheiros. É uma ferramenta de engenharia de sistema desenhada para extrair cada gota de desempenho do seu hardware, priorizando sempre a segurança e a estabilidade do Windows.
-
-A nova versão 2.0.6 atinge o ápice do design responsivo, com a introdução do sistema de Smart Profiles (Perfis Inteligentes) que lê o hardware do seu PC para proteger-lhe contra bloqueios e a resolução matemática definitiva para o DPI Scaling em múltiplos monitores.
-
-1. Principais Funcionalidades
+🔥 Principais Funcionalidades
 
 👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao iniciar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se você ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
 
-🤖 Inteligência de Hardware (Smart Profiles): O Modo Gamer é agora capaz de ler a quantidade de RAM e os limites térmicos da sua máquina. Para PCs com mais de 16GB, ele protege serviços como o SysMain para garantir navegação web ultrarrápida, enquanto força 15 camadas de rede e Kernel para latência zero nos jogos, sem superaquecer processadores modernos.
+🤖 Inteligência de Hardware (Smart Profiles): O Modo Gamer é capaz de ler a quantidade de RAM e os limites térmicos da sua máquina. Para PCs com mais de 16GB, ele protege serviços como o SysMain para garantir navegação web ultrarrápida, enquanto força 14 camadas de rede e Kernel para latência zero nos jogos.
 
-📈 DPI Scaling Nativo (Ecrãs Múltiplos): A API do Windows (DWM) foi forçada a injetar cores obscuras no código nativo, mantendo o redimensionamento elástico (flexbox) perfeito em qualquer monitor e suportando totalmente o Aero Snap do Windows 11.
+📈 DPI Scaling Nativo e Grelha Elástica: A ferramenta abandonou as janelas frameless inseguras e larguras fixas. A API do Windows (DWM) foi forçada a injetar cores no código, mantendo o redimensionamento elástico (flexbox) perfeito. Os cartões ajustam-se e esticam simetricamente, independentemente do monitor, resolução ou zoom aplicado.
 
-🧠 Memória Fotográfica Persistente: O programa cria um snapshot de como o seu PC estava antes das otimizações na memória profunda do Registo. Mesmo que reinicie a máquina, ele lembrará exatamente de como reverter tudo.
+🧠 Sistema Anti-Loop (Quebra-Ciclos): A arquitetura base possui agora defesas contra os escudos do Windows 11. Se tentar desativar uma função e o seu PC ou antivírus negar o acesso (PermissionDenied), o programa limpa as suas memórias de forma inteligente e liberta a interface, impedindo encravamentos.
 
 🐍 Otimizações Nativas (Motor Python & Bandeja): Ferramentas exclusivas que comunicam diretamente com o Kernel do Windows, incluindo um Smart RAM Cleaner, Auto Game Priority para forçar prioridade máxima nos jogos, Validador de Hz do ecrã, Purga da Standby List (nível ISLC) e Minimização Inteligente para o System Tray (Bandeja do Sistema).
 
@@ -30,174 +21,67 @@ A nova versão 2.0.6 atinge o ápice do design responsivo, com a introdução do
 
 🛡️ Privacidade e Segurança Ativa: Desativa a telemetria invasiva da Microsoft e da NVIDIA, além de tarefas ocultas que consomem a sua internet e processador em segundo plano. O programa impede proativamente a desativação de barreiras essenciais (UAC/SmartScreen) para manter a integridade contra malwares.
 
-⚙️ Engenharia Anti-Crash e UI-Safe: Blindado contra falsos positivos através de ofuscação avançada. A interface gráfica roda a 60FPS constantes devido à alocação de cargas pesadas (como leituras de Placa Gráfica) em Threads de background.
+📜 Changelog Definitivo (Histórico de Versões)
 
-2. Changelog Definitivo
+💎 v2.1.0 - Elite Edition (Smart Profiles & UX Responsiva)
 
-<details open>
-<summary><b>💎 v2.0.6 - Elite Edition (Atual)</b></summary>
+Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface foram reduzidos para 280px e receberam pesos de geometria elásticos. A interface agora estica e encolhe fluidamente em qualquer ecrã.
 
-Resolução Definitiva de DPI (Multi-Monitor): Remoção da Titlebar Customizada e devolução do controlo de geometria ao Desktop Window Manager (DWM). Garante maximização milimétrica em ecrãs secundários e restaura a funcionalidade Aero Snap.
+Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescrita para impedir bloqueios quando o Windows nega leitura de chaves protegidas de hardware.
 
-Injeção de Dark Mode Nativo: Implementação da API Win32 (DWMWA_USE_IMMERSIVE_DARK_MODE), forçando a barra de título nativa a adotar a paleta escura Premium.
+Remoção Segura do Modo MSI: Remoção integral da função e interface gráfica do "Modo MSI", respeitando os protocolos de segurança do Windows 11 que barram modificações severas na árvore PCI.
 
-Inteligência de Hardware (Smart Profiles): O Modo Gamer agora analisa fisicamente o PC. Se a máquina possuir mais de 16GB de RAM, ele bloqueia a desativação do SysMain (Superfetch), impedindo lentidão.
+🌟 v2.0.6 - Elite Edition (Smart Profiles & DPI Native)
 
-Fix de Vídeo em Browsers (TCP/IP): O comando de rede foi ajustado de disabled para normal com algoritmo CUBIC. Permite streams 4K em segundo plano enquanto mantém Input Lag baixo nos jogos competitivos.
+Resolução Definitiva de DPI: Remoção da Titlebar Customizada e devolução do controlo ao Desktop Window Manager (DWM). Garante maximização milimétrica e restaura o Aero Snap.
 
-Bandeja do Sistema Nativa (System Tray): Ao clicar no minimizar padrão (_) do Windows, o programa oculta-se inteligentemente ao lado do relógio através da captação do evento <Unmap>.
+Injeção de Dark Mode Nativo: API Win32 DWMWA_USE_IMMERSIVE_DARK_MODE forçando a barra de título padrão do Windows a ficar escura e premium.
 
-</details>
+Inteligência de Hardware: Leitura de RAM para proteger o SysMain em PCs High-End (>16GB), impedindo lentidão no uso diário do sistema.
 
-<details>
-<summary><b>✨ v2.0.5 - Elite Edition</b></summary>
+Fix de Vídeos / Streaming: Restauro do TCP Auto-Tuning para normal acoplado ao poderoso algoritmo CUBIC. Resolve a página preta em links do Google (aclk) e carregamento de ícones.
 
-Efeito Mica / Transparência Dinâmica: Integração de slider no painel lateral permitindo ajustar a opacidade global da ferramenta, criando um efeito de vidro elegante sobre o wallpaper do utilizador.
+Bandeja do Sistema Nativa: Interceção profunda do evento <Unmap>. O app oculta-se ao lado do relógio.
 
-Sistema Inteligente de Hover: Cartões de otimização acendem as suas bordas de acordo com a paleta de cores ativada no momento ao passar o rato por cima.
+✨ v2.0.5 - Elite Edition (UX Premium)
 
-</details>
+Efeito Mica / Transparência Dinâmica: Integração de slider de opacidade (-alpha) na barra lateral e Hover Effects ligados às paletas de cores nativas.
 
-<details>
-<summary><b>🎨 v2.0.4 - Elite Edition</b></summary>
+🔍 v2.0.3 e v2.0.4 - Auditoria Real e Tabviews
 
-Modernização de Layout: Adoção de Soft UI (Bordas arredondadas corner_radius=12) e alteração da tipografia para a elegante Segoe UI.
+Auditoria de Registo em Tempo Real: Leitura direta em HKEY_LOCAL_MACHINE das políticas estritas do SO.
 
-Sistema de Abas (Tabview): Fim do scroll infinito. As mais de 60 opções foram divididas cirurgicamente em abas (Desempenho, Rede, Privacidade, Limpeza e Root).
+Organização em Tabview: Fim do scroll infinito com seções especializadas e criação do Painel Visual de Hardware com Threads dedicadas de monitorização de GPU (nvidia-smi).
 
-Dashboard Visual de Hardware: Criação de um painel lateral interativo com barras de progresso reais.
+Desbloqueio de Menus (Edge): Remoção de Policies organizacionais impeditivas nos navegadores.
 
-</details>
+🛡️ v2.0.2 - Security Patch
 
-<details>
-<summary><b>🔍 v2.0.3 - Elite Edition</b></summary>
+Remoção de Funções Críticas de Risco: Remoção das opções de desativação do UAC e do Filtro SmartScreen. Otimizadores não devem expor a máquina do utilizador a ataques virtuais.
 
-Auditoria de Registo em Tempo Real: O programa passou a ler o estado real do Windows no momento de arranque (Single Source of Truth).
+👑 v2.0.1 e Anteriores (A Fundação do Kernel)
 
-Unificação de Desempenho Visual Máximo: Combinadas as chaves de Acrílico e Efeitos Visuais num único Master Switch.
+Integração Ctypes 64-bits: Parâmetros absolutos na ntdll.dll para compatibilidade com ponteiros avançados de RAM.
 
-Otimização Global TCP/IP: Fusão de três ferramentas antigas (TcpNoDelay, Buffers Netsh e Controle CUBIC).
+Standby List Nativa e Filtros de Rede Físicos: Criação do ambiente isento de Stutterings de hardware para E-Sports.
 
-Desbloqueio de Menus (Bypass GPO): Função para remover restrições de "Gerenciado por sua Organização" no Microsoft Edge.
+💻 Como Compilar (Para Desenvolvedores)
 
-</details>
+O Gustavo Optimizer v2.1.0 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais.
 
-<details>
-<summary><b>🛡️ v2.0.2 - Security Patch</b></summary>
-
-Remoção de Funções Críticas de Risco: Remoção permanente das opções de desativação do UAC, Filtro SmartScreen e Mitigações de Segurança de CPU (Spectre/Meltdown) para manter a integridade anti-malware da máquina.
-
-</details>
-
-<details>
-<summary><b>👑 v2.0.1 - Patch de Estabilidade Sênior</b></summary>
-
-Integração Ctypes 64-bits (Fix WinError 6): Declaração explícita de argtypes na API C++ nativa para suporte irrestrito a sistemas de 64-bits na purga de RAM.
-
-Gerenciador Interativo Bidirecional: O painel de Debloat passou a rastrear o status real e a suportar a reinstalação de aplicações via manifesto XML.
-
-Filtro Inteligente de Placa de Rede (NIC): A rotina de Moderação focou-se exclusivamente em adaptadores físicos (-Physical), cortando bugs com VPNs/VMs.
-
-Proteção de Sessão Avançada: Chaves Root de reinício passaram a ser ignoradas pelo Modo Gamer automático.
-
-</details>
-
-<details>
-<summary><b>🛠️ v2.0 - Elite Edition (A Atualização de Kernel)</b></summary>
-
-Purga da Standby List (Nível ISLC): Ligação direta em C/C++ via API nativa (ntdll.dll) para esvaziar a memória RAM em espera.
-
-Forçar Modo MSI (GPU): Algoritmo que altera o registo PCI da Placa Gráfica para comunicar sem interrupções com o CPU.
-
-Otimizações E-Sports (Latência Zero): Desativação do relógio HPET, aniquilação de Dynamic Ticks e Raw Mouse Input.
-
-Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destravando 60FPS na UI principal.
-
-</details>
-
-<details>
-<summary><b>📦 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
-
-<blockquote>
-
-<details>
-<summary><b>🛠️ v1.1.1 - Patch de Correção Crítica</b></summary>
-
-Correção de Assimetria nos Perfis: O "Modo Trabalho" foi reescrito para atuar como um verdadeiro Master Switch e desligar toda a agressividade.
-
-Prevenção de Falsos Positivos de Memória: O Registo reflete o estado visual final e real do botão apenas após a consolidação do SO.
-
-Execução 100% Assíncrona: Desacoplamento da interface gráfica (UI) das ações de sistema (CMD/PowerShell) evitando congelamentos.
-
-Captura Dinâmica do Plano de Energia: Registo do plano de energia de fábrica (OEM) no primeiro arranque.
-
-</details>
-
-<details>
-<summary><b>🚀 v1.1.0 - Otimizações Nativas e Integração</b></summary>
-
-Manual Interativo adicionado com capacidade de exportação em .txt.
-
-Barras de Progresso visuais reativas implementadas.
-
-Implementação do Smart RAM Cleaner, Auto Game Priority e Validador de Hz.
-
-Limpeza Temp transformada numa rotina mapeada recursivamente (os.walk).
-
-</details>
-
-<details>
-<summary><b>🧠 v1.0.0 - A Versão "Pro Edition" Definitiva</b></summary>
-
-Memória Profunda no Registo: Implementação de Snapshots (winreg), permitindo reverter o PC ao estado exato pré-otimização.
-
-Correção "Botões Fantasma": Resolvido problema de Race Conditions nas renderizações do CustomTkinter.
-
-</details>
-
-<details>
-<summary><b>⚡ v0.9.0 - Validação e Energia Extrema</b></summary>
-
-Otimização do Plano de Energia: Cria e aplica o plano oculto "Desempenho Máximo" (Ultimate Performance).
-
-Verificação de Execução: Consultas de Loop-back para confirmar a obediência do SO.
-
-</details>
-
-<details>
-<summary><b>🛡️ v0.8.0 a v0.1.0 - Fundações</b></summary>
-
-Criação de UI CustomTkinter, bypass Antivírus via Ofuscação de Strings na memória e aplicação de otimizações de rede base.
-
-</details>
-
-</blockquote>
-
-</details>
-
-4. Como Compilar para Desenvolvedores
-
-O Gustavo Optimizer v2.0.6 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
-
-1. Instale todas as Dependências de Sistema, Compilação e Imagem:
+1. Instale todas as Dependências:
 
 py -m pip install pyinstaller customtkinter psutil pystray Pillow
 
 
 2. Navegue até à pasta do projeto:
 
-cd "INSIRA_AQUI_O_CAMINHO_DO_ARQUIVO"
+cd "C:\Seu\Caminho\Para\O\Script"
 
-
-(Ajuste o caminho inserindo o local exato onde se encontra o script e o ícone).
 
 3. Execute a compilação absoluta com PyInstaller:
 
 py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
 
 
-Nota Crítica: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação, para que a injeção de ID de Processo (AppUserModelID) tenha êxito visual na barra de tarefas do Windows.
-
-<div align="center">
-<i>Engenharia desenvolvida para performance máxima e estabilidade intocável.</i>
-</div>
+Nota: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação.
