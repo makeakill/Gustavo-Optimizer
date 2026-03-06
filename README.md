@@ -33,9 +33,9 @@ O Gustavo Optimizer abandonou os scripts frágeis. A nova versão 2.1.0 é uma f
 <details open>
 <summary><b>💎 v2.1.0 - Elite Edition (Atual)</b></summary>
 
-Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface foram reduzidos para 280px e receberam pesos de geometria elásticos. A interface agora estica e encolhe fluidamente em qualquer ecrã.
+Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface foram reduzidos para 280px e receberam pesos de geometria elásticos (sticky="nsew"). A interface agora estica e encolhe fluidamente em qualquer ecrã, evitando o corte lateral.
 
-Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescrita para impedir bloqueios quando o Windows nega leitura de chaves protegidas de hardware.
+Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescrita para impedir bloqueios infinitos da interface quando o Windows nega leitura de chaves protegidas de hardware.
 
 Remoção Segura do Modo MSI: Remoção integral da função e interface gráfica do "Modo MSI", respeitando os protocolos de segurança do Windows 11 que barram modificações severas na árvore PCI.
 
@@ -48,27 +48,42 @@ Resolução Definitiva de DPI: Remoção da Titlebar Customizada e devolução d
 
 Injeção de Dark Mode Nativo: API Win32 DWMWA_USE_IMMERSIVE_DARK_MODE forçando a barra de título padrão do Windows a ficar escura e premium.
 
-Inteligência de Hardware: Leitura de RAM para proteger o SysMain em PCs High-End (>16GB), impedindo lentidão no uso diário do sistema.
+Inteligência de Hardware: Leitura de RAM para proteger o SysMain em PCs High-End (>16GB), impedindo lentidão grave no uso diário do sistema.
 
-Fix de Vídeos / Streaming: Restauro do TCP Auto-Tuning para normal acoplado ao poderoso algoritmo CUBIC. Resolve a página preta em links do Google (aclk) e carregamento de ícones.
+Proteção Térmica: Chaves de uso de CPU contínuo (Core Parking) removidas do ciclo automático para impedir Thermal Throttling.
 
-Bandeja do Sistema Nativa: Interceção profunda do evento <Unmap>. O app oculta-se ao lado do relógio.
+Fix de Vídeos / Streaming: Restauro do TCP Auto-Tuning para normal acoplado ao poderoso algoritmo CUBIC. Resolve a página preta em links do Google (aclk) e carregamento de ícones (Favicons).
+
+Bandeja do Sistema Nativa: Interceção profunda do evento <Unmap>. O app oculta-se ao lado do relógio perfeitamente ao minimizar.
 
 </details>
 
 <details>
 <summary><b>✨ v2.0.5 - Elite Edition (UX Premium)</b></summary>
 
-Efeito Mica / Transparência Dinâmica: Integração de slider de opacidade (-alpha) na barra lateral e Hover Effects ligados às paletas de cores nativas.
+Efeito Mica / Transparência Dinâmica: Integração de slider de opacidade (-alpha) na barra lateral permitindo ajustar a transparência global da ferramenta.
+
+Sistema Inteligente de Hover: Adaptação da cor da borda ao tema principal ativo da interface gráfica ao passar o cursor do rato.
 
 </details>
 
 <details>
-<summary><b>🔍 v2.0.4 e v2.0.3 - Auditoria Real e Tabviews</b></summary>
+<summary><b>🎨 v2.0.4 - Elite Edition (Overhaul de Design)</b></summary>
+
+Modernização de Layout e Tabview: Fim do scroll infinito. Divisão cirúrgica em abas (Desempenho, Rede, Privacidade, Limpeza e Root) e adoção de Soft UI (bordas corner_radius=12).
+
+Dashboard Visual de Hardware: Criação de um painel lateral interativo com barras de progresso reais monitorizando CPU, RAM e GPU.
+
+</details>
+
+<details>
+<summary><b>🔍 v2.0.3 - Elite Edition (Real-Time Audit)</b></summary>
 
 Auditoria de Registo em Tempo Real: Leitura direta em HKEY_LOCAL_MACHINE das políticas estritas do SO.
 
-Organização em Tabview: Fim do scroll infinito com seções especializadas e criação do Painel Visual de Hardware com Threads dedicadas de monitorização de GPU (nvidia-smi).
+Unificação de Desempenho Visual: Combinadas as chaves de Acrílico e Efeitos Visuais num único Master Switch.
+
+Otimização Global TCP/IP: Fusão arquitetural de TcpNoDelay, Buffers Netsh e Controle CUBIC.
 
 Desbloqueio de Menus (Edge): Remoção de Policies organizacionais impeditivas nos navegadores.
 
@@ -77,16 +92,44 @@ Desbloqueio de Menus (Edge): Remoção de Policies organizacionais impeditivas n
 <details>
 <summary><b>🛡️ v2.0.2 - Security Patch</b></summary>
 
-Remoção de Funções Críticas de Risco: Remoção das opções de desativação do UAC e do Filtro SmartScreen. Otimizadores não devem expor a máquina do utilizador a ataques virtuais.
+Remoção de Funções Críticas de Risco: Remoção permanente das opções de desativação do Controle de Conta de Usuário (UAC), Filtro SmartScreen e Mitigações de CPU (Spectre/Meltdown) para manter a integridade anti-malware da máquina.
 
 </details>
 
 <details>
-<summary><b>👑 v2.0.1 e Anteriores (A Fundação do Kernel)</b></summary>
+<summary><b>👑 v2.0.1 - Patch de Estabilidade Sênior</b></summary>
 
-Integração Ctypes 64-bits: Parâmetros absolutos na ntdll.dll para compatibilidade com ponteiros avançados de RAM.
+Integração Ctypes 64-bits (Fix WinError 6): Declaração explícita de argtypes na API C++ nativa para suporte irrestrito a sistemas de 64-bits na purga de RAM.
 
-Standby List Nativa e Filtros de Rede Físicos: Criação do ambiente isento de Stutterings de hardware para E-Sports.
+Gerenciador Interativo Bidirecional: O painel de Debloat passou a rastrear o status real e a suportar a reinstalação de aplicações via manifesto XML.
+
+Filtro Inteligente de Placa de Rede (NIC): A rotina focou-se exclusivamente em adaptadores físicos (-Physical), cortando bugs com VPNs/VMs.
+
+Proteção de Sessão Avançada: O "Master Sistema" e o "Modo Gamer" blindados para ignorarem chaves que requerem reinício.
+
+</details>
+
+<details>
+<summary><b>🛠️ v2.0.0 - Elite Edition (A Atualização de Kernel)</b></summary>
+
+Purga da Standby List (Nível ISLC): Ligação direta em C/C++ via API nativa (ntdll.dll).
+
+Otimizações E-Sports (Latência Zero): Desativação do relógio HPET, aniquilação de Dynamic Ticks e Mira Perfeita (Raw Mouse Input).
+
+Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destravando 60FPS constantes na UI principal.
+
+</details>
+
+<details>
+<summary><b>📦 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
+
+v1.1.1: Correção de Assimetria nos Perfis (Master Switch). Execução 100% Assíncrona (Desacoplamento UI/CMD).
+
+v1.1.0: Inclusão de código puro Python para Smart RAM Cleaner, Auto Game Priority e Validador de Hz. Limpeza Temp transformada em os.walk.
+
+v1.0.0: Memória Profunda no Registo (Implementação de Snapshots via winreg).
+
+v0.9.0 a v0.1.0: Injeção do Plano de Desempenho Máximo nativo de Workstation e Ofuscação avançada anti-heurística.
 
 </details>
 
