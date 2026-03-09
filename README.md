@@ -1,155 +1,90 @@
 <div align="center">
 
-<h1 style="font-size: 3em; font-weight: bold;">⚡ Gustavo Optimizer v2.1.0 - Elite Edition</h1>
+<h1 style="font-size: 3em; font-weight: bold;">🛡️ Gustavo Optimizer v2.2.0 - Stable Edition</h1>
 
-A central de comando de engenharia definitiva para Windows. Desenvolvida para extrair frames (FPS), liquidar a latência de entrada (Input Lag) e blindar a estabilidade do seu sistema operativo com o uso de lógicas inteligentes e código assíncrono.
+A central de comando de engenharia definitiva para Windows. Refinada e estabilizada para manter a integridade absoluta da máquina, enquanto gere latências lógicas, liberta recursos pesados e proporciona uma Interface Gráfica de nível corporativo.
 
-Poder absoluto, latência zero e segurança inquebrável.
+Foco em Heurística, Estabilidade do Kernel e Proteção do Utilizador.
 
 </div>
 
-O Gustavo Optimizer abandonou os scripts frágeis. A nova versão 2.1.0 é uma ferramenta robusta, equipada com uma grelha elástica totalmente responsiva, um quebra-ciclos inteligente para contornar escudos de antivírus e algoritmos Smart Profiles que se moldam à capacidade térmica e quantidade de memória RAM da sua máquina.
+O Gustavo Optimizer atingiu a sua maturidade. Na versão 2.2.0 Stable, abandonámos agressões inseguras aos controladores de Placas de Vídeo e adaptadores de rede, e introduzimos um Motor Heurístico de Leitura de Erros. Ele sabe agora exatamente quando um erro é um "falso positivo" (ex: uma pasta vazia a ser limpa) ou um risco real (falta de permissões de sistema).
 
 🔥 Principais Funcionalidades
 
-👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao arrancar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. Se o utilizador ou uma atualização alterarem alguma configuração "por fora", a interface adapta-se automaticamente ao estado real da máquina.
+🤖 Motor Heurístico Avançado (Anti-Falsos Positivos): Substituindo scripts opacos antigos, o Python agora captura o stderr em tempo real. Se mandar limpar a cache do navegador e a pasta já não existir, a IA do código assume "Sucesso", em vez de alarmar o utilizador com uma reversão visual abrupta na interface.
 
-🤖 Inteligência de Hardware (Smart Profiles): O Modo Gamer é capaz de ler a quantidade de RAM e os limites térmicos da sua máquina. Para PCs com mais de 16GB, ele protege serviços como o SysMain para garantir navegação web ultrarrápida, enquanto força 14 camadas de rede e Kernel para latência zero nos jogos.
+👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao arrancar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. A interface adapta-se automaticamente ao estado real da máquina.
 
-📈 DPI Scaling Nativo e Grelha Elástica: A ferramenta abandonou as janelas frameless inseguras e larguras fixas. A API do Windows (DWM) foi forçada a injetar cores no código, mantendo o redimensionamento elástico (flexbox) perfeito. Os cartões ajustam-se e esticam simetricamente, independentemente do monitor, resolução ou zoom aplicado.
+📈 DPI Scaling Nativo e Grelha Elástica: A API do Windows (DWM) foi forçada a injetar cores no código, mantendo o redimensionamento elástico (flexbox) perfeito. Os cartões ajustam-se e esticam simetricamente em qualquer configuração Multi-Monitor.
 
-🧠 Sistema Anti-Loop (Quebra-Ciclos): A arquitetura base possui agora defesas contra os escudos do Windows 11. Se tentar desativar uma função e o seu PC ou antivírus negar o acesso (PermissionDenied), o programa limpa as suas memórias de forma inteligente e liberta a interface, impedindo encravamentos.
+🧠 Sistema Anti-Loop de Acesso Negado: A arquitetura base possui agora defesas contra os escudos do Windows 11. Se o seu PC ou antivírus negar o acesso (PermissionDenied), o programa limpa as suas memórias de forma inteligente e liberta a interface, impedindo encravamentos de botões.
 
-🐍 Otimizações Nativas (Motor Python & Bandeja): Ferramentas exclusivas que comunicam diretamente com o Kernel do Windows, incluindo um Smart RAM Cleaner, Auto Game Priority para forçar prioridade máxima nos jogos, Validador de Hz do ecrã, Purga da Standby List (nível ISLC) e Minimização Inteligente para o System Tray (Bandeja do Sistema).
+🐍 Otimizações Nativas de Engenharia (Python): Ferramentas que comunicam diretamente com o Kernel do Windows: um Smart RAM Cleaner (via PSAPI), Auto Game Priority, Validador de Hz, Purga da Standby List (via ISLC / ntdll) e Minimização Inteligente para o System Tray (Bandeja do Sistema).
 
-📡 Diagnóstico de Rede Avançado: Verifique o seu IP Local, IP Público e Ping real. Faça um Benchmark Global nativo que compara a sua rota atual com os maiores servidores do mundo e permite aplicar o melhor DNS dinamicamente com um clique.
+💽 Gestão Profunda de Hardware (Hibernação): Otimiza o armazenamento instantaneamente com rotinas que interagem com o powercfg, desativando a hibernação e removendo o pesado ficheiro hiberfil.sys, somadas a Benchmarks Globais de Latência (DNS).
 
-🖥️ Gerenciador Interativo de Apps: Um painel de Debloat bidirecional com interface assíncrona. Ele analisa o status real do sistema, indicando o que está Instalado (Verde) ou Ausente (Vermelho), permitindo desinstalar pacotes ou reinstalá-los via XML nativo.
+🖥️ Gerenciador Interativo de Apps (Debloat): Um painel bidirecional que analisa o status real do sistema, indicando o que está Instalado (Verde) ou Ausente (Vermelho), permitindo desinstalar pacotes ou reinstalá-los via XML nativo.
 
-🛡️ Privacidade e Segurança Ativa: Desativa a telemetria invasiva da Microsoft e da NVIDIA, além de tarefas ocultas que consomem a sua internet e processador em segundo plano. O programa impede proativamente a desativação de barreiras essenciais (UAC/SmartScreen) para manter a integridade contra malwares.
-
-📜 Changelog Definitivo (Histórico de Versões)
+📜 Histórico de Versões e Evolução
 
 <details open>
-<summary><b>💎 v2.1.0 - Elite Edition (Atual)</b></summary>
+<summary><b>🛡️ v2.2.0 - Stable Edition (Instabilidade Zero & Heurística) [ATUAL]</b></summary>
 
-Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface foram reduzidos para 280px e receberam pesos de geometria elásticos (sticky="nsew"). A interface agora estica e encolhe fluidamente em qualquer ecrã, evitando o corte lateral.
+Motor Heurístico de Erros Reais: Remoção da camuflagem >nul 2>&1 || exit 0. O Python lê stderr e os códigos do Windows para interpretar "Falsos Positivos", deixando apenas erros de permissão real passarem.
 
-Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescrita para impedir bloqueios infinitos da interface quando o Windows nega leitura de chaves protegidas de hardware.
+Estabilidade Absoluta (Instabilidade Zero): Remoção definitiva de injeções (TCP Global, HPET, PowerMizer GPU, Moderação NIC e Flip Fix) que causavam o bloqueio/glitch da aceleração de vídeo e redes sociais na web.
 
-Remoção Segura do Modo MSI: Remoção integral da função e interface gráfica do "Modo MSI", respeitando os protocolos de segurança do Windows 11 que barram modificações severas na árvore PCI.
+Gestão de Armazenamento: Adicionado switch para Desativar Hibernação (hiberfil.sys), poupando espaço de disco instantaneamente.
+
+</details>
+
+<details>
+<summary><b>💎 v2.1.0 - Elite Edition (Smart Profiles & UX Responsiva)</b></summary>
+
+Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface ganharam pesos elásticos. A interface estica e encolhe fluidamente.
+
+Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescrita.
+
+Remoção Segura do Modo MSI: O protocolo de segurança rígido PCI do Windows 11 passou a ser respeitado pela ferramenta.
 
 </details>
 
 <details>
 <summary><b>🌟 v2.0.6 - Elite Edition (Smart Profiles & DPI Native)</b></summary>
 
-Resolução Definitiva de DPI: Remoção da Titlebar Customizada e devolução do controlo ao Desktop Window Manager (DWM). Garante maximização milimétrica e restaura o Aero Snap.
+Resolução Definitiva de DPI: Devolução do controlo ao Desktop Window Manager (DWM). Maximiza as janelas perfeitamente e restaura o Aero Snap.
 
-Injeção de Dark Mode Nativo: API Win32 DWMWA_USE_IMMERSIVE_DARK_MODE forçando a barra de título padrão do Windows a ficar escura e premium.
+Injeção de Dark Mode Nativo: API Win32 forçando a barra padrão do Windows a ficar escura.
 
-Inteligência de Hardware: Leitura de RAM para proteger o SysMain em PCs High-End (>16GB), impedindo lentidão grave no uso diário do sistema.
+Inteligência de Hardware: Proteção do SysMain em PCs High-End (>16GB RAM) e da gestão de núcleo do Core Parking.
 
-Proteção Térmica: Chaves de uso de CPU contínuo (Core Parking) removidas do ciclo automático para impedir Thermal Throttling.
-
-Fix de Vídeos / Streaming: Restauro do TCP Auto-Tuning para normal acoplado ao poderoso algoritmo CUBIC. Resolve a página preta em links do Google (aclk) e carregamento de ícones (Favicons).
-
-Bandeja do Sistema Nativa: Interceção profunda do evento <Unmap>. O app oculta-se ao lado do relógio perfeitamente ao minimizar.
+Bandeja do Sistema Nativa: O app oculta-se perfeitamente ao lado do relógio através da captação <Unmap>.
 
 </details>
 
 <details>
-<summary><b>✨ v2.0.5 - Elite Edition (UX Premium)</b></summary>
+<summary><b>🛠️ Versões Clássicas (v2.0 a v1.0)</b></summary>
 
-Efeito Mica / Transparência Dinâmica: Integração de slider de opacidade (-alpha) na barra lateral permitindo ajustar a transparência global da ferramenta.
+Integração Ctypes 64-bits (ntdll.dll) e ofuscação avançada.
 
-Sistema Inteligente de Hover: Adaptação da cor da borda ao tema principal ativo da interface gráfica ao passar o cursor do rato.
+Remoção de riscos à integridade (UAC e SmartScreen mantidos ativos).
 
-</details>
+Introdução de lógica 100% Assíncrona (Threading).
 
-<details>
-<summary><b>🎨 v2.0.4 - Elite Edition (Overhaul de Design)</b></summary>
-
-Modernização de Layout e Tabview: Fim do scroll infinito. Divisão cirúrgica em abas (Desempenho, Rede, Privacidade, Limpeza e Root) e adoção de Soft UI (bordas corner_radius=12).
-
-Dashboard Visual de Hardware: Criação de um painel lateral interativo com barras de progresso reais monitorizando CPU, RAM e GPU.
-
-</details>
-
-<details>
-<summary><b>🔍 v2.0.3 - Elite Edition (Real-Time Audit)</b></summary>
-
-Auditoria de Registo em Tempo Real: Leitura direta em HKEY_LOCAL_MACHINE das políticas estritas do SO.
-
-Unificação de Desempenho Visual: Combinadas as chaves de Acrílico e Efeitos Visuais num único Master Switch.
-
-Otimização Global TCP/IP: Fusão arquitetural de TcpNoDelay, Buffers Netsh e Controle CUBIC.
-
-Desbloqueio de Menus (Edge): Remoção de Policies organizacionais impeditivas nos navegadores.
-
-</details>
-
-<details>
-<summary><b>🛡️ v2.0.2 - Security Patch</b></summary>
-
-Remoção de Funções Críticas de Risco: Remoção permanente das opções de desativação do Controle de Conta de Usuário (UAC), Filtro SmartScreen e Mitigações de CPU (Spectre/Meltdown) para manter a integridade anti-malware da máquina.
-
-</details>
-
-<details>
-<summary><b>👑 v2.0.1 - Patch de Estabilidade Sênior</b></summary>
-
-Integração Ctypes 64-bits (Fix WinError 6): Declaração explícita de argtypes na API C++ nativa para suporte irrestrito a sistemas de 64-bits na purga de RAM.
-
-Gerenciador Interativo Bidirecional: O painel de Debloat passou a rastrear o status real e a suportar a reinstalação de aplicações via manifesto XML.
-
-Filtro Inteligente de Placa de Rede (NIC): A rotina focou-se exclusivamente em adaptadores físicos (-Physical), cortando bugs com VPNs/VMs.
-
-Proteção de Sessão Avançada: O "Master Sistema" e o "Modo Gamer" blindados para ignorarem chaves que requerem reinício.
-
-</details>
-
-<details>
-<summary><b>🛠️ v2.0.0 - Elite Edition (A Atualização de Kernel)</b></summary>
-
-Purga da Standby List (Nível ISLC): Ligação direta em C/C++ via API nativa (ntdll.dll).
-
-Otimizações E-Sports (Latência Zero): Desativação do relógio HPET, aniquilação de Dynamic Ticks e Mira Perfeita (Raw Mouse Input).
-
-Thread Assíncrona (Hardware): Dedicada à leitura da GPU (nvidia-smi), destravando 60FPS constantes na UI principal.
-
-</details>
-
-<details>
-<summary><b>📦 Versões Clássicas (v1.1.1 a v0.1.0)</b></summary>
-
-v1.1.1: Correção de Assimetria nos Perfis (Master Switch). Execução 100% Assíncrona (Desacoplamento UI/CMD).
-
-v1.1.0: Inclusão de código puro Python para Smart RAM Cleaner, Auto Game Priority e Validador de Hz. Limpeza Temp transformada em os.walk.
-
-v1.0.0: Memória Profunda no Registo (Implementação de Snapshots via winreg).
-
-v0.9.0 a v0.1.0: Injeção do Plano de Desempenho Máximo nativo de Workstation e Ofuscação avançada anti-heurística.
+Memória Persistente de Perfil (Snapshots via winreg).
 
 </details>
 
 💻 Como Compilar (Para Desenvolvedores)
 
-O Gustavo Optimizer v2.1.0 Elite requer compilação com privilégios de Administrador e a injeção do ícone. Devido ao recurso de bandeja e interface premium, há pré-requisitos adicionais de bibliotecas.
+O projeto depende de ferramentas gráficas e leituras sistêmicas de bibliotecas externas.
 
 1. Instale todas as Dependências:
 
 py -m pip install pyinstaller customtkinter psutil pystray Pillow
 
 
-2. Navegue até à pasta do projeto:
-
-cd "C:\Seu\Caminho\Para\O\Script"
-
-
-3. Execute a compilação absoluta com PyInstaller:
+2. Vá até a diretoria raiz e compile com o PyInstaller:
 
 py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
-
-
-Nota Crítica: Certifique-se de que o ficheiro icone.ico se encontra na mesma pasta do script antes de iniciar a compilação, para que a injeção de ID de Processo (AppUserModelID) tenha êxito visual na barra de tarefas do Windows.
