@@ -1,4 +1,9 @@
 
+
+================================================================================
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\juntar_codigo.py
+================================================================================
+
 import os
 
 # Caminho da pasta principal do seu projeto
@@ -31,7 +36,7 @@ print(f"Sucesso! Todo o código fonte foi copiado para: {arquivo_saida}")
 
 
 ================================================================================
-ARQUIVO: \main.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\main.py
 ================================================================================
 
 import sys
@@ -98,7 +103,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
 ================================================================================
-ARQUIVO: core\engine.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\engine.py
 ================================================================================
 
 from core.logger import get_logger
@@ -156,7 +161,7 @@ class OptimizationEngine:
         return list(self.optimizations.values())
 
 ================================================================================
-ARQUIVO: core\logger.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\logger.py
 ================================================================================
 
 import logging
@@ -190,7 +195,7 @@ def get_logger():
     return logging.getLogger("GustavoOptimizer")
 
 ================================================================================
-ARQUIVO: \core\optimization_model.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\optimization_model.py
 ================================================================================
 
 from abc import ABC, abstractmethod
@@ -258,7 +263,7 @@ class Optimization(ABC):
         SnapshotManager.save_state(self.id, state, self.get_original_state())
 
 ================================================================================
-ARQUIVO: core\power_manager.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\power_manager.py
 ================================================================================
 
 import subprocess
@@ -341,7 +346,7 @@ class PowerPlanManager:
             return False
 
 ================================================================================
-ARQUIVO: core\system_safety.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\system_safety.py
 ================================================================================
 
 import subprocess
@@ -392,7 +397,7 @@ class SystemSafety:
             return False
 
 ================================================================================
-ARQUIVO: core\task_runner.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\task_runner.py
 ================================================================================
 
 import winreg
@@ -485,7 +490,7 @@ class CommandRunner:
             return False
 
 ================================================================================
-ARQUIVO: core\theme_manager.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\theme_manager.py
 ================================================================================
 
 import winreg
@@ -515,13 +520,13 @@ class ThemeManager:
         return c1 and c2
 
 ================================================================================
-ARQUIVO: core\__init__.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\__init__.py
 ================================================================================
 
 
 
 ================================================================================
-ARQUIVO: hardware\detector.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\hardware\detector.py
 ================================================================================
 
 import psutil
@@ -593,13 +598,13 @@ class HardwareInfo:
         }
 
 ================================================================================
-ARQUIVO: hardware\__init__.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\hardware\__init__.py
 ================================================================================
 
 
 
 ================================================================================
-ARQUIVO: optimizations\cpu_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\cpu_opts.py
 ================================================================================
 
 import winreg
@@ -699,7 +704,7 @@ class NduOpt(Optimization):
         return sucesso and not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\gaming_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\gaming_opts.py
 ================================================================================
 
 import winreg
@@ -830,7 +835,7 @@ class EnableGpuHighPerfOpt(Optimization):
         return not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\latency_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\latency_opts.py
 ================================================================================
 
 import winreg
@@ -903,7 +908,7 @@ class DisablePointerPrecisionOpt(Optimization):
         return sucesso and not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\memory_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\memory_opts.py
 ================================================================================
 
 import winreg
@@ -997,7 +1002,7 @@ class WSearchOpt(Optimization):
         return not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\network_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\network_opts.py
 ================================================================================
 
 import winreg
@@ -1157,7 +1162,7 @@ class DisableTeredoOpt(Optimization):
         return sucesso and not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\storage_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\storage_opts.py
 ================================================================================
 
 import winreg
@@ -1313,7 +1318,7 @@ class DisableStorageSenseOpt(Optimization):
         return sucesso and not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\system_opts.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\system_opts.py
 ================================================================================
 
 import winreg
@@ -1475,13 +1480,13 @@ class DisableErrorReportingOpt(Optimization):
         return sucesso and not self.check_os_state()
 
 ================================================================================
-ARQUIVO: optimizations\__init__.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\__init__.py
 ================================================================================
 
 
 
 ================================================================================
-ARQUIVO: rollback\snapshot_manager.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\rollback\snapshot_manager.py
 ================================================================================
 
 import json
@@ -1565,13 +1570,13 @@ class SnapshotManager:
                     logger.error(f"Status: Falha ao limpar ficheiro de snapshots: {e}")
 
 ================================================================================
-ARQUIVO: rollback\__init__.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\rollback\__init__.py
 ================================================================================
 
 
 
 ================================================================================
-ARQUIVO: ui\main_window.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\ui\main_window.py
 ================================================================================
 
 import customtkinter as ctk
@@ -1580,8 +1585,6 @@ import time
 import inspect
 import os
 import sys
-import pkgutil
-import importlib
 import logging
 
 from PIL import Image, ImageDraw
@@ -1598,8 +1601,6 @@ from core.theme_manager import ThemeManager
 from rollback.snapshot_manager import SnapshotManager
 from ui.theme import THEMES
 
-import optimizations
-
 logger = get_logger()
 
 class TextboxHandler(logging.Handler):
@@ -1615,7 +1616,7 @@ class TextboxHandler(logging.Handler):
 class OptimizerApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Gustavo Optimizer v2.2.0 - Pro Edition")
+        self.title("Gustavo Optimizer v3.0.0 - Pro Edition")
         self.geometry("1300x850") 
         self.minsize(1100, 750)
         
@@ -1632,7 +1633,6 @@ class OptimizerApp(ctk.CTk):
         def resource_path(relative_path):
             """ Obtém o caminho absoluto, compatível com o executável final e modo dev """
             try:
-                # O PyInstaller cria a pasta temporária e armazena o caminho em _MEIPASS
                 base_path = sys._MEIPASS
             except Exception:
                 base_path = os.path.abspath(".")
@@ -1641,11 +1641,8 @@ class OptimizerApp(ctk.CTk):
         self.icon_path = resource_path("icon.ico")
         # -----------------------------------------------
 
-        # Configurações Iniciais da Interface e Bandeja
         self.setup_window_icon()
         self.setup_tray_icon_system()
-        
-        # Interceta o evento de minimizar a janela
         self.bind("<Unmap>", self.on_window_minimize)
 
         self.carregar_todas_otimizacoes()
@@ -1654,11 +1651,7 @@ class OptimizerApp(ctk.CTk):
         self.setup_in_memory_logger()
         self.update_telemetry()
 
-    # =========================================================================
-    # SISTEMA DE SYSTEM TRAY (BANDEJA DO SISTEMA)
-    # =========================================================================
     def setup_window_icon(self):
-        """Aplica o ícone à janela principal (canto superior esquerdo e barra de tarefas)."""
         try:
             if os.path.exists(self.icon_path):
                 self.iconbitmap(self.icon_path)
@@ -1666,36 +1659,30 @@ class OptimizerApp(ctk.CTk):
             logger.debug(f"Aviso: Não foi possível carregar o ícone da janela principal. {e}")
 
     def get_tray_image(self):
-        """Carrega a imagem do ícone. Gera um ícone genérico se o ficheiro não existir."""
         try:
             if os.path.exists(self.icon_path):
                 return Image.open(self.icon_path)
         except Exception:
             pass
-        
-        # Fallback (Segurança): Se o ícone falhar, desenha um ícone azul de emergência
         img = Image.new('RGB', (64, 64), color=(43, 43, 43))
         d = ImageDraw.Draw(img)
         d.rectangle((16, 16, 48, 48), fill=(0, 120, 215))
         return img
 
     def setup_tray_icon_system(self):
-        """Prepara o menu e o ícone da bandeja do sistema (System Tray)."""
         image = self.get_tray_image()
         menu = pystray.Menu(
             item('Restaurar Optimizer', self.tray_restore_window, default=True),
             item('Sair do Programa', self.tray_quit_window)
         )
-        self.tray_icon = pystray.Icon("GustavoOptimizer", image, "Gustavo Optimizer Pro", menu)
+        self.tray_icon = pystray.Icon("GustavoOptimizer", image, "Gustavo Optimizer Pro v3.0", menu)
 
     def on_window_minimize(self, event):
-        """Dispara quando o utilizador clica no botão de minimizar '-' do Windows."""
         if event.widget == self and self.state() == 'iconic':
-            self.withdraw()  # Oculta a janela da barra de tarefas
+            self.withdraw()
             threading.Thread(target=self.tray_icon.run, daemon=True).start()
 
     def tray_restore_window(self, icon, item):
-        """Restaura a janela quando clica na bandeja."""
         self.tray_icon.stop() 
         self.after(0, self.deiconify_safe)
 
@@ -1704,31 +1691,35 @@ class OptimizerApp(ctk.CTk):
         self.state('normal')
 
     def tray_quit_window(self, icon, item):
-        """Encerra o programa completamente através da bandeja."""
         self.tray_icon.stop()
         self.after(0, self.destroy)
 
     # =========================================================================
-    # CORE DA INTERFACE
+    # CARREGAMENTO DE PLUGINS (REFATORADO PARA SUPORTAR PYINSTALLER)
     # =========================================================================
     def carregar_todas_otimizacoes(self):
         contador = 0
-        package = optimizations
-        prefix = package.__name__ + "."
-        for importer, modname, ispkg in pkgutil.iter_modules(package.__path__, prefix):
+        
+        # 1. Importação explícita: O PyInstaller agora "vê" estes ficheiros e embutirá no .exe
+        from optimizations import cpu_opts, gaming_opts, latency_opts, memory_opts, network_opts, storage_opts, system_opts
+        
+        # 2. Lista de módulos a extrair
+        modulos = [cpu_opts, gaming_opts, latency_opts, memory_opts, network_opts, storage_opts, system_opts]
+        
+        # 3. Extração dinâmica das classes (Motor Inteligente mantido)
+        for module in modulos:
             try:
-                module = importlib.import_module(modname)
                 for nome, obj in inspect.getmembers(module, inspect.isclass):
                     if issubclass(obj, Optimization) and obj is not Optimization:
                         self.engine.register(obj())
                         contador += 1
             except Exception as e:
-                logger.error(f"Status: Falha ao carregar módulo {modname}: {e}")
+                logger.error(f"Status: Falha ao carregar módulo {module.__name__}: {e}")
+                
         logger.info(f"Sucesso: {contador} plugins de sistema descobertos e injetados.")
 
     def setup_ui(self):
         t = self.current_theme
-        
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=0) 
@@ -1830,11 +1821,7 @@ class OptimizerApp(ctk.CTk):
 
         self.switches = []
         all_opts = self.engine.get_all_optimizations()
-        
-        sorted_opts = sorted(all_opts, key=lambda x: (
-            not getattr(x, 'is_reversible', True),
-            getattr(x, 'requires_restart', False)
-        ))
+        sorted_opts = sorted(all_opts, key=lambda x: (not getattr(x, 'is_reversible', True), getattr(x, 'requires_restart', False)))
 
         for o in sorted_opts:
             cat = o.category
@@ -1872,16 +1859,13 @@ class OptimizerApp(ctk.CTk):
     def change_app_theme(self, theme_name):
         self.current_theme = THEMES[theme_name]
         t = self.current_theme
-        
         self.configure(fg_color=t["bg_main"])
         self.sidebar.configure(fg_color=t["bg_sidebar"], border_color=t["border"])
         self.lbl_title.configure(text_color=t["btn_primary"])
         self.switch_dark_mode.configure(progress_color=t["btn_primary"], text_color=t["text_main"])
-        self.lbl_theme.configure(text_color=t["text_dim"])
-        
-        self.theme_selector.configure(fg_color=t["card_border"], button_color=t["border"], button_hover_color=t["card_bg"], text_color=t["text_main"], dropdown_fg_color=t["card_bg"], dropdown_text_color=t["text_main"])
-        self.btn_backup.configure(fg_color=t["btn_neutral"], hover_color=t["border"], text_color=t["text_main"], border_color=t["border"])
-        self.btn_emergency.configure(fg_color=t["btn_danger"], hover_color=t["warning"], text_color="#FFFFFF")
+        self.theme_selector.configure(fg_color=t["card_border"], button_color=t["border"], button_hover_color=t["card_bg"], text_color=t["text_main"])
+        self.btn_backup.configure(fg_color=t["btn_neutral"], hover_color=t["border"], text_color=t["text_main"])
+        self.btn_emergency.configure(fg_color=t["btn_danger"], hover_color=t["warning"])
         
         if self.gamer_mode_active:
             self.btn_gamer.configure(fg_color=t["btn_action"], text_color="#000000")
@@ -1892,48 +1876,30 @@ class OptimizerApp(ctk.CTk):
             self.btn_work.configure(fg_color=t["btn_action"], text_color="#000000", border_width=0)
         else:
             self.btn_work.configure(fg_color="transparent", text_color=t["btn_primary"], border_width=2)
-            
-        self.lbl_log.configure(text_color=t["text_dim"])
+        
         self.txt_log.configure(fg_color=t["log_bg"], text_color=t["text_main"], border_color=t["card_border"])
         self.frame_telemetry.configure(fg_color=t["card_bg"], border_color=t["card_border"])
-        self.lbl_cpu_title.configure(text_color=t["text_dim"])
-        self.lbl_ram_title.configure(text_color=t["text_dim"])
-        self.lbl_gpu_title.configure(text_color=t["text_dim"])
-        self.macro_progress.configure(progress_color=t["btn_primary"], fg_color=t["card_border"])
-        
-        self.tabview.configure(fg_color=t["bg_main"], segmented_button_selected_color=t["card_border"], segmented_button_unselected_color=t["card_bg"], segmented_button_fg_color=t["bg_sidebar"], text_color=t["text_main"])
-        self.apply_tab_colors() 
-        
-        for sw in self.switches:
-            sw.apply_theme(t)
+        for sw in self.switches: sw.apply_theme(t)
 
     def update_telemetry(self):
         stats = self.hw.get_realtime_stats()
         t = self.current_theme
-        
         cpu_val = stats['cpu']
-        cpu_color = t["btn_danger"] if cpu_val > 85 else t["warning"] if cpu_val > 60 else t["success"]
-        self.lbl_cpu_val.configure(text=f"{cpu_val:.1f}%", text_color=cpu_color)
+        self.lbl_cpu_val.configure(text=f"{cpu_val:.1f}%")
         self.bar_cpu.set(cpu_val / 100.0)
-        self.bar_cpu.configure(progress_color=cpu_color, fg_color=t["card_border"])
-
         ram_val = stats['ram']
-        ram_color = t["btn_danger"] if ram_val > 85 else t["warning"] if ram_val > 65 else t["success"]
-        self.lbl_ram_val.configure(text=f"{ram_val:.1f}%", text_color=ram_color)
+        self.lbl_ram_val.configure(text=f"{ram_val:.1f}%")
         self.bar_ram.set(ram_val / 100.0)
-        self.bar_ram.configure(progress_color=ram_color, fg_color=t["card_border"])
-
+        
         gpu_str = stats['gpu'].replace('%', '')
         try:
             gpu_val = float(gpu_str)
-            gpu_color = t["btn_danger"] if gpu_val > 85 else t["warning"] if gpu_val > 65 else t["success"]
-            self.lbl_gpu_val.configure(text=f"{gpu_val:.1f}%", text_color=gpu_color)
+            self.lbl_gpu_val.configure(text=f"{gpu_val:.1f}%")
             self.bar_gpu.set(gpu_val / 100.0)
-            self.bar_gpu.configure(progress_color=gpu_color, fg_color=t["card_border"])
         except:
-            self.lbl_gpu_val.configure(text="N/A", text_color=t["text_dim"])
+            self.lbl_gpu_val.configure(text="N/A")
             self.bar_gpu.set(0)
-
+            
         self.after(1000, self.update_telemetry)
 
     def setup_in_memory_logger(self):
@@ -1945,7 +1911,6 @@ class OptimizerApp(ctk.CTk):
     def detect_active_profiles(self):
         gamer_cats = ["Latência", "Jogos", "CPU", "Rede"]
         gamer_switches = [s for s in self.switches if s.opt.category in gamer_cats and getattr(s.opt, 'is_reversible', True) and not getattr(s.opt, 'requires_restart', False)]
-        
         if gamer_switches:
             active_gamer = sum(1 for s in gamer_switches if s.control.get() == 1)
             if active_gamer / len(gamer_switches) >= 0.6:
@@ -1954,7 +1919,6 @@ class OptimizerApp(ctk.CTk):
 
         work_cats = ["Memória", "Sistema", "Armazenamento", "Rede"]
         work_switches = [s for s in self.switches if s.opt.category in work_cats and getattr(s.opt, 'is_reversible', True) and not getattr(s.opt, 'requires_restart', False)]
-        
         if work_switches:
             active_work = sum(1 for s in work_switches if s.control.get() == 1)
             if active_work / len(work_switches) >= 0.6 and not self.gamer_mode_active:
@@ -1962,93 +1926,51 @@ class OptimizerApp(ctk.CTk):
                 self.btn_work.configure(fg_color=self.current_theme["btn_action"], text_color="#000000", border_width=0, text="DESATIVAR MODO TRABALHO")
 
     def manual_restore_point(self):
-        self.btn_backup.configure(state="disabled", text="A CRIAR BACKUP (AGUARDE)...", text_color=self.current_theme["warning"], border_color=self.current_theme["warning"])
+        self.btn_backup.configure(state="disabled", text="A CRIAR BACKUP...")
         def worker():
-            try:
-                SystemSafety.create_restore_point("Gustavo Optimizer - Backup Manual")
-            finally:
-                self.after(0, lambda: self.btn_backup.configure(state="normal", text="CRIAR PONTO DE RESTAURO", text_color=self.current_theme["text_main"], border_color=self.current_theme["border"]))
+            try: SystemSafety.create_restore_point("Gustavo Optimizer V3 - Backup")
+            finally: self.after(0, lambda: self.btn_backup.configure(state="normal", text="CRIAR PONTO DE RESTAURO"))
         threading.Thread(target=worker, daemon=True).start()
 
     def emergency_rollback(self):
-        self.btn_emergency.configure(state="disabled", text="A REVERTER SISTEMA...", fg_color=self.current_theme["btn_danger"], text_color="#FFFFFF")
+        self.btn_emergency.configure(state="disabled", text="A REVERTER...")
         def worker():
             try:
-                logger.warning("====== INICIANDO REVERSÃO GLOBAL DE EMERGÊNCIA ======")
                 reversibles = [s for s in self.switches if getattr(s.opt, 'is_reversible', True) and (s.control.get() == 1 or s.opt.is_active())]
-                total = len(reversibles)
-                count = 0
-                for s in reversibles:
-                    count += 1
-                    s.force_set(False)
-                    self.after(0, lambda val=count/total if total > 0 else 1: self.macro_progress.set(val))
-                    time.sleep(0.05)
-                
-                self.gamer_mode_active = False
-                self.work_mode_active = False
+                for s in reversibles: s.force_set(False)
+                SnapshotManager.clear_snapshots()
+                logger.info("====== SISTEMA RESTAURADO ======")
+            finally: 
+                self.after(0, lambda: self.btn_emergency.configure(state="normal", text="DESFAZER TODAS AS ALTERAÇÕES"))
                 self.after(0, lambda: self.btn_gamer.configure(fg_color=self.current_theme["btn_primary"], text_color=self.current_theme["accent_text"], text="MODO GAMER EXTREMO"))
                 self.after(0, lambda: self.btn_work.configure(fg_color="transparent", text_color=self.current_theme["btn_primary"], border_width=2, text="MODO TRABALHO SEGURO"))
-                
-                SnapshotManager.clear_snapshots()
-                logger.info("====== SISTEMA RESTAURADO AOS PARÂMETROS ORIGINAIS ======")
-            finally:
-                self.after(0, lambda: self.btn_emergency.configure(state="normal", text="DESFAZER TODAS AS ALTERAÇÕES", fg_color=self.current_theme["btn_danger"], text_color="#FFFFFF"))
-                self.after(0, lambda: self.macro_progress.set(0))
+                self.gamer_mode_active = False
+                self.work_mode_active = False
         threading.Thread(target=worker, daemon=True).start()
 
     def toggle_windows_theme(self):
         is_dark = (self.switch_dark_mode.get() == 1)
-        self.switch_dark_mode.configure(state="disabled")
-        def worker():
-            ThemeManager.set_dark_mode(is_dark)
-            self.after(0, lambda: self.switch_dark_mode.configure(state="normal"))
-        threading.Thread(target=worker, daemon=True).start()
+        threading.Thread(target=lambda: ThemeManager.set_dark_mode(is_dark), daemon=True).start()
 
     def run_gamer_profile(self):
         self.btn_gamer.configure(state="disabled")
         def task():
             try:
                 if not self.gamer_mode_active:
-                    logger.info("====== INICIANDO PERFIL GAMER ======")
-                    logger.info("Otimizações que exigem reinício foram ignoradas no modo automático.")
-                    if self.work_mode_active:
-                        self.work_mode_active = False
-                        self.after(0, lambda: self.btn_work.configure(fg_color="transparent", text_color=self.current_theme["btn_primary"], border_width=2, text="MODO TRABALHO SEGURO"))
-
+                    logger.info("====== INICIANDO PERFIL GAMER V3.0 ======")
                     target_cats = ["Latência", "Jogos", "CPU", "Rede"]
-                    applicable_switches = [s for s in self.switches if s.opt.category in target_cats and not getattr(s.opt, 'requires_restart', False)]
-                    total = len(applicable_switches)
-                    count = 0
-                    
-                    for s in applicable_switches:
-                        count += 1
-                        s.force_set(True) 
-                        self.after(0, lambda val=count/total if total > 0 else 1: self.macro_progress.set(val))
-                        time.sleep(0.05)
-                            
-                    logger.info("====== MODO GAMER ATIVADO COM SUCESSO! ======")
+                    sws = [s for s in self.switches if s.opt.category in target_cats and not getattr(s.opt, 'requires_restart', False)]
+                    for s in sws: s.force_set(True)
                     self.gamer_mode_active = True
                     self.after(0, lambda: self.btn_gamer.configure(fg_color=self.current_theme["btn_action"], text_color="#000000", text="DESATIVAR MODO GAMER"))
                 else:
-                    logger.info("====== REVERTENDO PERFIL GAMER ======")
-                    logger.info("Otimizações que exigem reinício foram ignoradas no modo automático.")
+                    logger.info("====== REVERTENDO PERFIL GAMER V3.0 ======")
                     target_cats = ["Latência", "Jogos", "CPU", "Rede"]
-                    applicable_switches = [s for s in self.switches if s.opt.category in target_cats and not getattr(s.opt, 'requires_restart', False)]
-                    total = len(applicable_switches)
-                    count = 0
-                    
-                    for s in applicable_switches:
-                        count += 1
-                        s.force_set(False)
-                        self.after(0, lambda val=count/total if total > 0 else 1: self.macro_progress.set(val))
-                        time.sleep(0.05)
-                            
-                    logger.info("====== MODO GAMER REVERTIDO COM SUCESSO! ======")
+                    sws = [s for s in self.switches if s.opt.category in target_cats and not getattr(s.opt, 'requires_restart', False)]
+                    for s in sws: s.force_set(False)
                     self.gamer_mode_active = False
                     self.after(0, lambda: self.btn_gamer.configure(fg_color=self.current_theme["btn_primary"], text_color=self.current_theme["accent_text"], text="MODO GAMER EXTREMO"))
-            finally:
-                self.after(0, lambda: self.btn_gamer.configure(state="normal"))
-                self.after(0, lambda: self.macro_progress.set(0))
+            finally: self.after(0, lambda: self.btn_gamer.configure(state="normal"))
         threading.Thread(target=task, daemon=True).start()
 
     def run_work_profile(self):
@@ -2056,59 +1978,35 @@ class OptimizerApp(ctk.CTk):
         def task():
             try:
                 if not self.work_mode_active:
-                    logger.info("====== INICIANDO PERFIL TRABALHO ======")
-                    logger.info("Otimizações que exigem reinício foram ignoradas no modo automático.")
-                    
+                    logger.info("====== INICIANDO PERFIL TRABALHO V3.0 ======")
                     if self.gamer_mode_active:
                         self.gamer_mode_active = False
                         self.after(0, lambda: self.btn_gamer.configure(fg_color=self.current_theme["btn_primary"], text_color=self.current_theme["accent_text"], text="MODO GAMER EXTREMO"))
 
                     target_cats = ["Memória", "Sistema", "Armazenamento", "Rede", "Latência", "Jogos", "CPU"]
-                    applicable_switches = [s for s in self.switches if s.opt.category in target_cats and not getattr(s.opt, 'requires_restart', False)]
-                    total = len(applicable_switches)
-                    count = 0
+                    sws = [s for s in self.switches if s.opt.category in target_cats and not getattr(s.opt, 'requires_restart', False)]
                     
-                    for s in applicable_switches:
-                        cat = s.opt.category
-                        if cat in ["Memória", "Sistema", "Armazenamento", "Rede"]:
-                            count += 1
+                    for s in sws:
+                        if s.opt.category in ["Memória", "Sistema", "Armazenamento", "Rede"]:
                             s.force_set(True) 
-                            self.after(0, lambda val=count/total if total > 0 else 1: self.macro_progress.set(val))
-                            time.sleep(0.05)
-                        elif cat in ["Latência", "Jogos", "CPU"]:
-                            count += 1
+                        elif s.opt.category in ["Latência", "Jogos", "CPU"]:
                             s.force_set(False)
-                            self.after(0, lambda val=count/total if total > 0 else 1: self.macro_progress.set(val))
-                            time.sleep(0.05)
                         
-                    logger.info("====== MODO TRABALHO ATIVADO COM SUCESSO! ======")
                     self.work_mode_active = True
                     self.after(0, lambda: self.btn_work.configure(fg_color=self.current_theme["btn_action"], text_color="#000000", border_width=0, text="DESATIVAR MODO TRABALHO"))
                 else:
-                    logger.info("====== REVERTENDO PERFIL TRABALHO ======")
-                    logger.info("Otimizações que exigem reinício foram ignoradas no modo automático.")
-                    
+                    logger.info("====== REVERTENDO PERFIL TRABALHO V3.0 ======")
                     target_cats_revert = ["Memória", "Sistema", "Armazenamento", "Rede"]
-                    applicable_switches = [s for s in self.switches if s.opt.category in target_cats_revert and not getattr(s.opt, 'requires_restart', False)]
-                    total = len(applicable_switches)
-                    count = 0
-                    
-                    for s in applicable_switches:
-                        count += 1
-                        s.force_set(False)
-                        self.after(0, lambda val=count/total if total > 0 else 1: self.macro_progress.set(val))
-                        time.sleep(0.05)
-                        
-                    logger.info("====== MODO TRABALHO REVERTIDO COM SUCESSO! ======")
+                    sws = [s for s in self.switches if s.opt.category in target_cats_revert and not getattr(s.opt, 'requires_restart', False)]
+                    for s in sws: s.force_set(False)
                     self.work_mode_active = False
                     self.after(0, lambda: self.btn_work.configure(fg_color="transparent", text_color=self.current_theme["btn_primary"], border_width=2, text="MODO TRABALHO SEGURO"))
             finally:
                 self.after(0, lambda: self.btn_work.configure(state="normal"))
-                self.after(0, lambda: self.macro_progress.set(0))
         threading.Thread(target=task, daemon=True).start()
 
 ================================================================================
-ARQUIVO: ui\theme.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\ui\theme.py
 ================================================================================
 
 # ui/theme.py
@@ -2197,7 +2095,7 @@ THEMES = {
 }
 
 ================================================================================
-ARQUIVO: ui\widgets.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\ui\widgets.py
 ================================================================================
 
 import customtkinter as ctk
@@ -2363,6 +2261,6 @@ class OptimizationSwitch(ctk.CTkFrame):
                 self.after(0, self.flash_error)
 
 ================================================================================
-ARQUIVO: \ui\__init__.py
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\ui\__init__.py
 ================================================================================
 
