@@ -88,7 +88,7 @@ if __name__ == "__main__":
         traceback.print_exc()
         
         print("="*70)
-        
+         
         # Guarda o erro no disco rígido para análise
         try:
             with open("ERRO_FATAL.txt", "w", encoding="utf-8") as f:
@@ -266,8 +266,10 @@ class Optimization(ABC):
 ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\power_manager.py
 ================================================================================
 
-import subprocess
+import ctypes
+from ctypes import wintypes
 from core.logger import get_logger
+from core.task_runner import CommandRunner
 
 logger = get_logger()
 
@@ -276,74 +278,75 @@ class PowerPlanManager:
     
     @staticmethod
     def get_active_plan() -> str:
-        """Lê diretamente do SO qual é o GUID do plano de energia atualmente em uso."""
+        """Chamada C nativa (Win32 API) para máxima performance (Sem uso de CMD)"""
         try:
-            result = subprocess.run(["powercfg", "/getactivescheme"], capture_output=True, text=True, creationflags=0x08000000)
-            if "GUID" in result.stdout:
-                partes = result.stdout.split()
-                for parte in partes:
-                    if len(parte) == 36 and "-" in parte:
-                        return parte.strip()
+            powrprof = ctypes.windll.powrprof
+            active_policy = ctypes.POINTER(ctypes.c_byte)()
+            
+            # Chama a DLL do Windows: PowerGetActiveScheme
+            res = powrprof.PowerGetActiveScheme(None, ctypes.byref(active_policy))
+            
+            if res == 0: 
+                # Converte o GUID da memória (struct de 16 bytes) para string legível
+                from uuid import UUID
+                guid_bytes = bytes(active_policy[:16])
+                active_guid = str(UUID(bytes_le=guid_bytes))
+                
+                # Liberta a memória alocada pelo Windows nativamente para evitar memory leaks
+                ctypes.windll.kernel32.LocalFree(active_policy)
+                return active_guid
             return ""
-        except Exception:
-            return ""
+        except Exception as e:
+            logger.debug(f"Falha na API Win32 PowrProf, usando fallback: {e}")
+            return PowerPlanManager._get_active_plan_fallback()
+
+    @staticmethod
+    def _get_active_plan_fallback() -> str:
+        res, out, _ = CommandRunner.run_cmd(['powercfg', '/getactivescheme'])
+        if res and "GUID" in out:
+            for p in out.split():
+                if len(p) == 36 and "-" in p: return p.strip()
+        return ""
 
     @staticmethod
     def get_installed_plans() -> dict:
-        """Retorna um dicionário com todos os planos instalados {GUID: Nome Limpo}."""
-        try:
-            result = subprocess.run(["powercfg", "/list"], capture_output=True, text=True, creationflags=0x08000000)
-            plans = {}
-            for line in result.stdout.splitlines():
+        """Lê os planos instalados usando parsing rápido e seguro"""
+        plans = {}
+        res, out, _ = CommandRunner.run_cmd(['powercfg', '/list'])
+        if res:
+            for line in out.splitlines():
                 if "GUID" in line:
                     partes = line.split()
-                    for parte in partes:
-                        if len(parte) == 36 and "-" in parte:
-                            guid = parte.strip()
-                            # Extrai o nome do plano (tudo entre o primeiro e o último parênteses)
+                    for p in partes:
+                        if len(p) == 36 and "-" in p:
                             nome = line[line.find("(")+1:line.rfind(")")]
-                            plans[guid] = nome.strip()
-            return plans
-        except Exception:
-            return {}
+                            plans[p.strip()] = nome.strip()
+        return plans
 
     @staticmethod
     def ensure_ultimate_performance() -> bool:
-        """Idempotência com Filtro Anti-ExitLag."""
+        """Idempotência Rígida para Plano de Energia."""
         plans = PowerPlanManager.get_installed_plans()
         target_guid = None
         
-        # 1. Procura o plano NATIVO puro, ignorando planos adulterados (ex: ExitLag)
         for guid, name in plans.items():
-            nome_limpo = name.lower()
-            if nome_limpo == "desempenho máximo" or nome_limpo == "ultimate performance" or guid == PowerPlanManager.ULTIMATE_PERFORMANCE_BASE_GUID:
+            if name.lower() in ["desempenho máximo", "desempenho maximo", "ultimate performance"]:
                 target_guid = guid
                 break
                 
-        # 2. Se não existir um plano puro, duplica a base original da Microsoft
         if not target_guid:
-            logger.info("Progresso: Plano NATIVO 'Desempenho Máximo' não encontrado. Criando base limpa...")
-            subprocess.run(["powercfg", "-duplicatescheme", PowerPlanManager.ULTIMATE_PERFORMANCE_BASE_GUID], capture_output=True, creationflags=0x08000000)
-            
+            logger.info("Progresso: Clonando plano Ultimate Performance nativo.")
+            CommandRunner.run_cmd(['powercfg', '-duplicatescheme', PowerPlanManager.ULTIMATE_PERFORMANCE_BASE_GUID])
             novos_planos = PowerPlanManager.get_installed_plans()
             for guid, name in novos_planos.items():
-                nome_limpo = name.lower()
-                # Localiza o GUID gerado que não estava na lista anterior
-                if (nome_limpo == "desempenho máximo" or nome_limpo == "ultimate performance") and guid not in plans:
+                if name.lower() in ["desempenho máximo", "desempenho maximo", "ultimate performance"] and guid not in plans:
                     target_guid = guid
                     break
 
-        if not target_guid:
-            # Fallback forçado caso o Windows esteja noutro idioma que não Pt ou En
-            target_guid = PowerPlanManager.ULTIMATE_PERFORMANCE_BASE_GUID
+        if not target_guid: return False
 
-        # 3. Ativa o plano assegurando a mudança no Kernel
-        try:
-            subprocess.run(["powercfg", "/setactive", target_guid], check=True, creationflags=0x08000000)
-            return True
-        except Exception as e:
-            logger.error(f"Status: Erro ao ativar plano de energia: {e}")
-            return False
+        CommandRunner.run_cmd(['powercfg', '/setactive', target_guid])
+        return True
 
 ================================================================================
 ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\system_safety.py
@@ -402,30 +405,70 @@ ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\task_runner.py
 
 import winreg
 import subprocess
+import os
 from core.logger import get_logger
 
 logger = get_logger()
 
 class CommandRunner:
+    # --- CORREÇÃO DE REDIRECIONAMENTO (SysWOW64 Bypass) ---
+    @staticmethod
+    def _get_system32_path():
+        windir = os.environ.get("SystemRoot", r"C:\Windows")
+        # Se for um Python 32-bit num Windows 64-bit, o System32 verdadeiro está em sysnative
+        sysnative = os.path.join(windir, "sysnative")
+        if os.path.exists(sysnative):
+            return sysnative
+        return os.path.join(windir, "System32")
+
+    SYSTEM32 = _get_system32_path.__func__()
+    # ------------------------------------------------------
     
+    @staticmethod
+    def _get_safe_binary(binary_name):
+        """Garante que executáveis nativos são chamados da pasta segura System32"""
+        return os.path.join(CommandRunner.SYSTEM32, binary_name)
+
     @staticmethod
     def run_cmd(command_list):
         """
-        Executa comandos de terminal de forma assíncrona, segura e invisível.
-        SEGURANÇA: shell=False obriga a passagem de uma lista explícita, bloqueando injeção de shell.
-        Retorna uma tupla: (Sucesso (bool), Stdout (str), Stderr (str))
+        Executa comandos de terminal de forma assíncrona e segura.
+        BLOQUEIO DE INJEÇÃO: Usa shell=False e caminhos absolutos.
         """
-        if isinstance(command_list, str):
+        if not isinstance(command_list, list):
             logger.error("FALHA DE SEGURANÇA: run_cmd exige uma lista de argumentos, não uma string.")
             return False, "", "Security Violation: Expected list, got str."
+
+        # Substitui o nome do binário pelo seu caminho absoluto seguro
+        bin_map = {
+            'powercfg': 'powercfg.exe',
+            'netsh': 'netsh.exe',
+            'sc': 'sc.exe',
+            'schtasks': 'schtasks.exe',
+            'fsutil': 'fsutil.exe',
+            'bcdedit': 'bcdedit.exe',
+            'ipconfig': 'ipconfig.exe',
+            'defrag': 'defrag.exe'
+        }
+        
+        executable = command_list[0].lower()
+        
+        if executable in bin_map:
+            command_list[0] = CommandRunner._get_safe_binary(bin_map[executable])
+        elif executable in ['del', 'rd', 'dir']:
+            # Comandos built-in do CMD precisam ser chamados via cmd.exe seguro
+            command_list = [CommandRunner._get_safe_binary("cmd.exe"), "/c"] + command_list
+        elif executable == 'powershell.exe' or executable == 'powershell':
+            # Localização segura do PowerShell
+            command_list[0] = os.path.join(CommandRunner.SYSTEM32, "WindowsPowerShell", "v1.0", "powershell.exe")
 
         try:
             result = subprocess.run(
                 command_list, 
-                shell=False, # BLOQUEIO DE INJEÇÃO
+                shell=False, # BLOQUEIO DE INJEÇÃO ATIVADO
                 capture_output=True, 
                 text=True, 
-                creationflags=0x08000000
+                creationflags=0x08000000 # Oculta janela preta
             )
             
             if result.returncode == 0:
@@ -912,6 +955,8 @@ ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\memor
 ================================================================================
 
 import winreg
+import ctypes
+import psutil
 from core.optimization_model import Optimization
 from core.task_runner import CommandRunner
 from core.logger import get_logger
@@ -1000,6 +1045,69 @@ class WSearchOpt(Optimization):
         CommandRunner.run_cmd(['sc', 'config', 'WSearch', 'start=', 'delayed-auto'])
         CommandRunner.run_cmd(['sc', 'start', 'WSearch'])
         return not self.check_os_state()
+
+class SmartRamCleanerOpt(Optimization):
+    def __init__(self):
+        super().__init__(
+            "mem_smart_cleaner", 
+            "Limpeza Inteligente de RAM", 
+            "Memória", 
+            "Liberta a memória (Working Set) inativa de todos os processos em execução usando a API nativa do Windows.", 
+            "Baixo", 
+            False, 
+            False  # is_reversible=False gera o botão vermelho "EXECUTAR LIMPEZA"
+        )
+
+    def check_condition(self, hw): 
+        # Funciona em qualquer hardware Windows
+        return True
+
+    def check_os_state(self) -> bool: 
+        # Ações de disparo único não possuem estado persistente para verificar
+        return False
+
+    def apply(self) -> bool:
+        try:
+            # Mapeamento das bibliotecas nativas do Kernel Windows
+            kernel32 = ctypes.windll.kernel32
+            psapi = ctypes.windll.psapi
+
+            # Constantes de permissão da Win32 API
+            PROCESS_QUERY_INFORMATION = 0x0400
+            PROCESS_SET_QUOTA = 0x0100
+
+            processos_limpos = 0
+            
+            # Itera por todos os PIDs ativos no sistema
+            for proc in psutil.process_iter(['pid']):
+                pid = proc.info['pid']
+                
+                # Segurança: Ignorar PID 0 (System Idle) e PID 4 (System) para evitar Access Denied
+                if pid <= 4:
+                    continue
+                    
+                try:
+                    # Tenta abrir o processo com as permissões mínimas necessárias
+                    h_process = kernel32.OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_SET_QUOTA, False, pid)
+                    if h_process:
+                        # Chamada nativa para esvaziar a RAM alocada pelo processo
+                        psapi.EmptyWorkingSet(h_process)
+                        kernel32.CloseHandle(h_process)
+                        processos_limpos += 1
+                except Exception:
+                    # Alguns processos do sistema bloqueiam o OpenProcess, ignoramos silenciosamente
+                    continue
+                    
+            logger.info(f"Progresso: Working Set esvaziado com sucesso em {processos_limpos} processos nativos.")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Status: Erro ao executar limpeza de RAM Win32 nativa: {e}")
+            return False
+
+    def rollback(self) -> bool: 
+        # Como é uma ação de limpeza em tempo real, não há nada a reverter
+        return True
 
 ================================================================================
 ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\network_opts.py
@@ -1680,6 +1788,9 @@ class OptimizerApp(ctk.CTk):
     def on_window_minimize(self, event):
         if event.widget == self and self.state() == 'iconic':
             self.withdraw()
+            # --- CORREÇÃO: Recria um ícone fresco na memória para evitar crash na bandeja ---
+            self.setup_tray_icon_system() 
+            # ------------------------------------------------------------------------------
             threading.Thread(target=self.tray_icon.run, daemon=True).start()
 
     def tray_restore_window(self, icon, item):
