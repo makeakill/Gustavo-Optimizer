@@ -6,64 +6,87 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
 ![Admin](https://img.shields.io/badge/privileges-Required-red.svg)
 
-## 💎 Diferenciais da Versão Pro
+💎 Diferenciais da Versão 3.0
+Kernel Engine 3.0: O programa não depende de ficheiros de configuração estáticos. Ele interroga o Windows em tempo real para exibir o estado real e absoluto do sistema.
 
-* **Arquitetura Nível 3:** O programa não depende de arquivos de configuração. Ele interroga o Windows em tempo real para exibir o estado real do sistema.
-* **Idempotência Rígida:** Zero escritas desnecessárias no disco. Se uma otimização já está ativa, o programa ignora a execução para poupar o ciclo de vida do seu SSD/NVMe.
-* **Segurança Anti-BSOD:** Todas as otimizações perigosas que alteravam o bootloader ou clocks sensíveis foram removidas por um painel de engenharia de elite.
-* **System Tray:** Minimize para a bandeja e mantenha o monitoramento de telemetria sem poluir sua barra de tarefas.
+Zero-Write Idempotency: Proteção extrema contra desgaste do seu SSD. Nenhuma chave de registo é escrita ou alterada se o valor atual no sistema já for o otimizado.
 
-## 🛠️ Funcionalidades Principais
+Segurança Anti-BSOD: Todas as otimizações perigosas que alteravam o bootloader ou relógios sensíveis do sistema (como Dynamic Ticks e HPET) foram removidas por um painel de engenharia.
 
-* **Modo Gamer Extremo:** Macro automatizada que calibra Latência, CPU, GPU e Rede para máxima performance em jogos competitivos.
-* **Modo Trabalho Seguro:** Foca na estabilidade e limpeza de memória para produtividade.
-* **Telemetria em Tempo Real:** Monitoramento de carga de CPU, RAM e GPU integrada.
-* **Deep Clean:** Purga de caches de shaders (DirectX), arquivos temporários e lixo de sistema.
-* **Power Management:** Ativação do plano "Desempenho Máximo" nativo, oculto por padrão no Windows.
+Intelligent Profile Detection: Ao abrir, o programa analisa heuristicamente se o seu PC já está em "Modo Gamer" e adapta a interface de forma automática.
 
-## 🚀 Como Compilar
+Tray Persistence: Minimize o programa para a bandeja do sistema (System Tray) e mantenha a telemetria a correr sem ocupar espaço na barra de tarefas.
 
-1. Instale as dependências:
-   ```bash
-   pip install customtkinter Pillow psutil pynvml pystray pyinstaller
-   
-2. Execute o comando de compilação:
-   pyinstaller --noconsole --onefile --uac-admin --icon=icon.ico --add-data "icon.ico;." main.py
+🛠️ Funcionalidades Principais
+Modo Gamer Extremo: Macro automatizada que calibra a Latência, CPU, GPU e Rede para a máxima performance em jogos competitivos.
 
-   ⚠️ Aviso Legal
-Este software executa comandos de nível administrativo. Embora tenha sido projetado para máxima segurança, utilize por sua conta e risco. Sempre crie um ponto de restauração antes de grandes alterações.
+Modo Trabalho Seguro: Foca-se na estabilidade e na limpeza de memória RAM para máxima produtividade.
 
----
+Telemetria em Tempo Real: Monitorização precisa da carga de CPU, RAM e GPU integrada.
 
-# 2. CHANGELOG (Histórico de Mudanças)
+Deep Clean: Expulsa caches de shaders corrompidos (DirectX), ficheiros temporários e resíduos do sistema.
 
-**Versão 2.2.0 (Atual)**
-* **NOVO:** Sistema de **System Tray** (Bandeja) com ícone dinâmico.
-* **NOVO:** Função `resource_path` para compatibilidade total com executáveis `.exe`.
-* **NOVO:** Scanner Heurístico de Perfil: O programa agora detecta se o "Modo Gamer" está ativo ao abrir, analisando o estado do SO.
-* **CORREÇÃO:** Erradicação de "Botões Fantasmas" através da validação dupla no Registro.
-* **SEGURANÇA:** Migração de `shell=True` para `shell=False` em todos os subprocessos para prevenir injeções maliciosas.
-* **SEGURANÇA:** Remoção de otimizações obsoletas (WinXP/7) e perigosas (BCD/Timers).
-* **ESTABILIDADE:** Tratamento de erro `KeyError: 'danger'` na UI através de fallbacks de cores.
+Power Management: Desbloqueio e ativação do plano "Desempenho Máximo" nativo, oculto por defeito no Windows.
 
----
+📜 CHANGELOG (Histórico de Alterações)
+Versão 3.0.0 (Atual)
 
-# 3. GLOSSÁRIO TÉCNICO
+ARQUITETURA: Migração total para o motor de Leitura Viva (V2.x -> V3.0). Erradicação do "Paradoxo do Botão Fantasma".
 
-* **Idempotência:** Propriedade de uma ação que pode ser executada várias vezes sem alterar o resultado além da primeira aplicação. No Optimizer, isso significa não gravar no Registro o que já está gravado.
-* **Kernel Scraping:** Técnica de ler as saídas brutas do terminal do Windows (`netsh`, `powercfg`) para entender como o "coração" do sistema está configurado.
-* **UAC Admin Manifest:** Código embutido no executável que obriga o Windows a pedir permissão de administrador ao iniciar.
-* **Core Parking:** Recurso do Windows que "desliga" núcleos da CPU para poupar energia. O Optimizer desativa isso para evitar latência ao "acordar" o núcleo durante o jogo.
-* **HAGS (Hardware Accelerated GPU Scheduling):** Permite que a placa de vídeo gerencie sua própria memória, reduzindo a carga no processador.
-* **FSO (Fullscreen Optimizations):** Recurso que cria uma camada híbrida entre janela e tela cheia. Desativar pode melhorar o *input lag* em jogos antigos.
+NOVO: Inclusão de System Tray com suporte a restauro inteligente através de um duplo clique.
 
----
+NOVO: Função estrutural de mapeamento de caminhos (resource_path) para compatibilidade total do ícone com executáveis .exe.
 
-# 4. MANUAL DE OPERAÇÃO (PARA O USUÁRIO)
+SEGURANÇA: Todos os comandos de shell foram blindados contra injeção de código, utilizando listas de argumentos nativas (shell=False).
 
-1.  **Primeira Execução:** Ao abrir, o programa demorará cerca de 3 segundos para fazer o scan inicial. É normal ver o log "Comando executado" várias vezes; é o programa conhecendo seu PC.
-2.  **Criação de Backup:** Antes de clicar em "Modo Gamer", clique em **CRIAR PONTO DE RESTAURO**. Isso utiliza o serviço VSS do Windows para garantir uma volta segura.
-3.  **Reinício do Sistema:** Otimizações marcadas com "REINÍCIO NECESSÁRIO" só terão efeito após você desligar e ligar o PC. O Modo Gamer ignora estas por padrão para evitar que o PC reinicie sozinho.
-4.  **Minimizar:** Ao clicar em minimizar, o programa vai para o lado do relógio. Clique com o botão direito no ícone para restaurar ou sair.
+SEGURANÇA: Remoção cirúrgica de 23 otimizações obsoletas (da era WinXP/7) e perigosas para garantir 100% de estabilidade nos processadores modernos.
 
----
+ESTABILIDADE: Tratamento de erros de UI com contingências (fallbacks) hexadecimais de cor para evitar falhas visuais.
+
+📚 GLOSSÁRIO TÉCNICO
+Idempotência: Propriedade de uma ação que pode ser executada múltiplas vezes sem alterar o resultado para além da primeira aplicação. No Optimizer, significa poupar escritas (I/O) no disco.
+
+Kernel Scraping: A técnica de ler as saídas brutas do terminal do Windows (como netsh, powercfg) para compreender exatamente como o "coração" do sistema operativo está configurado.
+
+UAC Admin Manifest: Código embutido no executável final que obriga o Windows a apresentar o escudo de segurança e pedir permissões de administrador no momento do arranque.
+
+Core Parking: Recurso do Windows que "adormece" núcleos do processador para poupar energia. O Optimizer bloqueia esta função para evitar a latência de "despertar" durante o jogo.
+
+HAGS (Hardware Accelerated GPU Scheduling): Permite que a placa gráfica faça a gestão da sua própria memória, aliviando a carga no processador central.
+
+FSO (Fullscreen Optimizations): Recurso que cria uma camada híbrida entre o modo de janela e o ecrã inteiro. Desativá-lo pode melhorar drasticamente o input lag em jogos competitivos.
+
+📖 MANUAL DE OPERAÇÃO (Para o Utilizador Final)
+Primeira Execução: Ao abrir o Gustavo Optimizer Pro, ele demorará cerca de 2 a 3 segundos a realizar o scan inicial. É normal ver o registo "Comando executado" a disparar dezenas de vezes; é o programa a fazer um "Raio-X" ao seu PC.
+
+Criação de Backup: Antes de acionar o "Modo Gamer" pela primeira vez, clique em CRIAR PONTO DE RESTAURO. O programa utilizará o serviço nativo do Windows para criar um ponto de segurança instantâneo.
+
+Reinício do Sistema: Otimizações marcadas com um selo laranja "REINÍCIO NECESSÁRIO" alteram ficheiros do núcleo e só terão efeito após reiniciar a máquina.
+
+Modo Silencioso: Para não poluir o seu ecrã, clique no botão de minimizar (-). O programa ficará oculto ao lado do relógio do Windows. Dê dois cliques no ícone para o trazer de volta.
+
+⚙️ GUIA DO DESENVOLVEDOR (Como Compilar o Projeto)
+Para gerar o executável final (.exe) a partir do código fonte, siga estes passos:
+
+1. Instale as dependências obrigatórias:
+
+Bash
+pip install customtkinter Pillow psutil pynvml pystray pyinstaller
+2. Script de Compilação Automática:
+Crie um ficheiro chamado compilar.bat na raiz do projeto, junto ao main.py e ao icon.ico, com o seguinte código:
+
+Snippet de código
+@echo off
+title Compilador Gustavo Optimizer Pro v3.0
+echo Instalando/Atualizando dependencias do Kernel...
+pip install customtkinter Pillow psutil pynvml pystray pyinstaller
+echo.
+echo Iniciando compilacao estrutural OneFile com Privilegios Admin...
+pyinstaller --noconsole --onefile --uac-admin --icon=icon.ico --add-data "icon.ico;." main.py
+echo.
+echo =========================================================
+echo Compilacao concluida com sucesso! 
+echo O seu executavel final encontra-se dentro da pasta "dist".
+echo =========================================================
+pause
+Basta executar este ficheiro .bat sempre que quiser gerar uma nova versão do seu executável!
