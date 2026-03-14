@@ -84,9 +84,15 @@ echo.
 echo Iniciando compilacao estrutural OneFile com Privilegios Admin...
 pyinstaller --noconsole --onefile --uac-admin --icon=icon.ico --add-data "icon.ico;." main.py
 echo.
+
 echo =========================================================
+
 echo Compilacao concluida com sucesso!  
+
 echo O seu executavel final encontra-se dentro da pasta "dist".
+
 echo =========================================================
+
 pause
+
 Basta executar este ficheiro .bat sempre que quiser gerar uma nova versão do seu executável!
