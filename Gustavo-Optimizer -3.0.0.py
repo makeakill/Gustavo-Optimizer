@@ -267,7 +267,6 @@ ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\core\power_manager.
 ================================================================================
 
 import ctypes
-from ctypes import wintypes
 from core.logger import get_logger
 from core.task_runner import CommandRunner
 
@@ -281,7 +280,8 @@ class PowerPlanManager:
         """Chamada C nativa (Win32 API) para máxima performance (Sem uso de CMD)"""
         try:
             powrprof = ctypes.windll.powrprof
-            active_policy = ctypes.POINTER(ctypes.c_byte)()
+            # CORREÇÃO: c_ubyte (Unsigned) garante que os valores fiquem entre 0 e 255
+            active_policy = ctypes.POINTER(ctypes.c_ubyte)()
             
             # Chama a DLL do Windows: PowerGetActiveScheme
             res = powrprof.PowerGetActiveScheme(None, ctypes.byref(active_policy))
@@ -292,7 +292,7 @@ class PowerPlanManager:
                 guid_bytes = bytes(active_policy[:16])
                 active_guid = str(UUID(bytes_le=guid_bytes))
                 
-                # Liberta a memória alocada pelo Windows nativamente para evitar memory leaks
+                # Libera a memória alocada pelo Windows nativamente para evitar memory leaks
                 ctypes.windll.kernel32.LocalFree(active_policy)
                 return active_guid
             return ""
@@ -663,8 +663,9 @@ class CoreParkingOpt(Optimization):
     def check_condition(self, hw): return True
     def check_os_state(self) -> bool:
         sucesso, stdout, _ = CommandRunner.run_cmd(['powercfg', '/query', 'scheme_current', 'sub_processor', 'CPMINCORES'])
-        # Busca o valor hexadecimal puro (100 = 64 em Hex), ignorando o idioma do Windows
-        return sucesso and "0x00000064" in stdout
+        if sucesso:
+            return "0x00000064" in stdout.lower() or "0x64" in stdout.lower()
+        return False
     def apply(self) -> bool:
         if self.check_os_state(): return True 
         CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '100'])
@@ -698,7 +699,9 @@ class IdleStateMaxOpt(Optimization):
     def check_condition(self, hw): return True
     def check_os_state(self) -> bool:
         sucesso, stdout, _ = CommandRunner.run_cmd(['powercfg', '/query', 'scheme_current', 'sub_processor', 'IDLESTATEMAX'])
-        return sucesso and "0x00000000" in stdout
+        if sucesso:
+            return "0x00000000" in stdout.lower() or "0x0" in stdout.lower()
+        return False
     def apply(self) -> bool:
         if self.check_os_state(): return True
         CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '0'])
@@ -718,7 +721,9 @@ class CpuEnergyPerfOpt(Optimization):
     def check_condition(self, hw): return True
     def check_os_state(self) -> bool:
         sucesso, stdout, _ = CommandRunner.run_cmd(['powercfg', '/query', 'scheme_current', 'sub_processor', 'PERFEPP'])
-        return sucesso and "0x00000000" in stdout
+        if sucesso:
+            return "0x00000000" in stdout.lower() or "0x0" in stdout.lower()
+        return False
     def apply(self) -> bool:
         if self.check_os_state(): return True
         CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '0'])
@@ -798,20 +803,6 @@ class HagsOpt(Optimization):
         return sucesso and self.check_os_state()
     def rollback(self) -> bool:
         sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\GraphicsDrivers", "HwSchMode", winreg.REG_DWORD, 1)
-        return sucesso and not self.check_os_state()
-
-class DisableFsoGlobalOpt(Optimization):
-    def __init__(self):
-        super().__init__("game_disable_fso", "Desativar FSO", "Jogos", "Desliga Fullscreen Optimizations globais.", "Médio", False, True)
-    def check_condition(self, hw): return True
-    def check_os_state(self) -> bool:
-        val, _ = CommandRunner.read_registry_value("HKCU", r"System\GameConfigStore", "GameDVR_FSEBehaviorMode")
-        return val == 2
-    def apply(self) -> bool:
-        sucesso = CommandRunner.write_registry_value("HKCU", r"System\GameConfigStore", "GameDVR_FSEBehaviorMode", winreg.REG_DWORD, 2)
-        return sucesso and self.check_os_state()
-    def rollback(self) -> bool:
-        sucesso = CommandRunner.write_registry_value("HKCU", r"System\GameConfigStore", "GameDVR_FSEBehaviorMode", winreg.REG_DWORD, 0)
         return sucesso and not self.check_os_state()
 
 class CleanDirectXCacheOpt(Optimization):
@@ -1811,7 +1802,7 @@ class OptimizerApp(ctk.CTk):
     def carregar_todas_otimizacoes(self):
         contador = 0
         
-        # 1. Importação explícita: O PyInstaller agora "vê" estes ficheiros e embutirá no .exe
+        # 1. Importação explícita: O PyInstaller agora "vê" estes arquivos e embutirá no .exe
         from optimizations import cpu_opts, gaming_opts, latency_opts, memory_opts, network_opts, storage_opts, system_opts
         
         # 2. Lista de módulos a extrair
@@ -1866,7 +1857,7 @@ class OptimizerApp(ctk.CTk):
         )
         self.theme_selector.pack(pady=(0, 15), padx=20, fill="x")
 
-        self.btn_backup = ctk.CTkButton(self.sidebar, text="CRIAR PONTO DE RESTAURO", command=self.manual_restore_point, fg_color=t["btn_neutral"], hover_color=t["border"], text_color=t["text_main"], font=("Segoe UI", 12, "bold"), height=40, corner_radius=8, border_width=1, border_color=t["border"])
+        self.btn_backup = ctk.CTkButton(self.sidebar, text="CRIAR PONTO DE RESTAURAÇÃO", command=self.manual_restore_point, fg_color=t["btn_neutral"], hover_color=t["border"], text_color=t["text_main"], font=("Segoe UI", 12, "bold"), height=40, corner_radius=8, border_width=1, border_color=t["border"])
         self.btn_backup.pack(pady=8, padx=20, fill="x")
 
         self.btn_gamer = ctk.CTkButton(self.sidebar, text="MODO GAMER EXTREMO", command=self.run_gamer_profile, fg_color=t["btn_primary"], text_color=t["accent_text"], font=("Segoe UI", 13, "bold"), height=40, corner_radius=8)
@@ -1906,7 +1897,7 @@ class OptimizerApp(ctk.CTk):
         self.bar_ram = ctk.CTkProgressBar(self.frame_telemetry, height=8, progress_color=t["success"], fg_color=t["card_border"])
         self.bar_ram.grid(row=1, column=1, padx=20, pady=(5, 15), sticky="ew")
 
-        self.lbl_gpu_title = ctk.CTkLabel(self.frame_telemetry, text="PLACA GRÁFICA", font=("Segoe UI", 10, "bold"), text_color=t["text_dim"])
+        self.lbl_gpu_title = ctk.CTkLabel(self.frame_telemetry, text="PLACA DE VÍDEO", font=("Segoe UI", 10, "bold"), text_color=t["text_dim"])
         self.lbl_gpu_title.grid(row=0, column=2, padx=20, pady=(15, 0), sticky="w")
         self.lbl_gpu_val = ctk.CTkLabel(self.frame_telemetry, text="0%", font=("Consolas", 18, "bold"), text_color=t["success"])
         self.lbl_gpu_val.grid(row=0, column=2, padx=20, pady=(15, 0), sticky="e")
@@ -2037,20 +2028,26 @@ class OptimizerApp(ctk.CTk):
                 self.btn_work.configure(fg_color=self.current_theme["btn_action"], text_color="#000000", border_width=0, text="DESATIVAR MODO TRABALHO")
 
     def manual_restore_point(self):
-        self.btn_backup.configure(state="disabled", text="A CRIAR BACKUP...")
+        self.btn_backup.configure(state="disabled", text="CRIANDO BACKUP...")
         def worker():
             try: SystemSafety.create_restore_point("Gustavo Optimizer V3 - Backup")
-            finally: self.after(0, lambda: self.btn_backup.configure(state="normal", text="CRIAR PONTO DE RESTAURO"))
+            finally: self.after(0, lambda: self.btn_backup.configure(state="normal", text="CRIAR PONTO DE RESTAURAÇÃO"))
         threading.Thread(target=worker, daemon=True).start()
 
     def emergency_rollback(self):
-        self.btn_emergency.configure(state="disabled", text="A REVERTER...")
+        self.btn_emergency.configure(state="disabled", text="REVERTENDO...")
         def worker():
             try:
-                reversibles = [s for s in self.switches if getattr(s.opt, 'is_reversible', True) and (s.control.get() == 1 or s.opt.is_active())]
+                # CORREÇÃO: Filtro atualizado para excluir funções que exigem reinício
+                reversibles = [
+                    s for s in self.switches 
+                    if getattr(s.opt, 'is_reversible', True) 
+                    and not getattr(s.opt, 'requires_restart', False)
+                    and (s.control.get() == 1 or s.opt.is_active())
+                ]
                 for s in reversibles: s.force_set(False)
                 SnapshotManager.clear_snapshots()
-                logger.info("====== SISTEMA RESTAURADO ======")
+                logger.info("====== SISTEMA RESTAURADO (EXCETO OTIMIZAÇÕES DE REINÍCIO) ======")
             finally: 
                 self.after(0, lambda: self.btn_emergency.configure(state="normal", text="DESFAZER TODAS AS ALTERAÇÕES"))
                 self.after(0, lambda: self.btn_gamer.configure(fg_color=self.current_theme["btn_primary"], text_color=self.current_theme["accent_text"], text="MODO GAMER EXTREMO"))
