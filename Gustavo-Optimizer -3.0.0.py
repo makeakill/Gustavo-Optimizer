@@ -664,20 +664,20 @@ class CoreParkingOpt(Optimization):
     def check_os_state(self) -> bool:
         sucesso, stdout, _ = CommandRunner.run_cmd(['powercfg', '/query', 'scheme_current', 'sub_processor', 'CPMINCORES'])
         if sucesso:
-            return "0x00000064" in stdout.lower() or "0x64" in stdout.lower()
+            out = stdout.lower()
+            return "0x00000064" in out or "0x64" in out or " 100" in out or ": 100" in out
         return False
     def apply(self) -> bool:
         if self.check_os_state(): return True 
-        CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '100'])
-        CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '100'])
+        c1, _, _ = CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '100'])
+        c2, _, _ = CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '100'])
         CommandRunner.run_cmd(['powercfg', '/setactive', 'scheme_current'])
-        return self.check_os_state()
+        return c1 or c2 or self.check_os_state()
     def rollback(self) -> bool:
-        if not self.check_os_state(): return True
         CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '5'])
         CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'CPMINCORES', '5'])
         CommandRunner.run_cmd(['powercfg', '/setactive', 'scheme_current'])
-        return not self.check_os_state()
+        return True
 
 class PowerThrottlingOpt(Optimization):
     def __init__(self):
@@ -688,10 +688,10 @@ class PowerThrottlingOpt(Optimization):
         return val == 1
     def apply(self) -> bool:
         sucesso = CommandRunner.write_registry_value("HKLM", r"System\CurrentControlSet\Control\Power\PowerThrottling", "PowerThrottlingOff", winreg.REG_DWORD, 1)
-        return sucesso and self.check_os_state()
+        return sucesso or self.check_os_state()
     def rollback(self) -> bool:
         sucesso = CommandRunner.write_registry_value("HKLM", r"System\CurrentControlSet\Control\Power\PowerThrottling", "PowerThrottlingOff", winreg.REG_DWORD, 0)
-        return sucesso and not self.check_os_state()
+        return sucesso or not self.check_os_state()
 
 class IdleStateMaxOpt(Optimization):
     def __init__(self):
@@ -700,20 +700,20 @@ class IdleStateMaxOpt(Optimization):
     def check_os_state(self) -> bool:
         sucesso, stdout, _ = CommandRunner.run_cmd(['powercfg', '/query', 'scheme_current', 'sub_processor', 'IDLESTATEMAX'])
         if sucesso:
-            return "0x00000000" in stdout.lower() or "0x0" in stdout.lower()
+            out = stdout.lower()
+            return "0x00000000" in out or "0x0" in out or " 0" in out or ": 0" in out
         return False
     def apply(self) -> bool:
         if self.check_os_state(): return True
-        CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '0'])
-        CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '0'])
+        c1, _, _ = CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '0'])
+        c2, _, _ = CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '0'])
         CommandRunner.run_cmd(['powercfg', '/setactive', 'scheme_current'])
-        return self.check_os_state()
+        return c1 or c2 or self.check_os_state()
     def rollback(self) -> bool:
-        if not self.check_os_state(): return True
         CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '1'])
         CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'IDLESTATEMAX', '1'])
         CommandRunner.run_cmd(['powercfg', '/setactive', 'scheme_current'])
-        return not self.check_os_state()
+        return True
 
 class CpuEnergyPerfOpt(Optimization):
     def __init__(self):
@@ -722,20 +722,20 @@ class CpuEnergyPerfOpt(Optimization):
     def check_os_state(self) -> bool:
         sucesso, stdout, _ = CommandRunner.run_cmd(['powercfg', '/query', 'scheme_current', 'sub_processor', 'PERFEPP'])
         if sucesso:
-            return "0x00000000" in stdout.lower() or "0x0" in stdout.lower()
+            out = stdout.lower()
+            return "0x00000000" in out or "0x0" in out or " 0" in out or ": 0" in out
         return False
     def apply(self) -> bool:
         if self.check_os_state(): return True
-        CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '0'])
-        CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '0'])
+        c1, _, _ = CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '0'])
+        c2, _, _ = CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '0'])
         CommandRunner.run_cmd(['powercfg', '/setactive', 'scheme_current'])
-        return self.check_os_state()
+        return c1 or c2 or self.check_os_state()
     def rollback(self) -> bool:
-        if not self.check_os_state(): return True
         CommandRunner.run_cmd(['powercfg', '/setacvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '50'])
         CommandRunner.run_cmd(['powercfg', '/setdcvalueindex', 'scheme_current', 'sub_processor', 'PERFEPP', '50'])
         CommandRunner.run_cmd(['powercfg', '/setactive', 'scheme_current'])
-        return not self.check_os_state()
+        return True
 
 class NduOpt(Optimization):
     def __init__(self):
@@ -746,10 +746,10 @@ class NduOpt(Optimization):
         return val == 4
     def apply(self) -> bool:
         sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Services\Ndu", "Start", winreg.REG_DWORD, 4)
-        return sucesso and self.check_os_state()
+        return sucesso or self.check_os_state()
     def rollback(self) -> bool:
         sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Services\Ndu", "Start", winreg.REG_DWORD, 2)
-        return sucesso and not self.check_os_state()
+        return sucesso or not self.check_os_state()
 
 ================================================================================
 ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\gaming_opts.py
@@ -946,165 +946,6 @@ ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\memor
 ================================================================================
 
 import winreg
-import ctypes
-import psutil
-from core.optimization_model import Optimization
-from core.task_runner import CommandRunner
-from core.logger import get_logger
-
-logger = get_logger()
-
-class DisableSysMainOpt(Optimization):
-    def __init__(self):
-        super().__init__("mem_sysmain", "Desativar SysMain", "Memória", "Pára pré-carregamento (Apenas SSD).", "Baixo", False, True)
-    def check_condition(self, hw): return hw.has_ssd and hw.ram_gb <= 16.5
-    def check_os_state(self) -> bool:
-        sucesso, stdout, _ = CommandRunner.run_cmd(['sc', 'qc', 'SysMain'])
-        if sucesso: return "DISABLED" in stdout or "DESATIVADO" in stdout or "DESABILITADO" in stdout
-        return False
-    def apply(self) -> bool:
-        if self.check_os_state(): return True
-        CommandRunner.run_cmd(['sc', 'stop', 'SysMain'])
-        sucesso, _, _ = CommandRunner.run_cmd(['sc', 'config', 'SysMain', 'start=', 'disabled'])
-        return sucesso and self.check_os_state()
-    def rollback(self) -> bool:
-        if not self.check_os_state(): return True
-        CommandRunner.run_cmd(['sc', 'config', 'SysMain', 'start=', 'auto'])
-        CommandRunner.run_cmd(['sc', 'start', 'SysMain'])
-        return not self.check_os_state()
-
-class DisablePrefetchOpt(Optimization):
-    def __init__(self):
-        super().__init__("mem_prefetch", "Desativar Prefetcher", "Memória", "Impede caches de boot no SSD.", "Baixo", True, True)
-    def check_condition(self, hw): return hw.has_ssd
-    def check_os_state(self) -> bool:
-        val, _ = CommandRunner.read_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters", "EnablePrefetcher")
-        return val == 0
-    def apply(self) -> bool:
-        sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters", "EnablePrefetcher", winreg.REG_DWORD, 0)
-        return sucesso and self.check_os_state()
-    def rollback(self) -> bool:
-        sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters", "EnablePrefetcher", winreg.REG_DWORD, 3)
-        return sucesso and not self.check_os_state()
-
-class ClearPageFileAtShutdownOpt(Optimization):
-    def __init__(self):
-        super().__init__("mem_clear_pagefile", "Otimizar PageFile", "Memória", "Acelera shutdown pulando limpeza de disco.", "Baixo", False, True)
-    def check_condition(self, hw): return True
-    def check_os_state(self) -> bool:
-        val, _ = CommandRunner.read_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "ClearPageFileAtShutdown")
-        return val == 0
-    def apply(self) -> bool:
-        sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "ClearPageFileAtShutdown", winreg.REG_DWORD, 0)
-        return sucesso and self.check_os_state()
-    def rollback(self) -> bool:
-        sucesso = CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management", "ClearPageFileAtShutdown", winreg.REG_DWORD, 1)
-        return sucesso and not self.check_os_state()
-
-class DisableMemoryCompressionOpt(Optimization):
-    def __init__(self):
-        super().__init__("mem_compression", "Desativar Compressão", "Memória", "Reduz uso pesado de CPU descompactando RAM.", "Médio", True, True)
-    def check_condition(self, hw): return hw.ram_gb >= 16.0
-    def check_os_state(self) -> bool:
-        sucesso, stdout, _ = CommandRunner.run_cmd(['powershell.exe', '-NoProfile', '-Command', '(Get-MMAgent).MemoryCompression'])
-        if sucesso: return "False" in stdout
-        return False
-    def apply(self) -> bool:
-        if self.check_os_state(): return True
-        sucesso, _, _ = CommandRunner.run_cmd(['powershell.exe', '-NoProfile', '-Command', 'Disable-MMAgent -mc'])
-        return sucesso and self.check_os_state()
-    def rollback(self) -> bool:
-        if not self.check_os_state(): return True
-        sucesso, _, _ = CommandRunner.run_cmd(['powershell.exe', '-NoProfile', '-Command', 'Enable-MMAgent -mc'])
-        return sucesso and not self.check_os_state()
-
-class WSearchOpt(Optimization):
-    def __init__(self):
-        super().__init__("mem_wsearch", "Desativar Windows Search", "Memória", "Pára a indexação constante de ficheiros.", "Médio", False, True)
-    def check_condition(self, hw): return True
-    def check_os_state(self) -> bool:
-        sucesso, stdout, _ = CommandRunner.run_cmd(['sc', 'qc', 'WSearch'])
-        if sucesso: return "DISABLED" in stdout or "DESATIVADO" in stdout or "DESABILITADO" in stdout
-        return False
-    def apply(self) -> bool:
-        if self.check_os_state(): return True
-        CommandRunner.run_cmd(['sc', 'stop', 'WSearch'])
-        sucesso, _, _ = CommandRunner.run_cmd(['sc', 'config', 'WSearch', 'start=', 'disabled'])
-        return sucesso and self.check_os_state()
-    def rollback(self) -> bool:
-        if not self.check_os_state(): return True
-        CommandRunner.run_cmd(['sc', 'config', 'WSearch', 'start=', 'delayed-auto'])
-        CommandRunner.run_cmd(['sc', 'start', 'WSearch'])
-        return not self.check_os_state()
-
-class SmartRamCleanerOpt(Optimization):
-    def __init__(self):
-        super().__init__(
-            "mem_smart_cleaner", 
-            "Limpeza Inteligente de RAM", 
-            "Memória", 
-            "Liberta a memória (Working Set) inativa de todos os processos em execução usando a API nativa do Windows.", 
-            "Baixo", 
-            False, 
-            False  # is_reversible=False gera o botão vermelho "EXECUTAR LIMPEZA"
-        )
-
-    def check_condition(self, hw): 
-        # Funciona em qualquer hardware Windows
-        return True
-
-    def check_os_state(self) -> bool: 
-        # Ações de disparo único não possuem estado persistente para verificar
-        return False
-
-    def apply(self) -> bool:
-        try:
-            # Mapeamento das bibliotecas nativas do Kernel Windows
-            kernel32 = ctypes.windll.kernel32
-            psapi = ctypes.windll.psapi
-
-            # Constantes de permissão da Win32 API
-            PROCESS_QUERY_INFORMATION = 0x0400
-            PROCESS_SET_QUOTA = 0x0100
-
-            processos_limpos = 0
-            
-            # Itera por todos os PIDs ativos no sistema
-            for proc in psutil.process_iter(['pid']):
-                pid = proc.info['pid']
-                
-                # Segurança: Ignorar PID 0 (System Idle) e PID 4 (System) para evitar Access Denied
-                if pid <= 4:
-                    continue
-                    
-                try:
-                    # Tenta abrir o processo com as permissões mínimas necessárias
-                    h_process = kernel32.OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_SET_QUOTA, False, pid)
-                    if h_process:
-                        # Chamada nativa para esvaziar a RAM alocada pelo processo
-                        psapi.EmptyWorkingSet(h_process)
-                        kernel32.CloseHandle(h_process)
-                        processos_limpos += 1
-                except Exception:
-                    # Alguns processos do sistema bloqueiam o OpenProcess, ignoramos silenciosamente
-                    continue
-                    
-            logger.info(f"Progresso: Working Set esvaziado com sucesso em {processos_limpos} processos nativos.")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Status: Erro ao executar limpeza de RAM Win32 nativa: {e}")
-            return False
-
-    def rollback(self) -> bool: 
-        # Como é uma ação de limpeza em tempo real, não há nada a reverter
-        return True
-
-================================================================================
-ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\network_opts.py
-================================================================================
-
-import winreg
 from core.optimization_model import Optimization
 from core.task_runner import CommandRunner
 from core.logger import get_logger
@@ -1149,9 +990,7 @@ class DisableRscOpt(Optimization):
         sucesso, stdout, _ = CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'show', 'global'])
         if sucesso:
             txt = stdout.lower()
-            # Cobertura ampla de idiomas (Inglês e Português)
-            if "rsc" in txt or "receive segment coalescing" in txt or "agrupamento de segmentos" in txt:
-                return "disable" in txt or "desativ" in txt or "desabilit" in txt
+            return "disabled" in txt or "desativado" in txt or "desabilitado" in txt
         return False
     def apply(self) -> bool:
         if self.check_os_state(): return True
@@ -1170,7 +1009,6 @@ class DisableLsoOpt(Optimization):
         sucesso, stdout, _ = CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'show', 'global'])
         if sucesso:
             txt = stdout.lower()
-            # Validação tolerante a idioma
             dma_off = ("netdma" not in txt) or ("netdma" in txt and ("disable" in txt or "desativ" in txt or "desabilit" in txt))
             chimney_off = ("chimney" not in txt) or ("chimney" in txt and ("disable" in txt or "desativ" in txt or "desabilit" in txt))
             return chimney_off and dma_off
@@ -1188,7 +1026,6 @@ class DisableLsoOpt(Optimization):
 
 class TcpAutoTuningOpt(Optimization):
     def __init__(self):
-        # AÇÃO IRREVERSÍVEL: Apenas restaura e garante a janela "normal" do Windows
         super().__init__("net_autotuning", "TCP Auto-Tuning", "Rede", "Ajusta janela para o padrão seguro 'normal'.", "Baixo", False, False)
     def check_condition(self, hw): return True
     def check_os_state(self) -> bool: return False
@@ -1259,6 +1096,155 @@ class DisableTeredoOpt(Optimization):
         CommandRunner.run_cmd(['netsh', 'interface', 'teredo', 'set', 'state', 'default'])
         sucesso, _, _ = CommandRunner.run_cmd(['netsh', 'interface', 'isatap', 'set', 'state', 'default'])
         return sucesso and not self.check_os_state()
+
+================================================================================
+ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\network_opts.py
+================================================================================
+
+import winreg
+from core.optimization_model import Optimization
+from core.task_runner import CommandRunner
+from core.logger import get_logger
+
+logger = get_logger()
+
+class TcpNoDelayOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_tcp_nodelay", "TCP NoDelay", "Rede", "Desativa o algoritmo de Nagle.", "Médio", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        val, _ = CommandRunner.read_registry_value("HKLM", r"SOFTWARE\MSMQ\Parameters", "TCPNoDelay")
+        return val == 1
+    def apply(self) -> bool:
+        CommandRunner.write_registry_value("HKLM", r"SOFTWARE\MSMQ\Parameters", "TCPNoDelay", winreg.REG_DWORD, 1)
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.delete_registry_value("HKLM", r"SOFTWARE\MSMQ\Parameters", "TCPNoDelay")
+        return True
+
+class TcpAckFrequencyOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_tcp_ack", "TCP Ack Frequency", "Rede", "Força confirmação de cada pacote recebido.", "Médio", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        sucesso, stdout, _ = CommandRunner.run_cmd(['powershell.exe', '-NoProfile', '-Command', '(Get-ItemProperty HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\* -Name TcpAckFrequency -ErrorAction SilentlyContinue).TcpAckFrequency'])
+        return sucesso and "1" in stdout
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['powershell.exe', '-NoProfile', '-Command', 'Get-ChildItem HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces | ForEach-Object { New-ItemProperty $_.PSPath -Name TcpAckFrequency -Value 1 -PropertyType DWORD -Force }'])
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.run_cmd(['powershell.exe', '-NoProfile', '-Command', 'Get-ChildItem HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces | ForEach-Object { Remove-ItemProperty $_.PSPath -Name TcpAckFrequency -ErrorAction SilentlyContinue }'])
+        return True
+
+class DisableRscOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_disable_rsc", "Desativar RSC", "Rede", "Evita que a placa acumule pacotes.", "Baixo", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        sucesso, stdout, _ = CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'show', 'global'])
+        if sucesso:
+            txt = stdout.lower()
+            # Se a placa não suportar RSC, consideramos ativado/seguro
+            if "rsc" not in txt and "receive segment coalescing" not in txt and "agrupamento" not in txt:
+                return True
+            return "disabled" in txt or "desativado" in txt or "desabilitado" in txt
+        return False
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'rsc=disabled'])
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'rsc=enabled'])
+        return True
+
+class DisableLsoOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_disable_lso", "Desativar LSO", "Rede", "Garante que pacotes grandes não corrompam a rede.", "Baixo", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        sucesso, stdout, _ = CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'show', 'global'])
+        if sucesso:
+            txt = stdout.lower()
+            dma_off = ("netdma" not in txt) or ("netdma" in txt and ("disable" in txt or "desativ" in txt or "desabilit" in txt))
+            chimney_off = ("chimney" not in txt) or ("chimney" in txt and ("disable" in txt or "desativ" in txt or "desabilit" in txt))
+            return chimney_off and dma_off
+        return False
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'netdma=disabled'])
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'chimney=disabled'])
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'netdma=enabled'])
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'chimney=enabled'])
+        return True
+
+class TcpAutoTuningOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_autotuning", "TCP Auto-Tuning", "Rede", "Ajusta janela para o padrão seguro 'normal'.", "Baixo", False, False)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool: return False
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'global', 'autotuninglevel=normal'])
+        return True
+    def rollback(self) -> bool: return True
+
+class TcpCubicOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_tcp_cubic", "Controlo CUBIC", "Rede", "Aplica algoritmo de estabilidade em pacotes.", "Médio", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        sucesso, stdout, _ = CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'show', 'supplemental'])
+        if sucesso: return "cubic" in stdout.lower()
+        return False
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'supplemental', 'template=internet', 'congestionprovider=cubic'])
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'int', 'tcp', 'set', 'supplemental', 'template=internet', 'congestionprovider=ctcp'])
+        return True
+
+class FlushDnsWinsockOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_flush_dns", "Reset DNS & Winsock", "Rede", "Expurga rotas mortas.", "Baixo", False, False)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool: return False 
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['ipconfig', '/flushdns'])
+        CommandRunner.run_cmd(['netsh', 'winsock', 'reset'])
+        return True
+    def rollback(self) -> bool: return True
+
+class QosDscpGamingOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_qos_dscp", "Marcação QoS DSCP", "Rede", "Prioriza pacotes do PC no roteador.", "Baixo", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        val, _ = CommandRunner.read_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Services\Tcpip\QoS", "Do not use NLA")
+        return str(val) == "1"
+    def apply(self) -> bool:
+        CommandRunner.write_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Services\Tcpip\QoS", "Do not use NLA", winreg.REG_SZ, "1")
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.delete_registry_value("HKLM", r"SYSTEM\CurrentControlSet\Services\Tcpip\QoS", "Do not use NLA")
+        return True
+
+class DisableTeredoOpt(Optimization):
+    def __init__(self):
+        super().__init__("net_disable_teredo", "Desativar Teredo", "Rede", "Desliga túneis IPv6 obscuros.", "Médio", False, True)
+    def check_condition(self, hw): return True
+    def check_os_state(self) -> bool:
+        sucesso, stdout, _ = CommandRunner.run_cmd(['netsh', 'interface', 'teredo', 'show', 'state'])
+        if sucesso:
+            txt = stdout.lower()
+            return "disable" in txt or "desativ" in txt or "desabilit" in txt
+        return False
+    def apply(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'interface', 'teredo', 'set', 'state', 'disabled'])
+        CommandRunner.run_cmd(['netsh', 'interface', 'isatap', 'set', 'state', 'default', 'disabled'])
+        return True
+    def rollback(self) -> bool:
+        CommandRunner.run_cmd(['netsh', 'interface', 'teredo', 'set', 'state', 'default'])
+        CommandRunner.run_cmd(['netsh', 'interface', 'isatap', 'set', 'state', 'default'])
+        return True
 
 ================================================================================
 ARQUIVO: c:\Users\Gustavo M.H\Downloads\GustavoOptimizer_Pro\optimizations\storage_opts.py
