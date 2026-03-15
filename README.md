@@ -1,90 +1,74 @@
-<div align="center">
+🛡️ Gustavo Optimizer Pro v3.1.0 - Enterprise Edition
+A central de comando de engenharia definitiva para Windows. Refinada e elevada ao nível Enterprise para manter a integridade absoluta da máquina, enquanto gere latências lógicas, liberta recursos pesados e proporciona uma Interface Gráfica de nível corporativo.
 
-<h1 style="font-size: 3em; font-weight: bold;">🛡️ Gustavo Optimizer v2.2.0 - Stable Edition</h1>
+Foco em Arquitetura Limpa, Estabilidade do Kernel, Idempotência e Proteção do Usuário.
 
-A central de comando de engenharia definitiva para Windows. Refinada e estabilizada para manter a integridade absoluta da máquina, enquanto gere latências lógicas, liberta recursos pesados e proporciona uma Interface Gráfica de nível corporativo.
-
-Foco em Heurística, Estabilidade do Kernel e Proteção do Utilizador.
-
-</div>
-
-O Gustavo Optimizer atingiu a sua maturidade. Na versão 2.2.0 Stable, abandonámos agressões inseguras aos controladores de Placas de Vídeo e adaptadores de rede, e introduzimos um Motor Heurístico de Leitura de Erros. Ele sabe agora exatamente quando um erro é um "falso positivo" (ex: uma pasta vazia a ser limpa) ou um risco real (falta de permissões de sistema).
+O Gustavo Optimizer atingiu a sua maturidade máxima. Na versão 3.1.0 Enterprise, abandonamos scripts opacos e chamadas diretas não seguras, introduzindo um Motor de Execução Desacoplado, Painéis Interativos de Diagnóstico e uma Caixa-Preta de Auditoria em tempo real. O sistema sabe exatamente o que está instalado no seu PC e nunca subscreve configurações originais com valores genéricos.
 
 🔥 Principais Funcionalidades
+🧠 Motor Heurístico e Idempotência: Substituindo scripts antigos, o Python agora lê o Registo e o Kernel nativamente antes de agir. Se um recurso já estiver otimizado, o motor ignora a escrita, poupando a vida útil do seu SSD e evitando processamento inútil.
 
-🤖 Motor Heurístico Avançado (Anti-Falsos Positivos): Substituindo scripts opacos antigos, o Python agora captura o stderr em tempo real. Se mandar limpar a cache do navegador e a pasta já não existir, a IA do código assume "Sucesso", em vez de alarmar o utilizador com uma reversão visual abrupta na interface.
+👁️ Single Source of Truth (Auditoria em Tempo Real): O programa não confia em achismos. Ao inicializar furtivamente em milissegundos, ele lê o Kernel do Windows. A interface adapta-se automaticamente ao estado real da máquina. Todas as mudanças geram um log estruturado (system_changes_audit.json).
 
-👁️ Auditoria em Tempo Real (Single Source of Truth): O programa não confia apenas na sua própria memória. Ao arrancar, ele lê o Kernel e o Registo nativo do Windows em milissegundos. A interface adapta-se automaticamente ao estado real da máquina.
+🔄 True Rollback (Snapshot de Estado Real): Ao contrário de otimizadores comuns que aplicam valores padrão, o Optimizer Pro tira uma "fotografia" da configuração exata da sua máquina antes de aplicar qualquer alteração. Reverter significa voltar cirurgicamente ao seu estado original.
 
-📈 DPI Scaling Nativo e Grelha Elástica: A API do Windows (DWM) foi forçada a injetar cores no código, mantendo o redimensionamento elástico (flexbox) perfeito. Os cartões ajustam-se e esticam simetricamente em qualquer configuração Multi-Monitor.
+🛡️ Blindagem de Memória e Permissões: O código Win32 API (ctypes) usa assinaturas de 64-bits estritas, prevenindo corrupção de memória (Segfaults). Funções críticas são bloqueadas automaticamente se o programa não possuir privilégios de Administrador.
 
-🧠 Sistema Anti-Loop de Acesso Negado: A arquitetura base possui agora defesas contra os escudos do Windows 11. Se o seu PC ou antivírus negar o acesso (PermissionDenied), o programa limpa as suas memórias de forma inteligente e liberta a interface, impedindo encravamentos de botões.
+📈 Painéis Interativos de Diagnóstico:
 
-🐍 Otimizações Nativas de Engenharia (Python): Ferramentas que comunicam diretamente com o Kernel do Windows: um Smart RAM Cleaner (via PSAPI), Auto Game Priority, Validador de Hz, Purga da Standby List (via ISLC / ntdll) e Minimização Inteligente para o System Tray (Bandeja do Sistema).
+Smart DNS Benchmark: Avalia o Ping dos maiores servidores mundiais (Cloudflare, Google, Quad9, etc.) em tempo real e injeta a rota vencedora diretamente no adaptador físico de rede.
 
-💽 Gestão Profunda de Hardware (Hibernação): Otimiza o armazenamento instantaneamente com rotinas que interagem com o powercfg, desativando a hibernação e removendo o pesado ficheiro hiberfil.sys, somadas a Benchmarks Globais de Latência (DNS).
+Debloat Avançado: Analisa o pacote de aplicativos nativos do Windows (UWP) e permite desinstalar ou reinstalar bloatwares de forma segura e visual.
 
-🖥️ Gerenciador Interativo de Apps (Debloat): Um painel bidirecional que analisa o status real do sistema, indicando o que está Instalado (Verde) ou Ausente (Vermelho), permitindo desinstalar pacotes ou reinstalá-los via XML nativo.
+🖥️ UI Enterprise Responsiva: Interface desenvolvida em CustomTkinter, com DPI Scaling nativo, suporte perfeito a múltiplos monitores e temas (incluindo integração com o Modo Escuro nativo do Windows).
+
+⚡ Telemetria Singleton de Custo Zero: Monitoramento contínuo de CPU, RAM e GPU em tempo real na interface, executado de forma paralela e em cache para não gerar quedas de FPS.
 
 📜 Histórico de Versões e Evolução
+👑 v3.1.0 - Enterprise Edition [ATUAL]
+Painéis Interativos: Introdução da classe visual Toplevel para o Smart DNS Benchmark e o Debloat Avançado.
 
-<details open>
-<summary><b>🛡️ v2.2.0 - Stable Edition (Instabilidade Zero & Heurística) [ATUAL]</b></summary>
+Cofre de Comandos (SystemCommandExecutor): Proteção contra Command Injection e travamentos infinitos (Timeouts).
 
-Motor Heurístico de Erros Reais: Remoção da camuflagem >nul 2>&1 || exit 0. O Python lê stderr e os códigos do Windows para interpretar "Falsos Positivos", deixando apenas erros de permissão real passarem.
+Fix de Memory Leak/Segfault: Assinaturas argtypes aplicadas nas chamadas nativas de Kernel.
 
-Estabilidade Absoluta (Instabilidade Zero): Remoção definitiva de injeções (TCP Global, HPET, PowerMizer GPU, Moderação NIC e Flip Fix) que causavam o bloqueio/glitch da aceleração de vídeo e redes sociais na web.
+Boot Silencioso: Remoção completa de terminais na inicialização; leitura de estado 100% via API Nativa.
 
-Gestão de Armazenamento: Adicionado switch para Desativar Hibernação (hiberfil.sys), poupando espaço de disco instantaneamente.
+🧱 v3.0.0 - Enterprise Foundation
+Arquitetura MVC: Desacoplamento total entre a Interface Gráfica e o Motor de Otimização.
 
-</details>
+Auditoria de Segurança: Implementação do SystemChangeGuard e logs rotativos profissionais de 5MB.
 
-<details>
-<summary><b>💎 v2.1.0 - Elite Edition (Smart Profiles & UX Responsiva)</b></summary>
+Cache de Hardware: Sistema Singleton para evitar gargalos de CPU durante varreduras de SSD/Cores.
 
-Grelha Responsiva e Elástica (Fix Multi-Monitor): Os cartões da interface ganharam pesos elásticos. A interface estica e encolhe fluidamente.
+🛡️ v2.2.0 - Stable Edition (Instabilidade Zero & Heurística)
+Motor Heurístico de Erros Reais: Leitura de stderr e códigos do Windows para interpretar "Falsos Positivos".
 
-Sistema Anti-Loop (Quebra-Ciclo): A função mestre de logs (log_res) foi reescrita.
+Estabilidade Absoluta: Remoção definitiva de injeções antigas (HPET, PowerMizer GPU) que causavam bloqueio de aceleração de vídeo.
 
-Remoção Segura do Modo MSI: O protocolo de segurança rígido PCI do Windows 11 passou a ser respeitado pela ferramenta.
+💎 v2.1.0 - Elite Edition (Smart Profiles & UX Responsiva)
+Grelha Responsiva: Cartões da interface ganharam pesos elásticos (Flexbox).
 
-</details>
+Sistema Anti-Loop: A função mestre de logs foi reescrita contra escudos do Windows 11.
 
-<details>
-<summary><b>🌟 v2.0.6 - Elite Edition (Smart Profiles & DPI Native)</b></summary>
+Remoção Segura do Modo MSI: O protocolo de segurança PCI passou a ser respeitado pela ferramenta.
 
-Resolução Definitiva de DPI: Devolução do controlo ao Desktop Window Manager (DWM). Maximiza as janelas perfeitamente e restaura o Aero Snap.
+🌟 Versões Clássicas (v2.0 a v1.0)
+Resolução Definitiva de DPI (Aero Snap restaurado).
 
-Injeção de Dark Mode Nativo: API Win32 forçando a barra padrão do Windows a ficar escura.
+Proteção de SysMain para PCs High-End (>16GB RAM).
 
-Inteligência de Hardware: Proteção do SysMain em PCs High-End (>16GB RAM) e da gestão de núcleo do Core Parking.
-
-Bandeja do Sistema Nativa: O app oculta-se perfeitamente ao lado do relógio através da captação <Unmap>.
-
-</details>
-
-<details>
-<summary><b>🛠️ Versões Clássicas (v2.0 a v1.0)</b></summary>
-
-Integração Ctypes 64-bits (ntdll.dll) e ofuscação avançada.
-
-Remoção de riscos à integridade (UAC e SmartScreen mantidos ativos).
-
-Introdução de lógica 100% Assíncrona (Threading).
-
-Memória Persistente de Perfil (Snapshots via winreg).
-
-</details>
+Integração base com ctypes e lógica 100% Assíncrona (Threading).
 
 💻 Como Compilar (Para Desenvolvedores)
+O projeto possui uma arquitetura modular moderna e depende de bibliotecas gráficas e de sistema avançadas.
 
-O projeto depende de ferramentas gráficas e leituras sistêmicas de bibliotecas externas.
+1. Instale todas as dependências:
 
-1. Instale todas as Dependências:
+Bash
+py -m pip install pyinstaller customtkinter psutil pystray Pillow pynvml
+2. Vá até o diretório raiz do projeto e compile com o PyInstaller:
 
-py -m pip install pyinstaller customtkinter psutil pystray Pillow
-
-
-2. Vá até a diretoria raiz e compile com o PyInstaller:
-
-py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icone.ico" --add-data "icone.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "Programa dos Bats.py"
+Bash
+py -m PyInstaller --clean --noconfirm --onefile --windowed --uac-admin --icon "icon.ico" --add-data "icon.ico;." --collect-all customtkinter --collect-all psutil --collect-all pystray --collect-all PIL "main.py"
+(Nota: Certifique-se de que possui o ficheiro icon.ico na mesma pasta antes de rodar a compilação).
